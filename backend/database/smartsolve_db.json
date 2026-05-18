@@ -1,0 +1,292 @@
+{
+  "users": [],
+  "papers": [],
+  "mockTests": [
+    {
+      "id": "math-101",
+      "title": "Class 10 CBSE Mathematics - Quadratic Equations",
+      "subject": "Mathematics",
+      "duration": 30,
+      "questions": [
+        {
+          "id": "q1",
+          "question": "Find the roots of the quadratic equation 2x² - 5x + 3 = 0.",
+          "options": [
+            "x = 1, x = 1.5",
+            "x = -1, x = -1.5",
+            "x = 2, x = 3",
+            "x = 0, x = 5"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Using the quadratic formula: x = [-b ± √(b² - 4ac)] / 2a. Here a=2, b=-5, c=3. b²-4ac = 25 - 24 = 1. Roots are (5 + 1)/4 = 1.5 and (5 - 1)/4 = 1. Hence, x = 1 and x = 1.5."
+        },
+        {
+          "id": "q2",
+          "question": "If one root of the quadratic equation kx² - 3x - 10 = 0 is 2, find the value of k.",
+          "options": [
+            "k = 2",
+            "k = 3",
+            "k = 4",
+            "k = 5"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Substitute x = 2 in the equation: k(2)² - 3(2) - 10 = 0 => 4k - 6 - 10 = 0 => 4k = 16 => k = 4."
+        },
+        {
+          "id": "q3",
+          "question": "What is the nature of the roots of the equation x² - 4x + 4 = 0?",
+          "options": [
+            "Real and distinct",
+            "Real and equal",
+            "Imaginary/No real roots",
+            "None of the above"
+          ],
+          "correctAnswer": 1,
+          "explanation": "Calculate the discriminant D = b² - 4ac. Here, D = (-4)² - 4(1)(4) = 16 - 16 = 0. Since D = 0, the roots are real and equal."
+        }
+      ]
+    },
+    {
+      "id": "sci-102",
+      "title": "Class 10 CBSE Science - Chemical Reactions and Equations",
+      "subject": "Science",
+      "duration": 20,
+      "questions": [
+        {
+          "id": "sq1",
+          "question": "Which of the following is a displacement reaction?",
+          "options": [
+            "CaCO₃ → CaO + CO₂",
+            "2H₂ + O₂ → 2H₂O",
+            "Fe + CuSO₄ → FeSO₄ + Cu",
+            "NaOH + HCl → NaCl + H₂O"
+          ],
+          "correctAnswer": 2,
+          "explanation": "In Fe + CuSO₄ → FeSO₄ + Cu, Iron (Fe) is more reactive than Copper (Cu) and displaces it from its sulphate solution, making it a displacement reaction."
+        },
+        {
+          "id": "sq2",
+          "question": "What happens when dilute hydrochloric acid is added to iron filings?",
+          "options": [
+            "Hydrogen gas and iron chloride are produced.",
+            "Chlorine gas and iron hydroxide are produced.",
+            "No reaction takes place.",
+            "Iron salt and water are produced."
+          ],
+          "correctAnswer": 0,
+          "explanation": "Fe + 2HCl → FeCl₂ + H₂. Hydrogen gas and iron(II) chloride are produced. This is a single displacement reaction."
+        }
+      ]
+    },
+    {
+      "id": "neet-bio-01",
+      "title": "NEET UG - Human Physiology & Biology",
+      "subject": "Science (Biology)",
+      "duration": 45,
+      "questions": [
+        {
+          "id": "nq1",
+          "question": "Which of the following is responsible for the transport of oxygen in the blood?",
+          "options": [
+            "White Blood Cells",
+            "Platelets",
+            "Hemoglobin",
+            "Plasma"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Hemoglobin is an iron-containing protein in red blood cells that reversibly binds oxygen."
+        },
+        {
+          "id": "nq2",
+          "question": "The basic functional unit of the human kidney is:",
+          "options": [
+            "Nephron",
+            "Neuron",
+            "Alveoli",
+            "Villi"
+          ],
+          "correctAnswer": 0,
+          "explanation": "The nephron is the microscopic structural and functional unit of the kidney."
+        },
+        {
+          "id": "nq3",
+          "question": "In photosynthesis, light-independent reactions (Calvin cycle) take place in:",
+          "options": [
+            "Thylakoid lumen",
+            "Stroma of chloroplast",
+            "Inner mitochondrial membrane",
+            "Cytoplasm"
+          ],
+          "correctAnswer": 1,
+          "explanation": "The Calvin cycle takes place in the stroma, the fluid-filled area of a chloroplast outside the thylakoid membranes."
+        }
+      ]
+    },
+    {
+      "id": "kcet-phy-01",
+      "title": "KCET Physics - Mechanics & Electromagnetism",
+      "subject": "Science (Physics)",
+      "duration": 60,
+      "questions": [
+        {
+          "id": "kq1",
+          "question": "A particle moves in a circular path of radius r with constant speed v. The work done by the centripetal force in one half revolution is:",
+          "options": [
+            "Zero",
+            "mv²/r * πr",
+            "mv²/r * 2πr",
+            "None of the above"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Centripetal force is always perpendicular to the displacement. Work done W = F·d = F d cos(90°) = 0."
+        },
+        {
+          "id": "kq2",
+          "question": "If the length of a wire is doubled and its radius is halved, its electrical resistance will become:",
+          "options": [
+            "Twice",
+            "Four times",
+            "Eight times",
+            "Sixteen times"
+          ],
+          "correctAnswer": 2,
+          "explanation": "Resistance R = ρL/A = ρL/(πr²). If L' = 2L and r' = r/2, then R' = ρ(2L)/(π(r/2)²) = ρ(2L)/(πr²/4) = 8 * (ρL/πr²) = 8R."
+        }
+      ]
+    }
+  ],
+  "userTests": [],
+  "notes": [
+    {
+      "id": "n1",
+      "title": "Quadratic Equations Formula Sheet",
+      "subject": "Mathematics",
+      "category": "formulas",
+      "content": "### Quadratic Equation: $ax^2 + bx + c = 0$\n\n#### 1. Discriminant ($D$)\n$D = b^2 - 4ac$\n\n#### 2. Nature of Roots\n- If $D > 0$: Roots are real and distinct: $x = \\frac{-b \\pm \\sqrt{D}}{2a}$\n- If $D = 0$: Roots are real and equal: $x = -\\frac{b}{2a}$\n- If $D < 0$: No real roots (imaginary roots).\n\n#### 3. Quadratic Formula (Shreedharacharya Method)\n$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$\n\n#### 4. Relation Between Roots and Coefficients\nLet $\\alpha$ and $\\beta$ be the roots of the equation:\n- Sum of roots: $\\alpha + \\beta = -\\frac{b}{a}$\n- Product of roots: $\\alpha \\cdot \\beta = \\frac{c}{a}$",
+      "videoUrl": "https://www.youtube.com/embed/Z1e_S7G6lZ0",
+      "flashcards": [
+        {
+          "front": "What is the quadratic formula?",
+          "back": "x = (-b ± √(b² - 4ac)) / 2a"
+        },
+        {
+          "front": "What does the discriminant D determine?",
+          "back": "The nature of the roots (real & distinct, real & equal, or complex)."
+        },
+        {
+          "front": "Formula for the sum of roots α + β?",
+          "back": "-b/a"
+        }
+      ]
+    },
+    {
+      "id": "n2",
+      "title": "Chemical Reactions and Balancing Equations",
+      "subject": "Science",
+      "category": "notes",
+      "content": "### Chemical Reactions Summary\n\n#### 1. Combination Reaction\nTwo or more reactants combine to form a single product.\n$2H_2 + O_2 \\rightarrow 2H_2O$\n\n#### 2. Decomposition Reaction\nA single reactant breaks down into two or more simpler products.\n$2H_2O \\rightarrow 2H_2 + O_2$ (Electrolytic decomposition)\n\n#### 3. Displacement Reaction\nA more reactive element displaces a less reactive element from its compound.\n$Fe + CuSO_4 \\rightarrow FeSO_4 + Cu$\n\n#### 4. Double Displacement Reaction\nExchange of ions between reactants.\n$Na_2SO_4 + BaCl_2 \\rightarrow BaSO_4 \\downarrow + 2NaCl$",
+      "videoUrl": "https://www.youtube.com/embed/e1W5ZkQ_b5c",
+      "flashcards": [
+        {
+          "front": "Define displacement reaction.",
+          "back": "A reaction in which a more reactive element displaces a less reactive element from its salt solution."
+        },
+        {
+          "front": "What is a precipitation reaction?",
+          "back": "A reaction that produces an insoluble salt (precipitate)."
+        }
+      ]
+    },
+    {
+      "id": "note-neet-1",
+      "title": "NEET Biology Masterclass: Human Physiology",
+      "subject": "Science (Biology)",
+      "category": "notes",
+      "content": "### Human Respiratory System\n\nThe human respiratory system consists of a pair of lungs and a series of air passages. The primary function is the exchange of gases (oxygen and carbon dioxide).\n\n#### Key Organs:\n- Trachea (Windpipe)\n- Bronchi\n- Bronchioles\n- Alveoli (Site of actual gas exchange)\n\n#### Transport of Gases:\nO2 is transported primarily by Hemoglobin (Hb) as Oxyhemoglobin. CO2 is transported dissolved in plasma, as carbaminohemoglobin, and mainly as bicarbonate ions.",
+      "videoUrl": "https://www.youtube.com/embed/S2H_xJksKgs",
+      "flashcards": [
+        {
+          "front": "What is the site of gas exchange in lungs?",
+          "back": "Alveoli"
+        },
+        {
+          "front": "How is majority of CO2 transported in blood?",
+          "back": "As Bicarbonate ions (HCO3-)"
+        }
+      ]
+    },
+    {
+      "id": "note-kcet-1",
+      "title": "KCET Physics Formula Sheet: Mechanics",
+      "subject": "Science (Physics)",
+      "category": "formulas",
+      "content": "### Essential Mechanics Formulas\n\n#### Kinematics\n- $v = u + at$\n- $s = ut + \\frac{1}{2}at^2$\n- $v^2 - u^2 = 2as$\n\n#### Dynamics\n- Force: $F = ma$\n- Momentum: $p = mv$\n- Work Done: $W = F \\cdot d \\cdot \\cos(\\theta)$\n\n#### Circular Motion\n- Centripetal Acceleration: $a_c = \\frac{v^2}{r}$",
+      "videoUrl": "https://www.youtube.com/embed/5iMxs2F8pBQ",
+      "flashcards": [
+        {
+          "front": "Formula for Centripetal Force?",
+          "back": "F = mv²/r"
+        },
+        {
+          "front": "Work-Energy Theorem?",
+          "back": "Work done by net force equals change in Kinetic Energy."
+        }
+      ]
+    }
+  ],
+  "forum": [
+    {
+      "id": "f1",
+      "title": "How to solve quadratic equations quickly in board exams?",
+      "content": "Does anyone have shortcuts for factoring? Sometimes splitting the middle term takes way too long when numbers are big.",
+      "author": "Rahul S.",
+      "subject": "Mathematics",
+      "date": "2026-05-18T10:00:00.000Z",
+      "replies": [
+        {
+          "author": "Anjali Sharma (Educator)",
+          "content": "Always check the product a*c first. Find prime factors of a*c, then look for pairs. If the numbers are too big, don't waste more than 30 seconds—instantly switch to the quadratic formula! It is foolproof.",
+          "date": "2026-05-18T10:15:00.000Z"
+        }
+      ]
+    }
+  ],
+  "studyRooms": [
+    {
+      "id": "room-math",
+      "name": "Mathematics Board Prep 📐",
+      "subject": "Mathematics",
+      "activeUsers": 3,
+      "messages": [
+        {
+          "author": "Kiran",
+          "content": "Hey guys, working on quadratic equations mock test. Anyone down to solve together?",
+          "time": "18:05"
+        },
+        {
+          "author": "Sneha",
+          "content": "Yes! I'm in the Pomodoro room now.",
+          "time": "18:07"
+        }
+      ]
+    },
+    {
+      "id": "room-science",
+      "name": "Science Masterminds 🧪",
+      "subject": "Science",
+      "activeUsers": 5,
+      "messages": [
+        {
+          "author": "Deepak",
+          "content": "Does anyone understand the balancing equation of lead nitrate decomposition?",
+          "time": "17:45"
+        },
+        {
+          "author": "Rohan",
+          "content": "Yes, it is 2Pb(NO3)2 -> 2PbO + 4NO2 + O2. Remember lead oxide is yellow and nitrogen dioxide gas has brown fumes!",
+          "time": "17:50"
+        }
+      ]
+    }
+  ]
+}
