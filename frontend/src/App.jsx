@@ -700,11 +700,17 @@ export default function App() {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1 }}>
           {[
             { id: 'home', label: 'Dashboard', icon: Trophy },
-            { id: 'solver', label: 'AI Question Solver', icon: Sparkles },
-            { id: 'tests', label: 'Mock Test Section', icon: BookMarked },
-            { id: 'notes', label: 'Study Materials', icon: BookOpen },
+            { id: 'exams', label: 'Government Exams', icon: BookOpen },
+            { id: 'solver', label: 'AI Doubt Solver', icon: Sparkles },
+            { id: 'tests', label: 'Smart Mock Tests', icon: BookMarked },
+            { id: 'papers', label: 'Previous Year Papers', icon: RefreshCw },
+            { id: 'notes', label: 'NCERT & PU Notes', icon: BookOpen },
+            { id: 'planner', label: 'Study Planner', icon: Clock },
+            { id: 'current_affairs', label: 'Current Affairs', icon: Volume2 },
+            { id: 'interview', label: 'AI Interview Prep', icon: Mic },
             { id: 'analytics', label: 'Performance Analytics', icon: BarChart3 },
-            { id: 'social', label: 'Classroom Lounge', icon: Users },
+            { id: 'social', label: 'Community & Lounge', icon: Users },
+            { id: 'admin', label: 'Admin Panel', icon: Settings },
           ].map(item => {
             const Icon = item.icon;
             const isSel = activeTab === item.id;
@@ -2224,7 +2230,149 @@ export default function App() {
           </div>
         )}
 
+        {/* ========================================================
+            TAB: GOVERNMENT EXAMS (KCET, NEET, UPSC)
+            ======================================================== */}
+        {activeTab === 'exams' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <h1 style={{ fontSize: '32px' }}>🏛️ Government Exams Prep</h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '-20px' }}>Access specialized curriculum for competitive entrance and government recruitment exams.</p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+              {['KCET (Karnataka CET)', 'NEET UG', 'JEE Mains', 'UPSC Prelims', 'KPSC', 'SSC CGL', 'NDA / Defense'].map(exam => (
+                <div key={exam} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ padding: '16px', background: 'var(--bg-tertiary)', borderRadius: '12px', display: 'flex', justifyContent: 'center' }}>
+                    <BookOpen size={48} style={{ color: '#06b6d4' }} />
+                  </div>
+                  <h3 style={{ fontSize: '20px', textAlign: 'center' }}>{exam}</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-muted)' }}>
+                    <span>Mock Tests: 15+</span>
+                    <span>PYQs: 10 Years</span>
+                  </div>
+                  <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setActiveTab('tests')}>
+                    Start Preparation
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB: AI INTERVIEW PREP
+            ======================================================== */}
+        {activeTab === 'interview' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <h1 style={{ fontSize: '32px' }}>🎙️ AI Interview Simulator</h1>
+            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', padding: '40px' }}>
+              <div style={{ padding: '30px', background: 'rgba(99,102,241,0.1)', borderRadius: '50%', border: '2px dashed #6366f1' }}>
+                <Mic size={64} style={{ color: '#6366f1' }} />
+              </div>
+              <h2 style={{ fontSize: '24px' }}>HR & Technical Interview Simulator</h2>
+              <p style={{ color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '500px' }}>
+                Practice for your SSC, UPSC, and NDA interviews. Our AI will speak questions to you and evaluate your spoken answers for confidence and accuracy.
+              </p>
+              <button className="btn-primary" style={{ padding: '12px 30px', fontSize: '16px' }}>Start Voice Simulation Room</button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB: STUDY PLANNER
+            ======================================================== */}
+        {activeTab === 'planner' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <h1 style={{ fontSize: '32px' }}>📅 AI Personalized Study Plan</h1>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '20px' }}>
+              <div className="glass-card">
+                <h3>Today's Targets</h3>
+                <ul style={{ listStyle: 'none', padding: 0, marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  <li style={{ display: 'flex', gap: '10px' }}><CheckCircle color="#10b981" /> Revise NEET Biology Chapter 4</li>
+                  <li style={{ display: 'flex', gap: '10px' }}><Clock color="#f59e0b" /> Take KCET Physics Mock Test (60 mins)</li>
+                  <li style={{ display: 'flex', gap: '10px' }}><Sparkles color="#6366f1" /> Practice 10 Quadratic Equations</li>
+                </ul>
+              </div>
+              <div className="glass-card">
+                <h3>Smart Revision Schedule</h3>
+                <p style={{ color: 'var(--text-secondary)', marginTop: '10px' }}>Based on your analytics, our AI recommends you focus on <strong>Quadratic Formulas</strong> and <strong>Thermodynamics</strong> today.</p>
+                <div style={{ marginTop: '20px', height: '200px', background: 'var(--bg-tertiary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>[Calendar Timeline View Integration]</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB: CURRENT AFFAIRS
+            ======================================================== */}
+        {activeTab === 'current_affairs' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <h1 style={{ fontSize: '32px' }}>📰 Current Affairs & GK Capsules</h1>
+            <div className="glass-card">
+              <h3>Today's UPSC/KPSC Highlights</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
+                <div style={{ padding: '15px', background: 'rgba(30,41,59,0.5)', borderRadius: '8px' }}>
+                  <span style={{ color: '#06b6d4', fontSize: '12px', fontWeight: 'bold' }}>NATIONAL</span>
+                  <h4 style={{ margin: '5px 0' }}>New Educational Policy Summit 2026</h4>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>A major summit discussing the integration of AI tools in all government curriculum.</p>
+                </div>
+                <div style={{ padding: '15px', background: 'rgba(30,41,59,0.5)', borderRadius: '8px' }}>
+                  <span style={{ color: '#10b981', fontSize: '12px', fontWeight: 'bold' }}>SCIENCE & TECH</span>
+                  <h4 style={{ margin: '5px 0' }}>ISRO's latest lunar observation satellite successfully deployed</h4>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>The satellite will assist in mapping lunar resources for upcoming missions.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB: PREVIOUS YEAR PAPERS
+            ======================================================== */}
+        {activeTab === 'papers' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <h1 style={{ fontSize: '32px' }}>📜 Previous Year Question Papers (PYQs)</h1>
+            <div className="glass-card" style={{ display: 'flex', gap: '15px' }}>
+              <select style={{ padding: '10px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)', outline: 'none' }}>
+                <option>CBSE Class 10</option>
+                <option>KCET Engineering</option>
+                <option>NEET Medical</option>
+                <option>UPSC Prelims</option>
+              </select>
+              <select style={{ padding: '10px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)', outline: 'none' }}>
+                <option>2025</option>
+                <option>2024</option>
+                <option>2023</option>
+                <option>2022</option>
+              </select>
+              <button className="btn-primary">Load Solved Papers</button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB: ADMIN PANEL
+            ======================================================== */}
+        {activeTab === 'admin' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <h1 style={{ fontSize: '32px' }}>⚙️ Super Admin Dashboard</h1>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="glass-card">
+                <h3>Manage Mock Tests</h3>
+                <button className="btn-secondary" style={{ marginTop: '15px' }}><Plus size={16} /> Upload New NEET/KCET Test</button>
+              </div>
+              <div className="glass-card">
+                <h3>Student Analytics</h3>
+                <p style={{ color: 'var(--text-secondary)', marginTop: '10px' }}>Total Registered Students: 1,245</p>
+                <p style={{ color: 'var(--text-secondary)' }}>Active Today: 342</p>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );
 }
+
