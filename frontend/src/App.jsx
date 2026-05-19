@@ -97,6 +97,19 @@ export default function App() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const synthRef = useRef(window.speechSynthesis);
 
+  // Smart Practice Mode States
+  const [smartSubject, setSmartSubject] = useState('Mathematics');
+  const [smartExamMode, setSmartExamMode] = useState('KCET Mode');
+  const [smartDifficulty, setSmartDifficulty] = useState('Medium');
+  const [smartTime, setSmartTime] = useState('15 Minutes');
+  const [isGeneratingSmartTest, setIsGeneratingSmartTest] = useState(false);
+  const [smartActiveTest, setSmartActiveTest] = useState(null);
+  const [smartUserAnswers, setSmartUserAnswers] = useState({});
+  const [smartTestTimeLeft, setSmartTestTimeLeft] = useState(0);
+  const [smartTestResult, setSmartTestResult] = useState(null);
+  const [smartTestTimeSpent, setSmartTestTimeSpent] = useState(0);
+  const smartTestTimerRef = useRef(null);
+
   // 1. Initial Load & Auth check
   useEffect(() => {
     const cachedUser = localStorage.getItem('ss_current_user');
@@ -456,6 +469,112 @@ export default function App() {
       console.error(err);
       alert("Failed to grade test.");
     }
+  };
+
+  // Smart Practice Mode Handlers
+  const handleGenerateSmartTest = () => {
+    setIsGeneratingSmartTest(true);
+    setTimeout(() => {
+      // Generate a mock test
+      const generatedTest = {
+        id: `smart_test_${Date.now()}`,
+        title: `AI Generated ${smartExamMode} Test`,
+        subject: smartSubject,
+        difficulty: smartDifficulty,
+        duration: parseInt(smartTime.split(' ')[0]),
+        questions: [
+          {
+            id: 'q1',
+            question: `What is the most fundamental concept in ${smartSubject}?`,
+            options: ['Option A', 'Option B', 'Option C', 'Option D'],
+            correctIndex: 1,
+            explanation: 'This is a generated explanation.'
+          },
+          {
+            id: 'q2',
+            question: `Solve this ${smartDifficulty} difficulty problem for ${smartExamMode}.`,
+            options: ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'],
+            correctIndex: 2,
+            explanation: 'Detailed AI generated step-by-step explanation.'
+          },
+          {
+            id: 'q3',
+            question: `Identify the correct statement regarding ${smartSubject}.`,
+            options: ['Statement 1', 'Statement 2', 'Statement 3', 'Statement 4'],
+            correctIndex: 0,
+            explanation: 'AI evaluation of the statement.'
+          }
+        ]
+      };
+      
+      setIsGeneratingSmartTest(false);
+      setSmartActiveTest(generatedTest);
+      setSmartUserAnswers({});
+      setSmartTestResult(null);
+      setSmartTestTimeLeft(generatedTest.duration * 60);
+      setSmartTestTimeSpent(0);
+
+      // Launch timer
+      if (smartTestTimerRef.current) clearInterval(smartTestTimerRef.current);
+      smartTestTimerRef.current = setInterval(() => {
+        setSmartTestTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(smartTestTimerRef.current);
+            submitSmartTestAuto();
+            return 0;
+          }
+          setSmartTestTimeSpent(s => s + 1);
+          return prev - 1;
+        });
+      }, 1000);
+    }, 1500);
+  };
+
+  const handleSelectSmartOption = (qId, optionIdx) => {
+    setSmartUserAnswers(prev => ({ ...prev, [qId]: optionIdx }));
+  };
+
+  const submitSmartTestAuto = () => {
+    handleSubmitSmartTest();
+  };
+
+  const handleSubmitSmartTest = () => {
+    if (smartTestTimerRef.current) clearInterval(smartTestTimerRef.current);
+    
+    // Calculate Score manually since this is a mock AI test
+    let correctCount = 0;
+    const detailedResults = smartActiveTest.questions.map((q) => {
+      const userAns = smartUserAnswers[q.id];
+      const isCorrect = userAns === q.correctIndex;
+      if (isCorrect) correctCount++;
+      return {
+        questionId: q.id,
+        question: q.question,
+        userAnswer: userAns !== undefined ? String.fromCharCode(65 + userAns) : 'None',
+        correctAnswer: String.fromCharCode(65 + q.correctIndex),
+        isCorrect,
+        explanation: q.explanation
+      };
+    });
+
+    const score = Math.round((correctCount / smartActiveTest.questions.length) * 100);
+    
+    // Simulate Ranking
+    let simulatedRank = "Top 5%";
+    if (score < 50) simulatedRank = "Top 50%";
+    else if (score < 80) simulatedRank = "Top 20%";
+    else if (score < 100) simulatedRank = "Top 10%";
+    else simulatedRank = "Top 1%";
+
+    setSmartTestResult({
+      score,
+      correctCount,
+      totalQuestions: smartActiveTest.questions.length,
+      timeSpentSeconds: smartTestTimeSpent,
+      weakTopics: score < 80 ? [`Advanced ${smartSubject} Concepts`] : [],
+      detailedResults,
+      simulatedRank
+    });
   };
 
   // 5. Notes, shared study formulas and flashcards
@@ -1706,48 +1825,247 @@ export default function App() {
               </p>
             </div>
 
-            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '600px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>SELECT SUBJECT</label>
-                <select style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}>
-                  <option>Mathematics</option>
-                  <option>Physics</option>
-                  <option>Chemistry</option>
-                  <option>General Knowledge</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>EXAM MODE</label>
-                <select style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}>
-                  <option>KCET Mode</option>
-                  <option>NEET Mode</option>
-                  <option>UPSC Mode</option>
-                  <option>Banking Mode</option>
-                  <option>PU Board Mode</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>DIFFICULTY & TIME LIMIT</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <select style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}>
-                    <option>Medium</option>
-                    <option>Hard</option>
-                    <option>Expert</option>
-                  </select>
-                  <select style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}>
-                    <option>15 Minutes</option>
-                    <option>30 Minutes</option>
-                    <option>60 Minutes</option>
+            {/* Case 1: Configuration Form */}
+            {!smartActiveTest && !smartTestResult && (
+              <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '600px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>SELECT SUBJECT</label>
+                  <select 
+                    value={smartSubject}
+                    onChange={(e) => setSmartSubject(e.target.value)}
+                    style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}
+                  >
+                    <option>Mathematics</option>
+                    <option>Physics</option>
+                    <option>Chemistry</option>
+                    <option>General Knowledge</option>
                   </select>
                 </div>
-              </div>
 
-              <button className="btn-primary" style={{ justifyContent: 'center', padding: '14px', marginTop: '10px' }}>
-                Generate Custom AI Test
-              </button>
-            </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>EXAM MODE</label>
+                  <select 
+                    value={smartExamMode}
+                    onChange={(e) => setSmartExamMode(e.target.value)}
+                    style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}
+                  >
+                    <option>KCET Mode</option>
+                    <option>NEET Mode</option>
+                    <option>UPSC Mode</option>
+                    <option>Banking Mode</option>
+                    <option>PU Board Mode</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>DIFFICULTY & TIME LIMIT</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <select 
+                      value={smartDifficulty}
+                      onChange={(e) => setSmartDifficulty(e.target.value)}
+                      style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}
+                    >
+                      <option>Medium</option>
+                      <option>Hard</option>
+                      <option>Expert</option>
+                    </select>
+                    <select 
+                      value={smartTime}
+                      onChange={(e) => setSmartTime(e.target.value)}
+                      style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}
+                    >
+                      <option>15 Minutes</option>
+                      <option>30 Minutes</option>
+                      <option>60 Minutes</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handleGenerateSmartTest} 
+                  disabled={isGeneratingSmartTest}
+                  className="btn-primary" 
+                  style={{ justifyContent: 'center', padding: '14px', marginTop: '10px', opacity: isGeneratingSmartTest ? 0.7 : 1 }}
+                >
+                  {isGeneratingSmartTest ? <><RefreshCw size={18} className="spin" /> Generating AI Test...</> : 'Generate Custom AI Test'}
+                </button>
+              </div>
+            )}
+
+            {/* Case 2: Taking the Smart Test */}
+            {smartActiveTest && !smartTestResult && (
+              <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: 'var(--border-glass)', paddingBottom: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#8b5cf6', fontWeight: 700, textTransform: 'uppercase' }}>
+                      {smartActiveTest.subject} AI EXAM IN PROGRESS
+                    </span>
+                    <h2 style={{ fontSize: '20px' }}>{smartActiveTest.title}</h2>
+                  </div>
+
+                  {/* Timer widget */}
+                  <div style={{
+                    padding: '8px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239,68,68,0.3)',
+                    color: '#ef4444', borderRadius: '8px', fontFamily: 'monospace', fontSize: '18px', fontWeight: 'bold'
+                  }}>
+                    ⏱️ {formatTime(smartTestTimeLeft)}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  {smartActiveTest.questions.map((q, qIdx) => (
+                    <div key={q.id} style={{ background: 'rgba(30, 41, 59, 0.2)', padding: '20px', borderRadius: '10px', border: 'var(--border-glass)' }}>
+                      <h4 style={{ fontSize: '15px', fontWeight: 600, color: 'white', marginBottom: '14px', lineHeight: 1.6 }}>
+                        Q{qIdx + 1}. {q.question}
+                      </h4>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        {q.options.map((opt, optIdx) => {
+                          const isSel = smartUserAnswers[q.id] === optIdx;
+                          return (
+                            <button
+                              key={optIdx}
+                              onClick={() => handleSelectSmartOption(q.id, optIdx)}
+                              style={{
+                                padding: '12px 16px', borderRadius: '8px', border: 'var(--border-glass)',
+                                background: isSel ? 'var(--accent-gradient)' : 'rgba(30, 41, 59, 0.5)',
+                                color: 'white', cursor: 'pointer', textAlign: 'left', fontSize: '13px',
+                                fontWeight: isSel ? 600 : 400, transition: 'all 0.15s ease'
+                              }}
+                            >
+                              <span style={{ fontWeight: 'bold', marginRight: '8px' }}>
+                                {String.fromCharCode(65 + optIdx)}.
+                              </span>
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', borderTop: 'var(--border-glass)', paddingTop: '20px' }}>
+                  <button 
+                    onClick={() => {
+                      if (window.confirm("Cancel AI Practice Test? Progress will be lost.")) {
+                        setSmartActiveTest(null);
+                        clearInterval(smartTestTimerRef.current);
+                      }
+                    }} 
+                    className="btn-secondary"
+                  >
+                    Cancel Exam
+                  </button>
+                  <button onClick={handleSubmitSmartTest} className="btn-primary">
+                    Submit Answer Sheet
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Case 3: Test Results & Leaderboard */}
+            {smartTestResult && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  {/* Score Card */}
+                  <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center', padding: '40px' }}>
+                    <div style={{
+                      width: '100px', height: '100px', borderRadius: '50%', background: smartTestResult.score >= 70 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                      color: smartTestResult.score >= 70 ? '#10b981' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '28px', fontWeight: 'bold', margin: '0 auto'
+                    }}>
+                      {smartTestResult.score}%
+                    </div>
+
+                    <div>
+                      <h2 style={{ fontSize: '24px', marginBottom: '6px' }}>
+                        {smartTestResult.score >= 80 ? '🎉 Exceptional Performance!' : '👍 Good Effort! Keep practicing.'}
+                      </h2>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                        Correct: **{smartTestResult.correctCount} / {smartTestResult.totalQuestions}** questions | Duration: **{Math.round(smartTestResult.timeSpentSeconds)} seconds**
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '10px' }}>
+                      <button 
+                        onClick={() => {
+                          setSmartActiveTest(null);
+                          setSmartTestResult(null);
+                        }} 
+                        className="btn-secondary"
+                      >
+                        Create New AI Test
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mock Leaderboard / Ranking Card */}
+                  <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '40px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: 'var(--border-glass)', paddingBottom: '16px' }}>
+                      <Trophy size={28} style={{ color: '#f59e0b' }} />
+                      <h2 style={{ fontSize: '24px' }}>Global Ranking</h2>
+                    </div>
+
+                    <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                      <p style={{ fontSize: '16px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Based on your AI test score, you rank in the:</p>
+                      <h3 style={{ fontSize: '32px', color: '#10b981', fontWeight: 800 }}>{smartTestResult.simulatedRank}</h3>
+                      <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px' }}>Among all students taking {smartSubject} in {smartExamMode}.</p>
+                    </div>
+
+                    <div style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px' }}>
+                      <div style={{ fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Users size={16} /> Leaderboard Preview
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                        <span>1. Rahul Sharma</span> <span>98%</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                        <span>2. Priya Patel</span> <span>95%</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', color: '#06b6d4', fontWeight: 'bold' }}>
+                        <span>{smartTestResult.simulatedRank === 'Top 1%' ? '3' : '—'}. You</span> <span>{smartTestResult.score}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Detailed Review */}
+                <div className="glass-card">
+                  <h3 style={{ fontSize: '18px', marginBottom: '20px' }}>📋 Detailed AI Evaluation</h3>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {smartTestResult.detailedResults.map((resItem, idx) => (
+                      <div 
+                        key={resItem.questionId} 
+                        style={{
+                          padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${resItem.isCorrect ? '#10b981' : '#ef4444'}`,
+                          background: 'rgba(30, 41, 59, 0.2)'
+                        }}
+                      >
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                          {resItem.isCorrect ? <CheckCircle size={16} style={{ color: '#10b981' }} /> : <XCircle size={16} style={{ color: '#ef4444' }} />}
+                          <span style={{ fontWeight: 600, fontSize: '14px' }}>Question {idx + 1}</span>
+                        </div>
+                        <p style={{ fontSize: '14px', color: 'white', marginBottom: '12px' }}>{resItem.question}</p>
+                        
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '12px', marginBottom: '12px' }}>
+                          <div>Your Choice: <span style={{ fontWeight: 'bold', color: resItem.isCorrect ? '#10b981' : '#ef4444' }}>{resItem.userAnswer}</span></div>
+                          <div>Correct Answer: <span style={{ fontWeight: 'bold', color: '#10b981' }}>{resItem.correctAnswer}</span></div>
+                        </div>
+
+                        <div style={{
+                          padding: '10px 14px', background: 'rgba(30, 41, 59, 0.6)', borderRadius: '6px',
+                          fontSize: '12px', color: 'var(--text-secondary)', border: 'var(--border-glass)'
+                        }}>
+                          <strong>AI Explanation:</strong> {resItem.explanation}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

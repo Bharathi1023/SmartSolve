@@ -379,8 +379,11 @@ const LOCAL_LIVE_CLASSES = [
 ];
 
 const LOCAL_VIDEO_LECTURES = [
-  { id: "vl1", title: "Motion in 1D", subject: "Physics", videoUrl: "https://www.youtube.com/embed/5iMxs2F8pBQ" },
-  { id: "vl2", title: "Chemical Balancing", subject: "Science", videoUrl: "https://www.youtube.com/embed/e1W5ZkQ_b5c" }
+  { id: "vl1", title: "Motion in 1D - Physics Revision", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl2", title: "Chemical Reactions & Equations", subject: "Science", videoUrl: "https://www.youtube.com/embed/tItRof0Q4iE" },
+  { id: "vl3", title: "Quadratic Equations Masterclass", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/Z1e_S7G6lZ0" },
+  { id: "vl4", title: "Human Brain & Nervous System", subject: "Biology", videoUrl: "https://www.youtube.com/embed/x4PPZCLnVkA" },
+  { id: "vl5", title: "Important Current Affairs 2026", subject: "UPSC/SSC", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
 ];
 
 // Helper to write to local storage
