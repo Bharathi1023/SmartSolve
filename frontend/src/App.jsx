@@ -70,6 +70,13 @@ export default function App() {
   const [videoLecturesList, setVideoLecturesList] = useState([]);
   const [fullHistory, setFullHistory] = useState([]);
   
+  // Custom Live Room and Notification States
+  const [reminders, setReminders] = useState({});
+  const [activeLiveRoom, setActiveLiveRoom] = useState(null);
+  const [liveRoomMessages, setLiveRoomMessages] = useState([]);
+  const [liveRoomNewMessage, setLiveRoomNewMessage] = useState('');
+  const [toastMsg, setToastMsg] = useState('');
+  
   // Course Selection UI state
   const [selectedExamType, setSelectedExamType] = useState('');
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -133,6 +140,68 @@ export default function App() {
       bodyClass.add('light-theme');
     }
   }, [isDarkMode]);
+
+  // Live Room Chat & Reminder handlers
+  const triggerNotification = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => {
+      setToastMsg('');
+    }, 4000);
+  };
+
+  const handleToggleReminder = (classId, classTitle) => {
+    setReminders(prev => {
+      const isSet = !prev[classId];
+      if (isSet) {
+        triggerNotification(`🔔 Reminder set for "${classTitle}"!`);
+      } else {
+        triggerNotification(`🔕 Reminder removed for "${classTitle}".`);
+      }
+      return { ...prev, [classId]: isSet };
+    });
+  };
+
+  const handleJoinLiveRoom = (liveClass) => {
+    setActiveLiveRoom(liveClass);
+    setLiveRoomMessages([
+      { sender: "System", text: `Welcome to the live room for "${liveClass.title}"!` },
+      { sender: "Dr. Anjali (Educator)", text: "Hello class! We are about to start the high-yield topic discussion." },
+      { sender: "Rahul", text: "Excited for this class!" },
+      { sender: "Sneha", text: "Is this class useful for JEE/KCET?" },
+      { sender: "Dr. Anjali (Educator)", text: "Yes Sneha, we will cover both conceptual shortcuts and past questions!" }
+    ]);
+  };
+
+  useEffect(() => {
+    if (!activeLiveRoom) return;
+    
+    const mockChatFeed = [
+      { sender: "Kiran", text: "Wow, this makes so much sense!" },
+      { sender: "Dr. Anjali (Educator)", text: "Let's work through this problem together. What is the derivative?" },
+      { sender: "Deepak", text: "Is it option B?" },
+      { sender: "Sneha", text: "Yes, I got B too!" },
+      { sender: "Dr. Anjali (Educator)", text: "Excellent job! The correct option is indeed B." },
+      { sender: "Rahul", text: "Super cool explanation!" }
+    ];
+    
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < mockChatFeed.length) {
+        setLiveRoomMessages(prev => {
+          const updated = [...prev, mockChatFeed[index]];
+          // Scroll chat to bottom
+          setTimeout(() => {
+            const el = document.getElementById('live-chat-messages');
+            if (el) el.scrollTop = el.scrollHeight;
+          }, 100);
+          return updated;
+        });
+        index++;
+      }
+    }, 4000);
+    
+    return () => clearInterval(interval);
+  }, [activeLiveRoom]);
 
   // Load all user related workspace state
   const loadUserData = async (userId) => {
@@ -961,6 +1030,245 @@ export default function App() {
           </div>
         )}
 
+        {/* Floating Custom Interactive Toast Notification */}
+        {toastMsg && (
+          <div className="animate-fade" style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+            color: 'white',
+            padding: '16px 28px',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(99, 102, 241, 0.4)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            fontWeight: 600,
+            fontSize: '14px',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(10px)',
+          }}>
+            <span style={{ fontSize: '18px' }}>🔔</span>
+            {toastMsg}
+          </div>
+        )}
+
+        {/* Fullscreen Interactive Mock Live Classroom Overlay */}
+        {activeLiveRoom && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(5, 8, 16, 0.98)',
+            backdropFilter: 'blur(20px)',
+            zIndex: 9999,
+            display: 'flex',
+            flexDirection: 'column',
+            color: 'white',
+            padding: '24px',
+            boxSizing: 'border-box',
+            fontFamily: 'system-ui, sans-serif'
+          }}>
+            {/* Top Bar Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              paddingBottom: '16px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{
+                  background: '#ef4444',
+                  color: 'white',
+                  padding: '4px 10px',
+                  borderRadius: '4px',
+                  fontWeight: 'bold',
+                  fontSize: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <span style={{ width: '6px', height: '6px', background: 'white', borderRadius: '50%', display: 'inline-block', animation: 'pulse 1s infinite' }} /> LIVE NOW
+                </span>
+                <h2 style={{ margin: 0, fontSize: '22px' }}>{activeLiveRoom.title}</h2>
+                <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px' }}>• Instructed by {activeLiveRoom.instructor}</span>
+              </div>
+              <button 
+                onClick={() => setActiveLiveRoom(null)}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.2)',
+                  border: '1px solid #ef4444',
+                  color: 'white',
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.4)'}
+                onMouseLeave={(e) => e.target.style.background = 'rgba(239, 68, 68, 0.2)'}
+              >
+                Leave Room
+              </button>
+            </div>
+
+            {/* Split Screen Classroom Panel */}
+            <div style={{ display: 'flex', flex: 1, gap: '24px', overflow: 'hidden', minHeight: 0 }}>
+              {/* Virtual Video Feed */}
+              <div style={{
+                flex: 3,
+                background: '#020617',
+                borderRadius: '16px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  src="https://www.youtube.com/embed/ZM8ECpBuQYE?autoplay=1&mute=1" 
+                  title={activeLiveRoom.title} 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen 
+                  style={{ flex: 1, border: 'none' }}
+                />
+                {/* Overlay live specs */}
+                <div style={{
+                  position: 'absolute',
+                  top: '20px',
+                  right: '20px',
+                  background: 'rgba(5, 8, 16, 0.85)',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(5px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <Users size={14} /> <span>142 students active in workspace</span>
+                </div>
+              </div>
+
+              {/* Collaborative Real-time Chat Lounge */}
+              <div style={{
+                flex: 1,
+                background: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: '16px',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  padding: '16px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                  fontWeight: 600,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span>Class Q&A & Live Chat</span>
+                  <span style={{ fontSize: '11px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ width: '6px', height: '6px', background: '#10b981', borderRadius: '50%' }} /> Active
+                  </span>
+                </div>
+
+                {/* Simulated messages log */}
+                <div 
+                  id="live-chat-messages"
+                  style={{
+                    flex: 1,
+                    padding: '16px',
+                    overflowY: 'auto',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '14px'
+                  }}
+                >
+                  {liveRoomMessages.map((msg, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      <span style={{
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: msg.sender.includes('Educator') ? '#a855f7' : msg.sender === 'System' ? '#06b6d4' : msg.sender === 'You' ? '#10b981' : '#6366f1'
+                      }}>
+                        {msg.sender}
+                      </span>
+                      <span style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', background: msg.sender === 'You' ? 'rgba(16, 185, 129, 0.1)' : undefined, padding: msg.sender === 'You' ? '6px 10px' : undefined, borderRadius: msg.sender === 'You' ? '6px' : undefined }}>{msg.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Submitting user message */}
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!liveRoomNewMessage.trim()) return;
+                    setLiveRoomMessages(prev => {
+                      const updated = [...prev, { sender: "You", text: liveRoomNewMessage }];
+                      setTimeout(() => {
+                        const el = document.getElementById('live-chat-messages');
+                        if (el) el.scrollTop = el.scrollHeight;
+                      }, 100);
+                      return updated;
+                    });
+                    setLiveRoomNewMessage('');
+                  }}
+                  style={{
+                    padding: '16px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                    display: 'flex',
+                    gap: '8px'
+                  }}
+                >
+                  <input 
+                    type="text"
+                    placeholder="Ask a question or type a message..."
+                    value={liveRoomNewMessage}
+                    onChange={(e) => setLiveRoomNewMessage(e.target.value)}
+                    style={{
+                      flex: 1,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '8px',
+                      padding: '10px 14px',
+                      color: 'white',
+                      outline: 'none',
+                      fontSize: '13px'
+                    }}
+                  />
+                  <button 
+                    type="submit"
+                    style={{
+                      background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0 16px',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: '13px'
+                    }}
+                  >
+                    Send
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ========================================================
             TAB 1: HOME DASHBOARD
             ======================================================== */}
@@ -1691,8 +1999,26 @@ export default function App() {
                   <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Users size={14} /> By {lc.instructor}
                   </div>
-                  <button className="btn-primary" style={{ justifyContent: 'center', marginTop: '10px' }}>
-                    {lc.status === 'Ongoing' ? 'Join Live Room' : 'Set Reminder'}
+                  <button 
+                    onClick={() => {
+                      if (lc.status === 'Ongoing') {
+                        handleJoinLiveRoom(lc);
+                      } else {
+                        handleToggleReminder(lc.id, lc.title);
+                      }
+                    }}
+                    className="btn-primary" 
+                    style={{ 
+                      justifyContent: 'center', 
+                      marginTop: '10px',
+                      background: lc.status !== 'Ongoing' && reminders[lc.id] ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : undefined,
+                      borderColor: lc.status !== 'Ongoing' && reminders[lc.id] ? '#059669' : undefined
+                    }}
+                  >
+                    {lc.status === 'Ongoing' 
+                      ? 'Join Live Room' 
+                      : (reminders[lc.id] ? '✅ Reminder Set' : 'Set Reminder')
+                    }
                   </button>
                 </div>
               ))}
@@ -1865,10 +2191,24 @@ export default function App() {
                   <div>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#818cf8', marginBottom: '4px' }}>AI Subject Tutor Message:</h3>
                     <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-                      {activeSubjectView === 'Physics' ? "I noticed your accuracy dropped in Kinematics. Let's revise Motion in 1D today." :
-                       activeSubjectView === 'Mathematics' ? "Your weak topic is Definite Integrals. Try a quick 10-minute revision quiz!" :
-                       activeSubjectView === 'Chemistry' ? "Great job on Organic Chemistry! Today, let's focus on balancing equations." :
-                       `Welcome back to ${activeSubjectView}! Let's tackle your daily learning goals.`}
+                      {({
+                        'Physics': "I noticed your accuracy dropped in Kinematics. Let's revise Motion in 1D today.",
+                        'Mathematics': "Your weak topic is Definite Integrals. Try a quick 10-minute revision quiz!",
+                        'Chemistry': "Great job on Organic Chemistry! Today, let's focus on balancing equations.",
+                        'Biology': "Your Genetics chapter needs revision. Let's review Mendel's Laws of Inheritance.",
+                        'Computer Science': "You scored well on loops! Time to level up with Object Oriented Programming.",
+                        'English': "Your comprehension is strong. Let's practice essay writing and grammar today.",
+                        'Kannada': "ನಿಮ್ಮ ವ್ಯಾಕರಣ ಅಭ್ಯಾಸ ಉತ್ತಮವಾಗಿದೆ! Let's work on poetry analysis today.",
+                        'Economics': "Demand & Supply fundamentals are solid. Time for National Income Accounting.",
+                        'Accountancy': "Your Trial Balance accuracy is 90%! Let's tackle Partnership Accounts now.",
+                        'General Knowledge': "Geography section needs work. Focus on Indian States & Capitals today.",
+                        'Current Affairs': "You've covered national news well. Let's focus on International Affairs.",
+                        'Reasoning': "Syllogism accuracy is 65%. Let's practice more logical deduction problems.",
+                        'Quantitative Aptitude': "Percentage problems are your strength! Time for Time & Work chapter.",
+                        'English Grammar': "Tenses are solid! Let's practice Reported Speech and Voice conversion.",
+                        'Indian Polity': "Fundamental Rights chapter done. Now let's study Directive Principles.",
+                        'History': "Ancient India is complete. Let's move to Medieval History & Mughal Empire."
+                      })[activeSubjectView] || `Welcome back to ${activeSubjectView}! Let's tackle your daily learning goals.`}
                     </p>
                   </div>
                   <button onClick={() => setActiveTab('tests')} className="btn-primary" style={{ marginLeft: 'auto', padding: '8px 16px', fontSize: '13px' }}>Start Quiz</button>
@@ -1906,12 +2246,127 @@ export default function App() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     <h3 style={{ fontSize: '20px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>Curriculum Chapters</h3>
                     
-                    {[
+                    {(({
+                      'Physics': [
+                        { id: 1, name: '1. Motion in a Straight Line', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Laws of Motion & Newton\'s Laws', status: 'Completed', videos: 4, tests: 2 },
+                        { id: 3, name: '3. Work, Energy & Power', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 4, name: '4. Light - Reflection & Refraction', status: 'Locked', videos: 5, tests: 2 },
+                        { id: 5, name: '5. Electricity & Magnetism', status: 'Locked', videos: 4, tests: 3 },
+                        { id: 6, name: '6. Modern Physics & Semiconductors', status: 'Locked', videos: 3, tests: 2 }
+                      ],
+                      'Chemistry': [
+                        { id: 1, name: '1. Chemical Reactions & Equations', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Periodic Classification of Elements', status: 'Completed', videos: 2, tests: 1 },
+                        { id: 3, name: '3. Acids, Bases & Salts', status: 'In Progress', videos: 4, tests: 2 },
+                        { id: 4, name: '4. Carbon & Its Compounds', status: 'Locked', videos: 3, tests: 2 },
+                        { id: 5, name: '5. Metals & Non-Metals', status: 'Locked', videos: 3, tests: 1 },
+                        { id: 6, name: '6. Chemical Bonding & Molecular Structure', status: 'Locked', videos: 4, tests: 3 }
+                      ],
+                      'Mathematics': [
+                        { id: 1, name: '1. Real Numbers & Number Systems', status: 'Completed', videos: 2, tests: 2 },
+                        { id: 2, name: '2. Polynomials & Quadratic Equations', status: 'Completed', videos: 4, tests: 3 },
+                        { id: 3, name: '3. Trigonometry & Applications', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 4, name: '4. Coordinate Geometry', status: 'Locked', videos: 3, tests: 2 },
+                        { id: 5, name: '5. Statistics & Probability', status: 'Locked', videos: 4, tests: 2 },
+                        { id: 6, name: '6. Calculus - Differentiation & Integration', status: 'Locked', videos: 5, tests: 3 }
+                      ],
+                      'Biology': [
+                        { id: 1, name: '1. Cell Structure & Organization', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Life Processes - Nutrition & Respiration', status: 'Completed', videos: 4, tests: 2 },
+                        { id: 3, name: '3. Human Nervous System & Brain', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 4, name: '4. Photosynthesis & Plant Biology', status: 'Locked', videos: 4, tests: 2 },
+                        { id: 5, name: '5. Genetics & Heredity', status: 'Locked', videos: 3, tests: 2 },
+                        { id: 6, name: '6. Ecology & Environment', status: 'Locked', videos: 3, tests: 3 }
+                      ],
+                      'Computer Science': [
+                        { id: 1, name: '1. Introduction to Programming', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Data Types, Loops & Conditionals', status: 'Completed', videos: 4, tests: 2 },
+                        { id: 3, name: '3. Functions & Modules', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 4, name: '4. Object Oriented Programming', status: 'Locked', videos: 4, tests: 2 },
+                        { id: 5, name: '5. Data Structures & Algorithms', status: 'Locked', videos: 5, tests: 3 },
+                        { id: 6, name: '6. Database Management (SQL)', status: 'Locked', videos: 3, tests: 2 }
+                      ],
+                      'English': [
+                        { id: 1, name: '1. Reading Comprehension', status: 'Completed', videos: 2, tests: 2 },
+                        { id: 2, name: '2. Grammar - Tenses & Articles', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 3, name: '3. Poetry & Literature Analysis', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 4, name: '4. Essay & Creative Writing', status: 'Locked', videos: 2, tests: 2 },
+                        { id: 5, name: '5. Shakespeare & Drama Studies', status: 'Locked', videos: 4, tests: 1 }
+                      ],
+                      'Kannada': [
+                        { id: 1, name: '1. ವ್ಯಾಕರಣ (Grammar Basics)', status: 'Completed', videos: 2, tests: 2 },
+                        { id: 2, name: '2. ಪದ್ಯ ವಿಶ್ಲೇಷಣೆ (Poetry Analysis)', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 3, name: '3. ಗದ್ಯ ಭಾಗ (Prose Section)', status: 'Locked', videos: 3, tests: 2 },
+                        { id: 4, name: '4. ಪ್ರಬಂಧ ಬರಹ (Essay Writing)', status: 'Locked', videos: 2, tests: 2 },
+                        { id: 5, name: '5. ಸಾಹಿತ್ಯ ಚರಿತ್ರೆ (Literary History)', status: 'Locked', videos: 3, tests: 1 }
+                      ],
+                      'Economics': [
+                        { id: 1, name: '1. Introduction to Economics', status: 'Completed', videos: 2, tests: 2 },
+                        { id: 2, name: '2. Demand, Supply & Market Equilibrium', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 3, name: '3. National Income Accounting', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 4, name: '4. Money, Banking & Finance', status: 'Locked', videos: 4, tests: 2 },
+                        { id: 5, name: '5. Indian Economy & Development', status: 'Locked', videos: 3, tests: 2 }
+                      ],
+                      'Accountancy': [
+                        { id: 1, name: '1. Accounting Principles & Concepts', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Journal Entries & Ledger', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 3, name: '3. Trial Balance & Final Accounts', status: 'In Progress', videos: 4, tests: 1 },
+                        { id: 4, name: '4. Partnership Accounts', status: 'Locked', videos: 3, tests: 2 },
+                        { id: 5, name: '5. Company Accounts & Financial Statements', status: 'Locked', videos: 4, tests: 3 }
+                      ],
+                      'General Knowledge': [
+                        { id: 1, name: '1. Indian Geography & States', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. World Geography & Climate', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 3, name: '3. Famous Personalities & Awards', status: 'Locked', videos: 2, tests: 2 },
+                        { id: 4, name: '4. Science & Technology GK', status: 'Locked', videos: 3, tests: 2 }
+                      ],
+                      'Current Affairs': [
+                        { id: 1, name: '1. National News & Government Schemes', status: 'Completed', videos: 2, tests: 2 },
+                        { id: 2, name: '2. International Affairs & Summits', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 3, name: '3. Economy & Budget Updates', status: 'Locked', videos: 2, tests: 2 },
+                        { id: 4, name: '4. Science, Sports & Defense News', status: 'Locked', videos: 3, tests: 2 }
+                      ],
+                      'Reasoning': [
+                        { id: 1, name: '1. Logical Reasoning & Syllogism', status: 'Completed', videos: 3, tests: 3 },
+                        { id: 2, name: '2. Coding-Decoding & Puzzles', status: 'In Progress', videos: 3, tests: 2 },
+                        { id: 3, name: '3. Blood Relations & Seating Arrangements', status: 'Locked', videos: 2, tests: 2 },
+                        { id: 4, name: '4. Data Interpretation & Sufficiency', status: 'Locked', videos: 4, tests: 3 }
+                      ],
+                      'Quantitative Aptitude': [
+                        { id: 1, name: '1. Number System & HCF/LCM', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Percentage, Profit & Loss', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 3, name: '3. Time, Speed & Distance', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 4, name: '4. Time & Work, Pipes & Cisterns', status: 'Locked', videos: 3, tests: 2 },
+                        { id: 5, name: '5. Algebra & Geometry', status: 'Locked', videos: 4, tests: 3 }
+                      ],
+                      'English Grammar': [
+                        { id: 1, name: '1. Tenses - Past, Present & Future', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Active & Passive Voice', status: 'Completed', videos: 2, tests: 2 },
+                        { id: 3, name: '3. Direct & Indirect Speech', status: 'In Progress', videos: 3, tests: 1 },
+                        { id: 4, name: '4. Sentence Correction & Error Spotting', status: 'Locked', videos: 3, tests: 2 },
+                        { id: 5, name: '5. Vocabulary & Idioms', status: 'Locked', videos: 2, tests: 2 }
+                      ],
+                      'Indian Polity': [
+                        { id: 1, name: '1. Indian Constitution & Preamble', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Fundamental Rights & Duties', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 3, name: '3. Directive Principles of State Policy', status: 'In Progress', videos: 2, tests: 1 },
+                        { id: 4, name: '4. Parliament & State Legislature', status: 'Locked', videos: 4, tests: 2 },
+                        { id: 5, name: '5. Judiciary & Supreme Court', status: 'Locked', videos: 3, tests: 3 }
+                      ],
+                      'History': [
+                        { id: 1, name: '1. Ancient India - Indus Valley & Vedic Age', status: 'Completed', videos: 3, tests: 2 },
+                        { id: 2, name: '2. Medieval India - Delhi Sultanate & Mughals', status: 'In Progress', videos: 4, tests: 1 },
+                        { id: 3, name: '3. Modern India - British Rule & Freedom Struggle', status: 'Locked', videos: 5, tests: 3 },
+                        { id: 4, name: '4. World History - World Wars & Cold War', status: 'Locked', videos: 4, tests: 2 },
+                        { id: 5, name: '5. Post-Independence India', status: 'Locked', videos: 3, tests: 2 }
+                      ]
+                    })[activeSubjectView] || [
                       { id: 1, name: '1. Basics & Fundamentals', status: 'Completed', videos: 4, tests: 2 },
                       { id: 2, name: '2. Core Principles & Laws', status: 'In Progress', videos: 3, tests: 0 },
                       { id: 3, name: '3. Advanced Applications', status: 'Locked', videos: 5, tests: 1 },
                       { id: 4, name: '4. Expert Level Problems', status: 'Locked', videos: 2, tests: 3 }
-                    ].map((chap, i) => (
+                    ]).map((chap, i) => (
                       <div key={i} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px', opacity: chap.status === 'Locked' ? 0.6 : 1 }}>
                         <div 
                           onClick={() => {
@@ -1990,6 +2445,82 @@ export default function App() {
                       </ul>
                     </div>
                   </div>
+
+                </div>
+
+                {/* Subject-Specific Recommended Videos */}
+                <div style={{ marginTop: '30px' }}>
+                  <h3 style={{ fontSize: '20px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', marginBottom: '20px' }}>
+                    Recommended Videos & Classes for {activeSubjectView}
+                  </h3>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                    {videoLecturesList.filter(v => v.subject.toLowerCase().includes(activeSubjectView.toLowerCase())).map(vl => (
+                      <div key={vl.id} className="glass-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ background: '#020617', borderRadius: '8px', overflow: 'hidden', height: '160px', position: 'relative' }}>
+                          <iframe 
+                            width="100%" 
+                            height="100%" 
+                            src={vl.videoUrl} 
+                            title={vl.title} 
+                            frameBorder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowFullScreen 
+                            style={{ position: 'absolute', top: 0, left: 0 }}
+                          />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '11px', color: '#06b6d4', fontWeight: 'bold', marginBottom: '4px', textTransform: 'uppercase' }}>
+                            {vl.subject}
+                          </div>
+                          <h4 style={{ fontSize: '14px', margin: 0, lineHeight: 1.4 }}>{vl.title}</h4>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {liveClassesList.filter(lc => lc.title.toLowerCase().includes(activeSubjectView.toLowerCase()) || lc.batch.toLowerCase().includes(activeSubjectView.toLowerCase())).map(lc => (
+                      <div key={lc.id} className="glass-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px', background: lc.status === 'Ongoing' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)', color: lc.status === 'Ongoing' ? '#ef4444' : '#10b981' }}>
+                            {lc.status === 'Ongoing' ? '🔴 LIVE NOW' : 'UPCOMING'}
+                          </span>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{new Date(lc.scheduledAt).toLocaleDateString()}</span>
+                        </div>
+                        <h3 style={{ fontSize: '16px', margin: 0 }}>{lc.title}</h3>
+                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Users size={14} /> By {lc.instructor}
+                        </div>
+                        <button 
+                          onClick={() => {
+                            if (lc.status === 'Ongoing') {
+                              handleJoinLiveRoom(lc);
+                            } else {
+                              handleToggleReminder(lc.id, lc.title);
+                            }
+                          }}
+                          className="btn-primary" 
+                          style={{ 
+                            justifyContent: 'center', 
+                            marginTop: '10px',
+                            background: lc.status !== 'Ongoing' && reminders[lc.id] ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : undefined,
+                            borderColor: lc.status !== 'Ongoing' && reminders[lc.id] ? '#059669' : undefined
+                          }}
+                        >
+                          {lc.status === 'Ongoing' 
+                            ? 'Join Live Room' 
+                            : (reminders[lc.id] ? '✅ Reminder Set' : 'Set Reminder')
+                          }
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {(videoLecturesList.filter(v => v.subject.toLowerCase().includes(activeSubjectView.toLowerCase())).length === 0 &&
+                    liveClassesList.filter(lc => lc.title.toLowerCase().includes(activeSubjectView.toLowerCase()) || lc.batch.toLowerCase().includes(activeSubjectView.toLowerCase())).length === 0) && (
+                    <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      No videos or live classes currently available for this exact subject title. Check the general Live Classes tab!
+                    </div>
+                  )}
 
                 </div>
               </div>
@@ -2525,10 +3056,34 @@ export default function App() {
             {/* Case 3: Test selector lobby */}
             {!activeTest && !testResult && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <h3 style={{ fontSize: '20px' }}>Select Timed Board Examination</h3>
+                <h3 style={{ fontSize: '20px' }}>{activeSubjectView ? `Available Exams for ${activeSubjectView}` : 'Select Timed Board Examination'}</h3>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
-                  {mockTests.map(test => (
+                  {(mockTests.filter(test => activeSubjectView ? test.subject === activeSubjectView : true).length > 0 
+                    ? mockTests.filter(test => activeSubjectView ? test.subject === activeSubjectView : true)
+                    : activeSubjectView ? [{
+                        id: `auto-${activeSubjectView}`,
+                        title: `${activeSubjectView} AI Baseline Assessment`,
+                        subject: activeSubjectView,
+                        duration: 15,
+                        questions: [
+                          {
+                            id: "q1",
+                            question: `Which of the following is a core concept in ${activeSubjectView}?`,
+                            options: ["Fundamentals", "Basics", "Advanced Theory", "All of the above"],
+                            correctAnswer: 3,
+                            explanation: `In ${activeSubjectView}, you must master fundamentals before advancing.`
+                          },
+                          {
+                            id: "q2",
+                            question: `What is the most effective way to study ${activeSubjectView}?`,
+                            options: ["Cramming", "Spaced Repetition", "Skipping Classes", "Guessing"],
+                            correctAnswer: 1,
+                            explanation: "Spaced repetition is scientifically proven to be the best method."
+                          }
+                        ]
+                      }] : mockTests
+                  ).map(test => (
                     <div key={test.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '20px' }}>
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>

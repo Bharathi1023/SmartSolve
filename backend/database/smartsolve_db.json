@@ -163,7 +163,7 @@
       "subject": "Mathematics",
       "category": "formulas",
       "content": "### Quadratic Equation: $ax^2 + bx + c = 0$\n\n#### 1. Discriminant ($D$)\n$D = b^2 - 4ac$\n\n#### 2. Nature of Roots\n- If $D > 0$: Roots are real and distinct: $x = \\frac{-b \\pm \\sqrt{D}}{2a}$\n- If $D = 0$: Roots are real and equal: $x = -\\frac{b}{2a}$\n- If $D < 0$: No real roots (imaginary roots).\n\n#### 3. Quadratic Formula (Shreedharacharya Method)\n$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$\n\n#### 4. Relation Between Roots and Coefficients\nLet $\\alpha$ and $\\beta$ be the roots of the equation:\n- Sum of roots: $\\alpha + \\beta = -\\frac{b}{a}$\n- Product of roots: $\\alpha \\cdot \\beta = \\frac{c}{a}$",
-      "videoUrl": "https://www.youtube.com/embed/Z1e_S7G6lZ0",
+      "videoUrl": "https://www.youtube.com/embed/MR07YxA8AHs",
       "flashcards": [
         {
           "front": "What is the quadratic formula?",
@@ -185,7 +185,7 @@
       "subject": "Science",
       "category": "notes",
       "content": "### Chemical Reactions Summary\n\n#### 1. Combination Reaction\nTwo or more reactants combine to form a single product.\n$2H_2 + O_2 \\rightarrow 2H_2O$\n\n#### 2. Decomposition Reaction\nA single reactant breaks down into two or more simpler products.\n$2H_2O \\rightarrow 2H_2 + O_2$ (Electrolytic decomposition)\n\n#### 3. Displacement Reaction\nA more reactive element displaces a less reactive element from its compound.\n$Fe + CuSO_4 \\rightarrow FeSO_4 + Cu$\n\n#### 4. Double Displacement Reaction\nExchange of ions between reactants.\n$Na_2SO_4 + BaCl_2 \\rightarrow BaSO_4 \\downarrow + 2NaCl$",
-      "videoUrl": "https://www.youtube.com/embed/e1W5ZkQ_b5c",
+      "videoUrl": "https://www.youtube.com/embed/FSyAehMdpyI",
       "flashcards": [
         {
           "front": "Define displacement reaction.",
@@ -203,7 +203,7 @@
       "subject": "Science (Biology)",
       "category": "notes",
       "content": "### Human Respiratory System\n\nThe human respiratory system consists of a pair of lungs and a series of air passages. The primary function is the exchange of gases (oxygen and carbon dioxide).\n\n#### Key Organs:\n- Trachea (Windpipe)\n- Bronchi\n- Bronchioles\n- Alveoli (Site of actual gas exchange)\n\n#### Transport of Gases:\nO2 is transported primarily by Hemoglobin (Hb) as Oxyhemoglobin. CO2 is transported dissolved in plasma, as carbaminohemoglobin, and mainly as bicarbonate ions.",
-      "videoUrl": "https://www.youtube.com/embed/S2H_xJksKgs",
+      "videoUrl": "https://www.youtube.com/embed/H8WJ45y9sN0",
       "flashcards": [
         {
           "front": "What is the site of gas exchange in lungs?",
@@ -221,7 +221,7 @@
       "subject": "Science (Physics)",
       "category": "formulas",
       "content": "### Essential Mechanics Formulas\n\n#### Kinematics\n- $v = u + at$\n- $s = ut + \\frac{1}{2}at^2$\n- $v^2 - u^2 = 2as$\n\n#### Dynamics\n- Force: $F = ma$\n- Momentum: $p = mv$\n- Work Done: $W = F \\cdot d \\cdot \\cos(\\theta)$\n\n#### Circular Motion\n- Centripetal Acceleration: $a_c = \\frac{v^2}{r}$",
-      "videoUrl": "https://www.youtube.com/embed/5iMxs2F8pBQ",
+      "videoUrl": "https://www.youtube.com/embed/ZM8ECpBuQYE",
       "flashcards": [
         {
           "front": "Formula for Centripetal Force?",
@@ -287,6 +287,222 @@
           "time": "17:50"
         }
       ]
+    }
+  ],
+  "liveClasses": [
+    {
+      "id": "lc1",
+      "title": "KCET Physics 1-Shot",
+      "instructor": "Prof. Kiran",
+      "scheduledAt": "2026-05-20T10:00:00Z",
+      "status": "Upcoming",
+      "batch": "KCET Batch"
+    },
+    {
+      "id": "lc2",
+      "title": "NEET Bio Masterclass",
+      "instructor": "Dr. Anjali",
+      "scheduledAt": "2026-05-19T09:00:00Z",
+      "status": "Ongoing",
+      "batch": "NEET Batch"
+    },
+    {
+      "id": "lc3",
+      "title": "JEE Math Integration Sprint",
+      "instructor": "Dr. Dev",
+      "scheduledAt": "2026-05-20T14:00:00Z",
+      "status": "Upcoming",
+      "batch": "JEE Batch"
+    },
+    {
+      "id": "lc4",
+      "title": "UPSC Indian Polity Masterclass",
+      "instructor": "Manoj Sir",
+      "scheduledAt": "2026-05-21T11:00:00Z",
+      "status": "Upcoming",
+      "batch": "UPSC Batch"
+    },
+    {
+      "id": "lc5",
+      "title": "CBSE Class 10 Chemistry Balancing",
+      "instructor": "Ms. Divya",
+      "scheduledAt": "2026-05-19T18:00:00Z",
+      "status": "Ongoing",
+      "batch": "Class 10 CBSE"
+    },
+    {
+      "id": "lc6",
+      "title": "General English & Grammar Hacks",
+      "instructor": "Prof. Sarah",
+      "scheduledAt": "2026-05-22T15:00:00Z",
+      "status": "Upcoming",
+      "batch": "General English Batch"
+    },
+    {
+      "id": "lc7",
+      "title": "Banking QA & Reasoning Trick",
+      "instructor": "Mr. Ramesh",
+      "scheduledAt": "2026-05-21T16:00:00Z",
+      "status": "Upcoming",
+      "batch": "Banking PO Batch"
+    },
+    {
+      "id": "lc8",
+      "title": "Modern Indian History Fast-Track",
+      "instructor": "Dr. Meera",
+      "scheduledAt": "2026-05-23T10:00:00Z",
+      "status": "Upcoming",
+      "batch": "SSC Batch"
+    },
+    {
+      "id": "lc9",
+      "title": "PUC 2 Accountancy Partnership Accounts",
+      "instructor": "Mr. CA Anand",
+      "scheduledAt": "2026-05-20T17:00:00Z",
+      "status": "Upcoming",
+      "batch": "Commerce PU2"
+    },
+    {
+      "id": "lc10",
+      "title": "Kannada Language Poetry Breakdown",
+      "instructor": "Mrs. Shweta",
+      "scheduledAt": "2026-05-24T14:00:00Z",
+      "status": "Upcoming",
+      "batch": "State Board Batch"
+    }
+  ],
+  "videoLectures": [
+    {
+      "id": "vl1",
+      "title": "Motion in 1D - Physics Revision",
+      "subject": "Physics",
+      "videoUrl": "https://www.youtube.com/embed/ZM8ECpBuQYE"
+    },
+    {
+      "id": "vl2",
+      "title": "Chemical Reactions & Equations",
+      "subject": "Chemistry",
+      "videoUrl": "https://www.youtube.com/embed/FSyAehMdpyI"
+    },
+    {
+      "id": "vl3",
+      "title": "Quadratic Equations Masterclass",
+      "subject": "Mathematics",
+      "videoUrl": "https://www.youtube.com/embed/MR07YxA8AHs"
+    },
+    {
+      "id": "vl4",
+      "title": "Human Brain & Nervous System",
+      "subject": "Biology",
+      "videoUrl": "https://www.youtube.com/embed/B10pc0Kizsc"
+    },
+    {
+      "id": "vl5",
+      "title": "Important Current Affairs 2026",
+      "subject": "Current Affairs",
+      "videoUrl": "https://www.youtube.com/embed/HuFR5XBYLfU"
+    },
+    {
+      "id": "vl6",
+      "title": "Introduction to Python Programming",
+      "subject": "Computer Science",
+      "videoUrl": "https://www.youtube.com/embed/O5nskjZ_GoI"
+    },
+    {
+      "id": "vl7",
+      "title": "Romeo & Juliet Character Analysis",
+      "subject": "English",
+      "videoUrl": "https://www.youtube.com/embed/fo46yFWIJzU"
+    },
+    {
+      "id": "vl8",
+      "title": "Kannada Vyakaran & Grammar Rules",
+      "subject": "Kannada",
+      "videoUrl": "https://www.youtube.com/embed/fo46yFWIJzU"
+    },
+    {
+      "id": "vl9",
+      "title": "Principles of Microeconomics",
+      "subject": "Economics",
+      "videoUrl": "https://www.youtube.com/embed/3ez14uE9cZ0"
+    },
+    {
+      "id": "vl10",
+      "title": "Accounting Basics & Journal Entries",
+      "subject": "Accountancy",
+      "videoUrl": "https://www.youtube.com/embed/c76tZ3U7l7w"
+    },
+    {
+      "id": "vl11",
+      "title": "General Knowledge - World Geography",
+      "subject": "General Knowledge",
+      "videoUrl": "https://www.youtube.com/embed/B10pc0Kizsc"
+    },
+    {
+      "id": "vl12",
+      "title": "Logical Reasoning & Syllogism",
+      "subject": "Reasoning",
+      "videoUrl": "https://www.youtube.com/embed/MR07YxA8AHs"
+    },
+    {
+      "id": "vl13",
+      "title": "Speed Math & Quantitative Aptitude",
+      "subject": "Quantitative Aptitude",
+      "videoUrl": "https://www.youtube.com/embed/MR07YxA8AHs"
+    },
+    {
+      "id": "vl14",
+      "title": "Active & Passive Voice Masterclass",
+      "subject": "English Grammar",
+      "videoUrl": "https://www.youtube.com/embed/fo46yFWIJzU"
+    },
+    {
+      "id": "vl15",
+      "title": "Indian Constitution & Preamble",
+      "subject": "Indian Polity",
+      "videoUrl": "https://www.youtube.com/embed/HuFR5XBYLfU"
+    },
+    {
+      "id": "vl16",
+      "title": "The Silk Road & Ancient History",
+      "subject": "History",
+      "videoUrl": "https://www.youtube.com/embed/vn3e37IQBCk"
+    },
+    {
+      "id": "vl17",
+      "title": "Photosynthesis & Respiration in Plants",
+      "subject": "Biology",
+      "videoUrl": "https://www.youtube.com/embed/eo5XndJaz-Y"
+    },
+    {
+      "id": "vl18",
+      "title": "Light Reflection & Refraction",
+      "subject": "Physics",
+      "videoUrl": "https://www.youtube.com/embed/ZM8ECpBuQYE"
+    },
+    {
+      "id": "vl19",
+      "title": "Periodic Classification of Elements",
+      "subject": "Chemistry",
+      "videoUrl": "https://www.youtube.com/embed/FSyAehMdpyI"
+    },
+    {
+      "id": "vl20",
+      "title": "Trigonometric Identities Made Easy",
+      "subject": "Mathematics",
+      "videoUrl": "https://www.youtube.com/embed/MR07YxA8AHs"
+    },
+    {
+      "id": "vl21",
+      "title": "Object Oriented Programming (OOP) in Java",
+      "subject": "Computer Science",
+      "videoUrl": "https://www.youtube.com/embed/O5nskjZ_GoI"
+    },
+    {
+      "id": "vl22",
+      "title": "Demand & Supply Curve Analysis",
+      "subject": "Economics",
+      "videoUrl": "https://www.youtube.com/embed/3ez14uE9cZ0"
     }
   ]
 }

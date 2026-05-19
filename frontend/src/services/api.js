@@ -1,4 +1,6 @@
 // API Client with robust self-healing fallback to LocalStorage if backend is offline.
+import { QUIZ_BANK } from './quizData.js';
+import { QUIZ_BANK_2 } from './quizData2.js';
 const BACKEND_URL = 'http://localhost:5000/api';
 
 // Native client-side implementations of the AI solver, so it runs completely stand-alone if backend is offline!
@@ -6,14 +8,14 @@ function localSolveQuestion(text, mode, lengthMode, language) {
   const query = text.toLowerCase();
   let subject = 'General Study';
   
-  if (query.includes('quadratic') || query.includes('x^2') || query.includes('x²') || query.includes('equation') || query.includes('math') || query.includes('solve for x')) {
-    subject = 'Mathematics';
-  } else if (query.includes('chemical') || query.includes('reaction') || query.includes('acid') || query.includes('balance') || query.includes('fe +') || query.includes('caco3')) {
-    subject = 'Science (Chemistry)';
-  } else if (query.includes('force') || query.includes('velocity') || query.includes('gravity') || query.includes('lens')) {
+  if (query.includes('force') || query.includes('velocity') || query.includes('gravity') || query.includes('lens') || query.includes('mirror') || query.includes('newton') || query.includes('motion') || query.includes('speed') || query.includes('acceleration')) {
     subject = 'Science (Physics)';
-  } else if (query.includes('cell') || query.includes('plant') || query.includes('photosynthesis')) {
+  } else if (query.includes('chemical') || query.includes('reaction') || query.includes('acid') || query.includes('balance') || query.includes('fe +') || query.includes('caco3') || query.includes('iron filings') || query.includes('copper sulphate')) {
+    subject = 'Science (Chemistry)';
+  } else if (query.includes('cell') || query.includes('plant') || query.includes('blood') || query.includes('heart') || query.includes('photosynthesis') || query.includes('respiratory') || query.includes('lung')) {
     subject = 'Science (Biology)';
+  } else if (query.includes('quadratic') || query.includes('x^2') || query.includes('x²') || query.includes('equation') || query.includes('math') || query.includes('solve for x') || query.includes('roots')) {
+    subject = 'Mathematics';
   }
 
   // Solve quadratic equations locally!
@@ -148,7 +150,7 @@ function localSolveQuestion(text, mode, lengthMode, language) {
       "Find the roots of 3x² - 2x + 5 = 0",
       "What is the discriminant of x² - 4x + 4 = 0?"
     ];
-    videoExplanation = "https://www.youtube.com/embed/Z1e_S7G6lZ0";
+    videoExplanation = "https://www.youtube.com/embed/MR07YxA8AHs";
     analysisReport = {
       chapter: "Quadratic Equations",
       difficulty: "Medium",
@@ -165,7 +167,7 @@ function localSolveQuestion(text, mode, lengthMode, language) {
       "Balance the equation: H2 + O2 -> H2O",
       "What is a double displacement reaction?"
     ];
-    videoExplanation = "https://www.youtube.com/embed/e1W5ZkQ_b5c";
+    videoExplanation = "https://www.youtube.com/embed/FSyAehMdpyI";
     analysisReport = {
       chapter: "Chemical Reactions",
       difficulty: "Hard",
@@ -177,12 +179,46 @@ function localSolveQuestion(text, mode, lengthMode, language) {
         { q: "Which of the following is a balanced equation?", options: ["H2 + O2 -> H2O", "2H2 + O2 -> 2H2O", "H2 + 2O2 -> H2O"], ans: "2H2 + O2 -> 2H2O" }
       ]
     };
+  } else if (subject.includes('Physics')) {
+    similarQuestions = [
+      "What is Newton's First Law of Motion?",
+      "State the formula for Centripetal Force."
+    ];
+    videoExplanation = "https://www.youtube.com/embed/ZM8ECpBuQYE";
+    analysisReport = {
+      chapter: "Kinematics & Motion",
+      difficulty: "Medium",
+      importantTopics: ["Newton's Laws", "Velocity Vectors", "Centripetal Acceleration"],
+      examWeightage: "High",
+      studyTime: "2 Hours",
+      shortNotes: "Motion in a straight line is governed by kinematics equations. Newton's second law states F = ma. Centripetal acceleration is v^2/r.",
+      generatedQuiz: [
+        { q: "What is the formula for Force?", options: ["F = m/a", "F = ma", "F = mv"], ans: "F = ma" }
+      ]
+    };
+  } else if (subject.includes('Biology')) {
+    similarQuestions = [
+      "Explain the transport of oxygen in the human body.",
+      "Where does the Calvin cycle take place in photosynthesis?"
+    ];
+    videoExplanation = "https://www.youtube.com/embed/H8WJ45y9sN0";
+    analysisReport = {
+      chapter: "Human Physiology & Photosynthesis",
+      difficulty: "Medium",
+      importantTopics: ["Gas Exchange in Alveoli", "Oxyhemoglobin Transport", "Stroma reactions"],
+      examWeightage: "High",
+      studyTime: "2 Hours",
+      shortNotes: "Alveoli are the sites of gas exchange. Majority of oxygen is transported as oxyhemoglobin. Calvin cycle occurs in the stroma of chloroplasts.",
+      generatedQuiz: [
+        { q: "Where does gas exchange occur?", options: ["Bronchi", "Alveoli", "Trachea"], ans: "Alveoli" }
+      ]
+    };
   } else {
     similarQuestions = [
       "Can you explain the underlying concept again?",
       "Give me a real world example of this."
     ];
-    videoExplanation = "https://www.youtube.com/embed/S2H_xJksKgs";
+    videoExplanation = "https://www.youtube.com/embed/fo46yFWIJzU";
     analysisReport = {
       chapter: "General Concepts",
       difficulty: "Easy",
@@ -286,57 +322,8 @@ function localSolveQuadratic(a, b, c) {
 
 // Initial fallback database template
 const LOCAL_MOCK_TESTS = [
-  {
-    id: "math-101",
-    title: "Class 10 CBSE Mathematics - Quadratic Equations",
-    subject: "Mathematics",
-    duration: 30,
-    questions: [
-      {
-        id: "q1",
-        question: "Find the roots of the quadratic equation 2x² - 5x + 3 = 0.",
-        options: ["x = 1, x = 1.5", "x = -1, x = -1.5", "x = 2, x = 3", "x = 0, x = 5"],
-        correctAnswer: 0,
-        explanation: "Applying quadratic formula yields roots 1.5 and 1."
-      },
-      {
-        id: "q2",
-        question: "If one root of the quadratic equation kx² - 3x - 10 = 0 is 2, find the value of k.",
-        options: ["k = 2", "k = 3", "k = 4", "k = 5"],
-        correctAnswer: 2,
-        explanation: "Substitute x=2 in the equation: k(4) - 6 - 10 = 0 => 4k = 16 => k=4."
-      },
-      {
-        id: "q3",
-        question: "What is the nature of the roots of the equation x² - 4x + 4 = 0?",
-        options: ["Real and distinct", "Real and equal", "Imaginary/No real roots", "None of the above"],
-        correctAnswer: 1,
-        explanation: "Discriminant D = b²-4ac = 16-16 = 0. Hence real and equal roots."
-      }
-    ]
-  },
-  {
-    id: "sci-102",
-    title: "Class 10 CBSE Science - Chemical Reactions and Equations",
-    subject: "Science",
-    duration: 20,
-    questions: [
-      {
-        id: "sq1",
-        question: "Which of the following is a displacement reaction?",
-        options: ["CaCO₃ → CaO + CO₂", "2H₂ + O₂ → 2H₂O", "Fe + CuSO₄ → FeSO₄ + Cu", "NaOH + HCl → NaCl + H₂O"],
-        correctAnswer: 2,
-        explanation: "Iron displacements copper from CuSO₄ since it is more reactive."
-      },
-      {
-        id: "sq2",
-        question: "What happens when dilute hydrochloric acid is added to iron filings?",
-        options: ["Hydrogen gas and iron chloride are produced.", "Chlorine gas and iron hydroxide are produced.", "No reaction takes place.", "Iron salt and water are produced."],
-        correctAnswer: 0,
-        explanation: "Fe + 2HCl → FeCl₂ + H₂ (g). Hydrogen gas and iron chloride are formed."
-      }
-    ]
-  }
+  ...QUIZ_BANK,
+  ...QUIZ_BANK_2
 ];
 
 const LOCAL_NOTES = [
@@ -346,7 +333,7 @@ const LOCAL_NOTES = [
     subject: "Mathematics",
     category: "formulas",
     content: `### Quadratic Equation: $ax^2 + bx + c = 0$\n\n#### 1. Discriminant ($D$)\n$D = b^2 - 4ac$\n\n#### 2. Nature of Roots\n- $D > 0$: Roots are real and distinct.\n- $D = 0$: Roots are real and equal.\n- $D < 0$: No real roots.\n\n#### 3. Quadratic Formula\n$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$`,
-    videoUrl: "https://www.youtube.com/embed/Z1e_S7G6lZ0",
+    videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs",
     flashcards: [
       { front: "What is the quadratic formula?", back: "x = (-b ± √(b² - 4ac)) / 2a" },
       { front: "What does the discriminant D determine?", back: "The nature of roots (real and distinct, equal, or imaginary)." },
@@ -359,7 +346,7 @@ const LOCAL_NOTES = [
     subject: "Science",
     category: "notes",
     content: `### Chemical Reactions Summary\n\n#### 1. Combination Reaction\n$2H_2 + O_2 \\rightarrow 2H_2O$\n\n#### 2. Decomposition Reaction\n$2H_2O \\rightarrow 2H_2 + O_2$\n\n#### 3. Displacement Reaction\n$Fe + CuSO_4 \\rightarrow FeSO_4 + Cu$`,
-    videoUrl: "https://www.youtube.com/embed/e1W5ZkQ_b5c",
+    videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI",
     flashcards: [
       { front: "Define displacement reaction.", back: "A reaction in which a more reactive element displaces a less reactive element from its compound." },
       { front: "What is a precipitation reaction?", back: "A chemical reaction that results in an insoluble precipitate." }
@@ -375,15 +362,81 @@ const LOCAL_COURSES = [
 
 const LOCAL_LIVE_CLASSES = [
   { id: "lc1", title: "KCET Physics 1-Shot", instructor: "Prof. Kiran", scheduledAt: "2026-05-20T10:00:00Z", status: "Upcoming", batch: "KCET Batch" },
-  { id: "lc2", title: "NEET Bio Masterclass", instructor: "Dr. Anjali", scheduledAt: "2026-05-19T09:00:00Z", status: "Ongoing", batch: "NEET Batch" }
+  { id: "lc2", title: "NEET Bio Masterclass", instructor: "Dr. Anjali", scheduledAt: "2026-05-19T09:00:00Z", status: "Ongoing", batch: "NEET Batch" },
+  { id: "lc3", title: "JEE Math Integration Sprint", instructor: "Dr. Dev", scheduledAt: "2026-05-20T14:00:00Z", status: "Upcoming", batch: "JEE Batch" },
+  { id: "lc4", title: "UPSC Indian Polity Masterclass", instructor: "Manoj Sir", scheduledAt: "2026-05-21T11:00:00Z", status: "Upcoming", batch: "UPSC Batch" },
+  { id: "lc5", title: "CBSE Class 10 Chemistry Balancing", instructor: "Ms. Divya", scheduledAt: "2026-05-19T18:00:00Z", status: "Ongoing", batch: "Class 10 CBSE" },
+  { id: "lc6", title: "General English & Grammar Hacks", instructor: "Prof. Sarah", scheduledAt: "2026-05-22T15:00:00Z", status: "Upcoming", batch: "General English Batch" },
+  { id: "lc7", title: "Banking QA & Reasoning Trick", instructor: "Mr. Ramesh", scheduledAt: "2026-05-21T16:00:00Z", status: "Upcoming", batch: "Banking PO Batch" },
+  { id: "lc8", title: "Modern Indian History Fast-Track", instructor: "Dr. Meera", scheduledAt: "2026-05-23T10:00:00Z", status: "Upcoming", batch: "SSC Batch" },
+  { id: "lc9", title: "PUC 2 Accountancy Partnership Accounts", instructor: "Mr. CA Anand", scheduledAt: "2026-05-20T17:00:00Z", status: "Upcoming", batch: "Commerce PU2" },
+  { id: "lc10", title: "Kannada Language Poetry Breakdown", instructor: "Mrs. Shweta", scheduledAt: "2026-05-24T14:00:00Z", status: "Upcoming", batch: "State Board Batch" }
 ];
 
 const LOCAL_VIDEO_LECTURES = [
+  // Physics (3 videos)
   { id: "vl1", title: "Motion in 1D - Physics Revision", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
-  { id: "vl2", title: "Chemical Reactions & Equations", subject: "Science", videoUrl: "https://www.youtube.com/embed/tItRof0Q4iE" },
-  { id: "vl3", title: "Quadratic Equations Masterclass", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/Z1e_S7G6lZ0" },
-  { id: "vl4", title: "Human Brain & Nervous System", subject: "Biology", videoUrl: "https://www.youtube.com/embed/x4PPZCLnVkA" },
-  { id: "vl5", title: "Important Current Affairs 2026", subject: "UPSC/SSC", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+  { id: "vl18", title: "Light Reflection & Refraction", subject: "Physics", videoUrl: "https://www.youtube.com/embed/Oh4m8Ees-3Q" },
+  { id: "vl23", title: "Electricity & Circuits Explained", subject: "Physics", videoUrl: "https://www.youtube.com/embed/mc979OhitAg" },
+  // Chemistry (3 videos)
+  { id: "vl2", title: "Chemical Reactions & Equations", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl19", title: "Periodic Classification of Elements", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/rz4Dd1I_fX0" },
+  { id: "vl24", title: "Acids, Bases & Salts", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/ANi709MYnWo" },
+  // Mathematics (3 videos)
+  { id: "vl3", title: "Quadratic Equations Masterclass", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl20", title: "Trigonometric Identities Made Easy", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/G-MKVOfjXkQ" },
+  { id: "vl25", title: "Statistics & Probability Crash Course", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  // Biology (3 videos)
+  { id: "vl4", title: "Human Brain & Nervous System", subject: "Biology", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl17", title: "Photosynthesis & Respiration in Plants", subject: "Biology", videoUrl: "https://www.youtube.com/embed/eo5XndJaz-Y" },
+  { id: "vl26", title: "Genetics & DNA - Mendel's Laws", subject: "Biology", videoUrl: "https://www.youtube.com/embed/CBezq1fFUEA" },
+  // Computer Science (3 videos)
+  { id: "vl6", title: "Introduction to Python Programming", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/O5nskjZ_GoI" },
+  { id: "vl21", title: "Object Oriented Programming (OOP) in Java", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/pTB0EiLXUC8" },
+  { id: "vl27", title: "SQL & Database Fundamentals", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/HXV3zeQKqGY" },
+  // English (3 videos)
+  { id: "vl7", title: "Romeo & Juliet Character Analysis", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl28", title: "How to Write a Perfect Essay", subject: "English", videoUrl: "https://www.youtube.com/embed/dGIDxJWMnk8" },
+  { id: "vl29", title: "Reading Comprehension Strategies", subject: "English", videoUrl: "https://www.youtube.com/embed/WBaRDQwEcGY" },
+  // Kannada (3 videos)
+  { id: "vl8", title: "Kannada Vyakaran & Grammar Rules", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl30", title: "Kannada Poetry - Kumara Vyasa Bharata", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl31", title: "Kannada Prose & Letter Writing", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/eo5XndJaz-Y" },
+  // Economics (3 videos)
+  { id: "vl9", title: "Principles of Microeconomics", subject: "Economics", videoUrl: "https://www.youtube.com/embed/3ez14uE9cZ0" },
+  { id: "vl22", title: "Demand & Supply Curve Analysis", subject: "Economics", videoUrl: "https://www.youtube.com/embed/kIFBaaPJUO0" },
+  { id: "vl32", title: "Indian Economy & Budget Explained", subject: "Economics", videoUrl: "https://www.youtube.com/embed/PHe0bXAIuk0" },
+  // Accountancy (3 videos)
+  { id: "vl10", title: "Accounting Basics & Journal Entries", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/c76tZ3U7l7w" },
+  { id: "vl33", title: "Trial Balance & Final Accounts", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/d0t23tD4nKk" },
+  { id: "vl34", title: "Partnership Accounts Made Easy", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/_-K9A1iyOhc" },
+  // General Knowledge (3 videos)
+  { id: "vl11", title: "General Knowledge - World Geography", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl35", title: "Indian States, Capitals & Facts", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl36", title: "Famous Scientists & Inventions", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/vn3e37IQBCk" },
+  // Current Affairs (2 videos)
+  { id: "vl5", title: "Important Current Affairs 2026", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl37", title: "Government Schemes & Policies Update", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/3ez14uE9cZ0" },
+  // Reasoning (3 videos)
+  { id: "vl12", title: "Logical Reasoning & Syllogism", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl38", title: "Coding-Decoding & Puzzles", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl39", title: "Blood Relations & Seating Arrangement", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/G-MKVOfjXkQ" },
+  // Quantitative Aptitude (3 videos)
+  { id: "vl13", title: "Speed Math & Quantitative Aptitude", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl40", title: "Percentage, Profit & Loss Tricks", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl41", title: "Time & Work - Shortcut Methods", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/G-MKVOfjXkQ" },
+  // English Grammar (3 videos)
+  { id: "vl14", title: "Active & Passive Voice Masterclass", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl42", title: "Tenses - Complete Guide", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/dGIDxJWMnk8" },
+  { id: "vl43", title: "Direct & Indirect Speech Rules", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/WBaRDQwEcGY" },
+  // Indian Polity (3 videos)
+  { id: "vl15", title: "Indian Constitution & Preamble", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl44", title: "Fundamental Rights & Duties Explained", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/3ez14uE9cZ0" },
+  { id: "vl45", title: "Parliament & Legislature of India", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/PHe0bXAIuk0" },
+  // History (3 videos)
+  { id: "vl16", title: "The Silk Road & Ancient History", subject: "History", videoUrl: "https://www.youtube.com/embed/vn3e37IQBCk" },
+  { id: "vl46", title: "Mughal Empire - Rise & Fall", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl47", title: "Indian Freedom Struggle - Key Events", subject: "History", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" }
 ];
 
 // Helper to write to local storage

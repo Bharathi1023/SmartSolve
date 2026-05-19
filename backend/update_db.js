@@ -80,7 +80,7 @@ try {
       subject: "Science (Biology)",
       category: "notes",
       content: "### Human Respiratory System\n\nThe human respiratory system consists of a pair of lungs and a series of air passages. The primary function is the exchange of gases (oxygen and carbon dioxide).\n\n#### Key Organs:\n- Trachea (Windpipe)\n- Bronchi\n- Bronchioles\n- Alveoli (Site of actual gas exchange)\n\n#### Transport of Gases:\nO2 is transported primarily by Hemoglobin (Hb) as Oxyhemoglobin. CO2 is transported dissolved in plasma, as carbaminohemoglobin, and mainly as bicarbonate ions.",
-      videoUrl: "https://www.youtube.com/embed/S2H_xJksKgs", // Educational placeholder
+      videoUrl: "https://www.youtube.com/embed/H8WJ45y9sN0", // Educational placeholder
       flashcards: [
         { front: "What is the site of gas exchange in lungs?", back: "Alveoli" },
         { front: "How is majority of CO2 transported in blood?", back: "As Bicarbonate ions (HCO3-)" }
@@ -92,7 +92,7 @@ try {
       subject: "Science (Physics)",
       category: "formulas",
       content: "### Essential Mechanics Formulas\n\n#### Kinematics\n- $v = u + at$\n- $s = ut + \\frac{1}{2}at^2$\n- $v^2 - u^2 = 2as$\n\n#### Dynamics\n- Force: $F = ma$\n- Momentum: $p = mv$\n- Work Done: $W = F \\cdot d \\cdot \\cos(\\theta)$\n\n#### Circular Motion\n- Centripetal Acceleration: $a_c = \\frac{v^2}{r}$",
-      videoUrl: "https://www.youtube.com/embed/5iMxs2F8pBQ", // Educational placeholder
+      videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE", // Educational placeholder
       flashcards: [
         { front: "Formula for Centripetal Force?", back: "F = mv²/r" },
         { front: "Work-Energy Theorem?", back: "Work done by net force equals change in Kinetic Energy." }

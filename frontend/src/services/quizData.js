@@ -1,0 +1,197 @@
+// Quiz Bank - 20 questions per subject
+const Q = (id,q,o,c,e) => ({id,question:q,options:o,correctAnswer:c,explanation:e});
+
+const physicsQs = [
+  Q("p1","What is the SI unit of force?",["Newton","Joule","Watt","Pascal"],0,"Force is measured in Newtons (N)."),
+  Q("p2","Speed of light in vacuum is approximately:",["3×10⁸ m/s","3×10⁶ m/s","3×10¹⁰ m/s","3×10⁴ m/s"],0,"Speed of light c ≈ 3×10⁸ m/s."),
+  Q("p3","Which mirror is used in headlights of a car?",["Concave","Convex","Plane","Cylindrical"],0,"Concave mirrors produce powerful parallel beams."),
+  Q("p4","Ohm's law relates:",["V, I, R","F, m, a","P, V, T","E, m, c"],0,"V = IR is Ohm's law."),
+  Q("p5","A body at rest has:",["Potential energy","Kinetic energy","Both","Neither"],0,"A body at rest has potential energy only."),
+  Q("p6","Which lens is used to correct myopia?",["Concave","Convex","Bifocal","Cylindrical"],0,"Concave (diverging) lens corrects myopia."),
+  Q("p7","Unit of electric current is:",["Ampere","Volt","Ohm","Watt"],0,"Current is measured in Amperes."),
+  Q("p8","Newton's first law is also called:",["Law of inertia","Law of acceleration","Law of action-reaction","Law of gravitation"],0,"First law defines inertia."),
+  Q("p9","What is the acceleration due to gravity on Earth?",["9.8 m/s²","10.8 m/s²","8.8 m/s²","11.8 m/s²"],0,"g ≈ 9.8 m/s²."),
+  Q("p10","Which color of light has the shortest wavelength?",["Violet","Red","Green","Yellow"],0,"Violet has shortest wavelength in visible spectrum."),
+  Q("p11","Power is defined as:",["Work done per unit time","Force × distance","Mass × velocity","Energy × time"],0,"P = W/t."),
+  Q("p12","Total internal reflection occurs when light travels from:",["Denser to rarer medium","Rarer to denser medium","Same medium","Vacuum only"],0,"TIR occurs denser to rarer when angle > critical angle."),
+  Q("p13","Which device converts electrical energy to mechanical?",["Electric motor","Generator","Transformer","Battery"],0,"Motor converts electrical to mechanical energy."),
+  Q("p14","Resistance of a conductor increases with:",["Increase in length","Increase in area","Decrease in length","None"],0,"R = ρL/A, so R increases with length."),
+  Q("p15","The image formed by a convex mirror is always:",["Virtual and diminished","Real and magnified","Virtual and magnified","Real and diminished"],0,"Convex mirrors always form virtual, diminished images."),
+  Q("p16","Frequency of AC supply in India is:",["50 Hz","60 Hz","100 Hz","220 Hz"],0,"India uses 50 Hz AC supply."),
+  Q("p17","Which electromagnetic wave has the longest wavelength?",["Radio waves","Gamma rays","X-rays","UV rays"],0,"Radio waves have the longest wavelength."),
+  Q("p18","Kinetic energy formula is:",["½mv²","mgh","Fd","mv"],0,"KE = ½mv²."),
+  Q("p19","Fleming's left hand rule gives direction of:",["Force on conductor","Induced current","Magnetic field","Electric field"],0,"Fleming's left hand rule gives force direction on current-carrying conductor."),
+  Q("p20","What is the focal length of a plane mirror?",["Infinity","Zero","1 m","0.5 m"],0,"Plane mirror has focal length at infinity.")
+];
+
+const chemistryQs = [
+  Q("c1","What is the pH of a neutral solution?",["7","0","14","1"],0,"pH 7 is neutral."),
+  Q("c2","Which gas is evolved when zinc reacts with HCl?",["Hydrogen","Oxygen","Chlorine","Nitrogen"],0,"Zn + 2HCl → ZnCl₂ + H₂."),
+  Q("c3","Rust is chemically:",["Fe₂O₃·xH₂O","FeO","FeCl₃","FeSO₄"],0,"Rust is hydrated iron(III) oxide."),
+  Q("c4","Which is the most reactive metal?",["Potassium","Gold","Copper","Iron"],0,"Potassium is most reactive among these."),
+  Q("c5","Baking soda formula is:",["NaHCO₃","Na₂CO₃","NaCl","NaOH"],0,"Baking soda is sodium bicarbonate NaHCO₃."),
+  Q("c6","Atomic number of Carbon is:",["6","12","8","14"],0,"Carbon has 6 protons."),
+  Q("c7","Which type of reaction is: 2Mg + O₂ → 2MgO?",["Combination","Decomposition","Displacement","Double displacement"],0,"Two reactants combine to form one product."),
+  Q("c8","Plaster of Paris formula is:",["CaSO₄·½H₂O","CaSO₄·2H₂O","CaCO₃","Ca(OH)₂"],0,"POP is calcium sulphate hemihydrate."),
+  Q("c9","Noble gases are in group:",["18","1","17","2"],0,"Noble gases are in Group 18."),
+  Q("c10","Ethanol formula is:",["C₂H₅OH","CH₃OH","C₃H₇OH","CH₄"],0,"Ethanol is C₂H₅OH."),
+  Q("c11","Litmus is obtained from:",["Lichens","Fungi","Algae","Bacteria"],0,"Litmus is extracted from lichens."),
+  Q("c12","Which acid is present in vinegar?",["Acetic acid","Citric acid","Hydrochloric acid","Sulfuric acid"],0,"Vinegar contains acetic acid (CH₃COOH)."),
+  Q("c13","Number of electrons in Na⁺ ion:",["10","11","12","23"],0,"Na has 11 electrons, Na⁺ loses one = 10."),
+  Q("c14","Diamond is an allotrope of:",["Carbon","Silicon","Sulfur","Phosphorus"],0,"Diamond is a carbon allotrope."),
+  Q("c15","What is the valency of Aluminium?",["3","2","1","4"],0,"Al has valency 3."),
+  Q("c16","Aqua regia is a mixture of:",["HCl and HNO₃","H₂SO₄ and HCl","HNO₃ and H₂SO₄","HCl and H₂O"],0,"Aqua regia = 3:1 ratio of HCl:HNO₃."),
+  Q("c17","Methane is the simplest:",["Alkane","Alkene","Alkyne","Alcohol"],0,"CH₄ is the simplest alkane."),
+  Q("c18","Bleaching powder formula:",["CaOCl₂","Ca(OH)₂","CaCO₃","CaSO₄"],0,"Bleaching powder is calcium hypochlorite."),
+  Q("c19","Which metal is liquid at room temperature?",["Mercury","Gallium","Sodium","Lead"],0,"Mercury (Hg) is liquid at room temperature."),
+  Q("c20","Photosynthesis equation product is:",["Glucose + O₂","CO₂ + H₂O","Starch + CO₂","None"],0,"6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂.")
+];
+
+const mathQs = [
+  Q("m1","Find roots of 2x²-5x+3=0",["x=1, x=1.5","x=-1, x=-1.5","x=2, x=3","x=0, x=5"],0,"Quadratic formula gives 1.5 and 1."),
+  Q("m2","Value of sin 30° is:",["0.5","1","0","√3/2"],0,"sin 30° = 1/2 = 0.5."),
+  Q("m3","HCF of 12 and 18 is:",["6","3","12","36"],0,"HCF(12,18) = 6."),
+  Q("m4","If x²-4x+4=0, roots are:",["Real and equal","Real and distinct","Imaginary","None"],0,"D = 16-16 = 0, real and equal."),
+  Q("m5","Sum of interior angles of a triangle:",["180°","360°","90°","270°"],0,"Triangle angles sum to 180°."),
+  Q("m6","What is 15% of 200?",["30","15","20","40"],0,"15/100 × 200 = 30."),
+  Q("m7","Value of tan 45° is:",["1","0","∞","√3"],0,"tan 45° = 1."),
+  Q("m8","Area of circle with radius 7cm:",["154 cm²","44 cm²","22 cm²","49 cm²"],0,"πr² = 22/7 × 49 = 154 cm²."),
+  Q("m9","LCM of 4, 6, 8 is:",["24","48","12","8"],0,"LCM(4,6,8) = 24."),
+  Q("m10","Slope of line y=3x+5 is:",["3","5","3/5","5/3"],0,"In y=mx+c, slope m=3."),
+  Q("m11","√144 equals:",["12","14","11","13"],0,"12 × 12 = 144."),
+  Q("m12","Probability of getting head in one toss:",["1/2","1","0","1/4"],0,"Fair coin: P(H) = 1/2."),
+  Q("m13","Value of cos 0° is:",["1","0","-1","1/2"],0,"cos 0° = 1."),
+  Q("m14","Volume of cube with side 5cm:",["125 cm³","25 cm³","75 cm³","150 cm³"],0,"V = s³ = 125 cm³."),
+  Q("m15","nth term of AP: a, a+d, a+2d is:",["a+(n-1)d","a+nd","a+(n+1)d","nd"],0,"Tn = a + (n-1)d."),
+  Q("m16","Mean of 2,4,6,8,10 is:",["6","5","7","8"],0,"Sum=30, n=5, mean=6."),
+  Q("m17","Circumference of circle with r=7:",["44 cm","22 cm","154 cm","88 cm"],0,"C = 2πr = 2×22/7×7 = 44."),
+  Q("m18","What is 2⁵?",["32","16","64","25"],0,"2⁵ = 32."),
+  Q("m19","Distance between (0,0) and (3,4):",["5","7","1","25"],0,"√(9+16) = √25 = 5."),
+  Q("m20","If sin θ = 3/5, then cos θ =:",["4/5","3/5","5/3","3/4"],0,"cos θ = 4/5 using Pythagorean identity.")
+];
+
+const biologyQs = [
+  Q("b1","Powerhouse of the cell is:",["Mitochondria","Nucleus","Ribosome","Golgi body"],0,"Mitochondria produce ATP energy."),
+  Q("b2","Photosynthesis occurs in:",["Chloroplast","Mitochondria","Nucleus","Ribosome"],0,"Chloroplasts contain chlorophyll."),
+  Q("b3","DNA stands for:",["Deoxyribonucleic acid","Dinitro acid","Deoxyribo acid","None"],0,"DNA = Deoxyribonucleic acid."),
+  Q("b4","Blood group known as universal donor:",["O","AB","A","B"],0,"O- is universal donor."),
+  Q("b5","Largest organ of human body:",["Skin","Liver","Brain","Heart"],0,"Skin is the largest organ."),
+  Q("b6","Number of chambers in human heart:",["4","2","3","6"],0,"Heart has 4 chambers."),
+  Q("b7","Which vitamin prevents scurvy?",["Vitamin C","Vitamin A","Vitamin D","Vitamin K"],0,"Vitamin C deficiency causes scurvy."),
+  Q("b8","Basic unit of life is:",["Cell","Atom","Tissue","Organ"],0,"Cell is the basic unit of life."),
+  Q("b9","Functional unit of kidney is:",["Nephron","Neuron","Alveoli","Villi"],0,"Nephron is the functional unit of kidney."),
+  Q("b10","Hemoglobin contains which metal?",["Iron","Copper","Zinc","Calcium"],0,"Hemoglobin contains iron (Fe)."),
+  Q("b11","Mendel is known as father of:",["Genetics","Biology","Botany","Zoology"],0,"Gregor Mendel is father of genetics."),
+  Q("b12","Which hormone regulates blood sugar?",["Insulin","Thyroxine","Adrenaline","Estrogen"],0,"Insulin regulates blood glucose levels."),
+  Q("b13","Plants breathe through:",["Stomata","Roots only","Stem only","Flowers"],0,"Gas exchange occurs through stomata."),
+  Q("b14","Number of bones in adult human:",["206","300","106","180"],0,"Adult human has 206 bones."),
+  Q("b15","Amoeba reproduces by:",["Binary fission","Budding","Spore formation","Fragmentation"],0,"Amoeba divides by binary fission."),
+  Q("b16","Bile is produced by:",["Liver","Pancreas","Stomach","Kidney"],0,"Liver produces bile."),
+  Q("b17","Which blood cells fight infection?",["WBC","RBC","Platelets","Plasma"],0,"White blood cells fight pathogens."),
+  Q("b18","Xylem transports:",["Water","Food","Hormones","Oxygen"],0,"Xylem transports water and minerals upward."),
+  Q("b19","Brain is protected by:",["Cranium","Ribcage","Vertebral column","Pelvis"],0,"Cranium (skull) protects the brain."),
+  Q("b20","Ozone layer protects from:",["UV rays","Infrared","Visible light","Radio waves"],0,"Ozone absorbs harmful ultraviolet radiation.")
+];
+
+const csQs = [
+  Q("cs1","HTML stands for:",["HyperText Markup Language","High Tech ML","Hyper Transfer ML","None"],0,"HTML = HyperText Markup Language."),
+  Q("cs2","Which is not a programming language?",["MS Word","Python","Java","C++"],0,"MS Word is an application, not a language."),
+  Q("cs3","RAM stands for:",["Random Access Memory","Read Access Memory","Run Access Memory","None"],0,"RAM = Random Access Memory."),
+  Q("cs4","Binary of decimal 10 is:",["1010","1100","1001","1110"],0,"10 in binary = 1010."),
+  Q("cs5","Which data structure uses FIFO?",["Queue","Stack","Tree","Graph"],0,"Queue uses First In First Out."),
+  Q("cs6","Output of print(2**3) in Python:",["8","6","9","23"],0,"2**3 = 2³ = 8."),
+  Q("cs7","SQL stands for:",["Structured Query Language","Simple Query Language","System Query Language","None"],0,"SQL = Structured Query Language."),
+  Q("cs8","Which is an output device?",["Monitor","Keyboard","Mouse","Scanner"],0,"Monitor displays output."),
+  Q("cs9","OOP stands for:",["Object Oriented Programming","Open Office Program","Online Operation Process","None"],0,"OOP = Object Oriented Programming."),
+  Q("cs10","1 KB equals:",["1024 bytes","1000 bytes","512 bytes","2048 bytes"],0,"1 KB = 1024 bytes."),
+  Q("cs11","Which loop runs at least once?",["do-while","for","while","None"],0,"do-while executes body first, then checks condition."),
+  Q("cs12","CPU stands for:",["Central Processing Unit","Central Program Unit","Computer Personal Unit","None"],0,"CPU = Central Processing Unit."),
+  Q("cs13","Which is not an OS?",["Oracle","Windows","Linux","macOS"],0,"Oracle is a database, not an OS."),
+  Q("cs14","Array index starts from:",["0","1","-1","None"],0,"Arrays are zero-indexed in most languages."),
+  Q("cs15","What does HTTP stand for?",["HyperText Transfer Protocol","High Text Transfer Protocol","Hyper Transfer Text Protocol","None"],0,"HTTP = HyperText Transfer Protocol."),
+  Q("cs16","Boolean data type has values:",["True/False","0-9","A-Z","None"],0,"Boolean is True or False."),
+  Q("cs17","Which symbol denotes comment in Python?",["#","//","/*","--"],0,"# is used for single-line comments in Python."),
+  Q("cs18","Full form of URL:",["Uniform Resource Locator","Universal Resource Link","Unified Resource Locator","None"],0,"URL = Uniform Resource Locator."),
+  Q("cs19","Which sorting has O(n²) worst case?",["Bubble Sort","Merge Sort","Quick Sort average","Heap Sort"],0,"Bubble sort has O(n²) worst case."),
+  Q("cs20","Primary key in database must be:",["Unique","Null","Duplicate","Empty"],0,"Primary keys must be unique and not null.")
+];
+
+const economicsQs = [
+  Q("e1","Father of Economics is:",["Adam Smith","Karl Marx","Keynes","Ricardo"],0,"Adam Smith wrote 'Wealth of Nations'."),
+  Q("e2","GDP stands for:",["Gross Domestic Product","General Domestic Product","Gross Development Product","None"],0,"GDP = Gross Domestic Product."),
+  Q("e3","When demand increases, price:",["Increases","Decreases","Stays same","Becomes zero"],0,"Higher demand leads to higher prices."),
+  Q("e4","RBI stands for:",["Reserve Bank of India","Regional Bank of India","Royal Bank of India","None"],0,"RBI = Reserve Bank of India."),
+  Q("e5","Inflation means:",["Rise in general price level","Fall in prices","Stable prices","None"],0,"Inflation = sustained increase in price levels."),
+  Q("e6","Mixed economy has:",["Both private and public sector","Only private","Only public","None"],0,"Mixed economy combines both sectors."),
+  Q("e7","National income formula Y=",["C+I+G+(X-M)","C+I only","G+X only","None"],0,"Y = C+I+G+(X-M) in open economy."),
+  Q("e8","Budget deficit means:",["Expenditure > Revenue","Revenue > Expenditure","Both equal","None"],0,"Deficit = spending exceeds revenue."),
+  Q("e9","Primary sector includes:",["Agriculture","Manufacturing","Services","IT"],0,"Primary sector = agriculture, mining, fishing."),
+  Q("e10","Currency of Japan is:",["Yen","Dollar","Euro","Pound"],0,"Japanese currency is Yen."),
+  Q("e11","GST stands for:",["Goods and Services Tax","General Sales Tax","Government Service Tax","None"],0,"GST = Goods and Services Tax."),
+  Q("e12","Law of demand states price and demand are:",["Inversely related","Directly related","Not related","Equal"],0,"As price rises, demand falls."),
+  Q("e13","Monopoly means:",["Single seller","Many sellers","Two sellers","No seller"],0,"Monopoly = single seller in market."),
+  Q("e14","Per capita income = National income ÷",["Population","GDP","Area","Tax"],0,"Per capita = total income / population."),
+  Q("e15","FDI stands for:",["Foreign Direct Investment","Federal Domestic Income","None","Fixed Deposit Interest"],0,"FDI = Foreign Direct Investment."),
+  Q("e16","Demand curve slopes:",["Downward","Upward","Horizontal","Vertical"],0,"Demand curve slopes downward left to right."),
+  Q("e17","Fiscal policy is controlled by:",["Government","Central Bank","Stock Exchange","IMF"],0,"Government controls fiscal policy (tax/spending)."),
+  Q("e18","Poverty line in India is based on:",["Calorie intake","Income only","GDP","Population"],0,"Poverty line based on minimum calorie requirement."),
+  Q("e19","Human Development Index includes:",["Health, Education, Income","Only income","Only health","Only education"],0,"HDI combines health, education, and income."),
+  Q("e20","Supply increases when price:",["Increases","Decreases","Stays same","Becomes zero"],0,"Higher prices incentivize more supply.")
+];
+
+const gkQs = [
+  Q("gk1","Capital of India is:",["New Delhi","Mumbai","Kolkata","Chennai"],0,"New Delhi is the capital."),
+  Q("gk2","Largest planet in solar system:",["Jupiter","Saturn","Earth","Mars"],0,"Jupiter is the largest planet."),
+  Q("gk3","National bird of India:",["Peacock","Sparrow","Eagle","Parrot"],0,"Indian Peafowl (Peacock) is national bird."),
+  Q("gk4","Longest river in India:",["Ganga","Yamuna","Godavari","Narmada"],0,"Ganga is the longest river in India."),
+  Q("gk5","Who invented the telephone?",["Alexander Graham Bell","Edison","Newton","Tesla"],0,"Bell invented the telephone in 1876."),
+  Q("gk6","How many states in India?",["28","29","30","27"],0,"India has 28 states currently."),
+  Q("gk7","Which is the smallest continent?",["Australia","Europe","Antarctica","South America"],0,"Australia is the smallest continent."),
+  Q("gk8","National flower of India:",["Lotus","Rose","Sunflower","Lily"],0,"Lotus is the national flower."),
+  Q("gk9","Who wrote the national anthem?",["Rabindranath Tagore","Bankim Chandra","Mahatma Gandhi","Nehru"],0,"Tagore wrote 'Jana Gana Mana'."),
+  Q("gk10","Currency of USA:",["Dollar","Pound","Euro","Yen"],0,"US Dollar is the currency."),
+  Q("gk11","Largest ocean in the world:",["Pacific","Atlantic","Indian","Arctic"],0,"Pacific Ocean is the largest."),
+  Q("gk12","Vitamin D is obtained from:",["Sunlight","Fruits","Vegetables","Meat only"],0,"Skin produces Vitamin D from sunlight."),
+  Q("gk13","Mount Everest is in:",["Nepal/Tibet","India","China only","Pakistan"],0,"Everest is on Nepal-Tibet border."),
+  Q("gk14","Blood is filtered by:",["Kidneys","Liver","Heart","Lungs"],0,"Kidneys filter blood to produce urine."),
+  Q("gk15","First President of India:",["Dr. Rajendra Prasad","Nehru","Sardar Patel","Ambedkar"],0,"Dr. Rajendra Prasad was first President."),
+  Q("gk16","Speed of sound in air:",["343 m/s","3×10⁸ m/s","100 m/s","500 m/s"],0,"Speed of sound ≈ 343 m/s at 20°C."),
+  Q("gk17","Sahara Desert is in:",["Africa","Asia","Australia","Europe"],0,"Sahara is in northern Africa."),
+  Q("gk18","Chemical formula of water:",["H₂O","CO₂","NaCl","O₂"],0,"Water = H₂O."),
+  Q("gk19","Independence Day of India:",["15th August","26th January","2nd October","14th November"],0,"India got independence on 15 Aug 1947."),
+  Q("gk20","Largest country by area:",["Russia","Canada","China","USA"],0,"Russia is the largest country by area.")
+];
+
+const historyQs = [
+  Q("h1","Indus Valley Civilization discovered in:",["1921","1857","1947","1800"],0,"Indus Valley discovered in 1921 at Harappa."),
+  Q("h2","Who built the Taj Mahal?",["Shah Jahan","Akbar","Aurangzeb","Babur"],0,"Shah Jahan built it in memory of Mumtaz."),
+  Q("h3","First battle of Panipat was in:",["1526","1556","1761","1857"],0,"Babur defeated Ibrahim Lodi in 1526."),
+  Q("h4","Quit India Movement started in:",["1942","1947","1930","1920"],0,"Gandhi launched Quit India in August 1942."),
+  Q("h5","Who gave the slogan 'Do or Die'?",["Mahatma Gandhi","Nehru","Subhas Chandra Bose","Tilak"],0,"Gandhi gave this during Quit India."),
+  Q("h6","Jallianwala Bagh massacre year:",["1919","1920","1930","1942"],0,"13 April 1919, General Dyer opened fire."),
+  Q("h7","Last Mughal emperor was:",["Bahadur Shah Zafar","Aurangzeb","Akbar","Shah Jahan"],0,"Bahadur Shah Zafar was the last Mughal."),
+  Q("h8","Father of the Nation of India:",["Mahatma Gandhi","Nehru","Ambedkar","Patel"],0,"Mahatma Gandhi is Father of the Nation."),
+  Q("h9","Ashoka belonged to which dynasty?",["Maurya","Gupta","Mughal","Chola"],0,"Ashoka was a Maurya dynasty emperor."),
+  Q("h10","Indian Constitution adopted on:",["26 November 1949","26 January 1950","15 August 1947","None"],0,"Constitution adopted 26 Nov 1949, enacted 26 Jan 1950."),
+  Q("h11","Who founded the Gupta dynasty?",["Sri Gupta","Chandragupta I","Samudragupta","Kumaragupta"],0,"Sri Gupta founded the Gupta dynasty."),
+  Q("h12","Dandi March was in:",["1930","1942","1920","1919"],0,"Gandhi's Salt March to Dandi in March 1930."),
+  Q("h13","World War II ended in:",["1945","1939","1942","1950"],0,"WWII ended in 1945 with Japan's surrender."),
+  Q("h14","Who was the first Mughal emperor?",["Babur","Akbar","Humayun","Jahangir"],0,"Babur founded the Mughal Empire in 1526."),
+  Q("h15","French Revolution started in:",["1789","1776","1800","1815"],0,"French Revolution began in 1789."),
+  Q("h16","Chandragupta Maurya's mentor was:",["Chanakya","Ashoka","Megasthenes","Kalidas"],0,"Chanakya (Kautilya) was his advisor."),
+  Q("h17","Who discovered America?",["Columbus","Vasco da Gama","Magellan","Cook"],0,"Christopher Columbus in 1492."),
+  Q("h18","Partition of Bengal was in:",["1905","1911","1920","1947"],0,"Lord Curzon partitioned Bengal in 1905."),
+  Q("h19","Non-Cooperation Movement year:",["1920","1930","1942","1919"],0,"Gandhi launched Non-Cooperation in 1920."),
+  Q("h20","Berlin Wall fell in:",["1989","1991","1985","1975"],0,"Berlin Wall fell on 9 November 1989.")
+];
+
+export const QUIZ_BANK = [
+  { id:"physics-101", title:"Physics - Complete Assessment", subject:"Physics", duration:40, questions:physicsQs },
+  { id:"chemistry-101", title:"Chemistry - Complete Assessment", subject:"Chemistry", duration:40, questions:chemistryQs },
+  { id:"math-101", title:"Mathematics - Complete Assessment", subject:"Mathematics", duration:40, questions:mathQs },
+  { id:"biology-101", title:"Biology - Complete Assessment", subject:"Biology", duration:40, questions:biologyQs },
+  { id:"cs-101", title:"Computer Science - Complete Assessment", subject:"Computer Science", duration:40, questions:csQs },
+  { id:"economics-101", title:"Economics - Complete Assessment", subject:"Economics", duration:40, questions:economicsQs },
+  { id:"gk-101", title:"General Knowledge - Complete Assessment", subject:"General Knowledge", duration:30, questions:gkQs },
+  { id:"history-101", title:"History - Complete Assessment", subject:"History", duration:40, questions:historyQs }
+];

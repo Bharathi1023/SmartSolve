@@ -10,14 +10,14 @@ export async function solveQuestion({ text, mode = 'standard', lengthMode = 'sta
   const query = text.toLowerCase();
   let subject = 'General Study';
   
-  if (query.includes('quadratic') || query.includes('x^2') || query.includes('x²') || query.includes('equation') || query.includes('math') || query.includes('solve for x')) {
-    subject = 'Mathematics';
-  } else if (query.includes('chemical') || query.includes('reaction') || query.includes('acid') || query.includes('balance') || query.includes('fe +') || query.includes('caco3')) {
-    subject = 'Science (Chemistry)';
-  } else if (query.includes('force') || query.includes('velocity') || query.includes('gravity') || query.includes('lens') || query.includes('mirror')) {
+  if (query.includes('force') || query.includes('velocity') || query.includes('gravity') || query.includes('lens') || query.includes('mirror') || query.includes('newton') || query.includes('motion') || query.includes('speed') || query.includes('acceleration')) {
     subject = 'Science (Physics)';
-  } else if (query.includes('cell') || query.includes('plant') || query.includes('blood') || query.includes('heart') || query.includes('photosynthesis')) {
+  } else if (query.includes('chemical') || query.includes('reaction') || query.includes('acid') || query.includes('balance') || query.includes('fe +') || query.includes('caco3') || query.includes('iron filings') || query.includes('copper sulphate')) {
+    subject = 'Science (Chemistry)';
+  } else if (query.includes('cell') || query.includes('plant') || query.includes('blood') || query.includes('heart') || query.includes('photosynthesis') || query.includes('respiratory') || query.includes('lung')) {
     subject = 'Science (Biology)';
+  } else if (query.includes('quadratic') || query.includes('x^2') || query.includes('x²') || query.includes('equation') || query.includes('math') || query.includes('solve for x') || query.includes('roots')) {
+    subject = 'Mathematics';
   }
 
   // Check if it's a quadratic equation problem to solve dynamically!
@@ -147,13 +147,107 @@ export async function solveQuestion({ text, mode = 'standard', lengthMode = 'sta
     steps = steps.map(s => translateToKannada(s));
   }
 
+  let similarQuestions = [];
+  let videoExplanation = null;
+  let analysisReport = null;
+
+  if (subject === 'Mathematics') {
+    similarQuestions = [
+      "Find the roots of 3x² - 2x + 5 = 0",
+      "What is the discriminant of x² - 4x + 4 = 0?"
+    ];
+    videoExplanation = "https://www.youtube.com/embed/MR07YxA8AHs";
+    analysisReport = {
+      chapter: "Quadratic Equations",
+      difficulty: "Medium",
+      importantTopics: ["Discriminant Nature", "Quadratic Formula", "Graph of Parabola"],
+      examWeightage: "High (8-10 Marks)",
+      studyTime: "2 Hours",
+      shortNotes: "A quadratic equation is ax² + bx + c = 0. The discriminant D = b² - 4ac determines the nature of roots. If D > 0, roots are real and distinct. If D = 0, roots are real and equal. If D < 0, roots are complex.",
+      generatedQuiz: [
+        { q: "What is the formula for the discriminant?", options: ["b² + 4ac", "b² - 4ac", "2a / b"], ans: "b² - 4ac" }
+      ]
+    };
+  } else if (subject.includes('Chemistry')) {
+    similarQuestions = [
+      "Balance the equation: H2 + O2 -> H2O",
+      "What is a double displacement reaction?"
+    ];
+    videoExplanation = "https://www.youtube.com/embed/FSyAehMdpyI";
+    analysisReport = {
+      chapter: "Chemical Reactions",
+      difficulty: "Hard",
+      importantTopics: ["Displacement Reactions", "Balancing Equations", "Oxidation-Reduction"],
+      examWeightage: "Very High (10-12 Marks)",
+      studyTime: "3 Hours",
+      shortNotes: "A chemical equation must be balanced to satisfy the Law of Conservation of Mass. In a displacement reaction, a more reactive metal displaces a less reactive metal from its salt solution.",
+      generatedQuiz: [
+        { q: "Which of the following is a balanced equation?", options: ["H2 + O2 -> H2O", "2H2 + O2 -> 2H2O", "H2 + 2O2 -> H2O"], ans: "2H2 + O2 -> 2H2O" }
+      ]
+    };
+  } else if (subject.includes('Physics')) {
+    similarQuestions = [
+      "What is Newton's First Law of Motion?",
+      "State the formula for Centripetal Force."
+    ];
+    videoExplanation = "https://www.youtube.com/embed/ZM8ECpBuQYE";
+    analysisReport = {
+      chapter: "Kinematics & Motion",
+      difficulty: "Medium",
+      importantTopics: ["Newton's Laws", "Velocity Vectors", "Centripetal Acceleration"],
+      examWeightage: "High",
+      studyTime: "2 Hours",
+      shortNotes: "Motion in a straight line is governed by kinematics equations. Newton's second law states F = ma. Centripetal acceleration is v^2/r.",
+      generatedQuiz: [
+        { q: "What is the formula for Force?", options: ["F = m/a", "F = ma", "F = mv"], ans: "F = ma" }
+      ]
+    };
+  } else if (subject.includes('Biology')) {
+    similarQuestions = [
+      "Explain the transport of oxygen in the human body.",
+      "Where does the Calvin cycle take place in photosynthesis?"
+    ];
+    videoExplanation = "https://www.youtube.com/embed/H8WJ45y9sN0";
+    analysisReport = {
+      chapter: "Human Physiology & Photosynthesis",
+      difficulty: "Medium",
+      importantTopics: ["Gas Exchange in Alveoli", "Oxyhemoglobin Transport", "Stroma reactions"],
+      examWeightage: "High",
+      studyTime: "2 Hours",
+      shortNotes: "Alveoli are the sites of gas exchange. Majority of oxygen is transported as oxyhemoglobin. Calvin cycle occurs in the stroma of chloroplasts.",
+      generatedQuiz: [
+        { q: "Where does gas exchange occur?", options: ["Bronchi", "Alveoli", "Trachea"], ans: "Alveoli" }
+      ]
+    };
+  } else {
+    similarQuestions = [
+      "Can you explain the underlying concept again?",
+      "Give me a real world example of this."
+    ];
+    videoExplanation = "https://www.youtube.com/embed/fo46yFWIJzU";
+    analysisReport = {
+      chapter: "General Concepts",
+      difficulty: "Easy",
+      importantTopics: ["Core Definitions", "Basic Principles"],
+      examWeightage: "Low",
+      studyTime: "1 Hour",
+      shortNotes: "Focus on understanding the fundamental definitions. Memorize the basic formulas and practice standard examples.",
+      generatedQuiz: [
+        { q: "What is the best way to learn this?", options: ["Rote memorization", "Practice and application"], ans: "Practice and application" }
+      ]
+    };
+  }
+
   return {
     subject,
     answer: answerContent,
     steps,
     diagram,
     mathSolved: !!mathAnalysis,
-    mathData: mathAnalysis
+    mathData: mathAnalysis,
+    similarQuestions,
+    videoExplanation,
+    analysisReport
   };
 }
 

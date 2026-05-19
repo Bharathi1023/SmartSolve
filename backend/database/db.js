@@ -112,7 +112,7 @@ $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$
 Let $\\alpha$ and $\\beta$ be the roots of the equation:
 - Sum of roots: $\\alpha + \\beta = -\\frac{b}{a}$
 - Product of roots: $\\alpha \\cdot \\beta = \\frac{c}{a}$`,
-      videoUrl: "https://www.youtube.com/embed/Z1e_S7G6lZ0",
+      videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs",
       flashcards: [
         { front: "What is the quadratic formula?", back: "x = (-b ± √(b² - 4ac)) / 2a" },
         { front: "What does the discriminant D determine?", back: "The nature of the roots (real & distinct, real & equal, or complex)." },
@@ -141,7 +141,7 @@ $Fe + CuSO_4 \\rightarrow FeSO_4 + Cu$
 #### 4. Double Displacement Reaction
 Exchange of ions between reactants.
 $Na_2SO_4 + BaCl_2 \\rightarrow BaSO_4 \\downarrow + 2NaCl$`,
-      videoUrl: "https://www.youtube.com/embed/e1W5ZkQ_b5c",
+      videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI",
       flashcards: [
         { front: "Define displacement reaction.", back: "A reaction in which a more reactive element displaces a less reactive element from its salt solution." },
         { front: "What is a precipitation reaction?", back: "A reaction that produces an insoluble salt (precipitate)." }
@@ -186,6 +186,42 @@ $Na_2SO_4 + BaCl_2 \\rightarrow BaSO_4 \\downarrow + 2NaCl$`,
         { author: "Rohan", content: "Yes, it is 2Pb(NO3)2 -> 2PbO + 4NO2 + O2. Remember lead oxide is yellow and nitrogen dioxide gas has brown fumes!", time: "17:50" }
       ]
     }
+  ],
+  liveClasses: [
+    { id: "lc1", title: "KCET Physics 1-Shot", instructor: "Prof. Kiran", scheduledAt: "2026-05-20T10:00:00Z", status: "Upcoming", batch: "KCET Batch" },
+    { id: "lc2", title: "NEET Bio Masterclass", instructor: "Dr. Anjali", scheduledAt: "2026-05-19T09:00:00Z", status: "Ongoing", batch: "NEET Batch" },
+    { id: "lc3", title: "JEE Math Integration Sprint", instructor: "Dr. Dev", scheduledAt: "2026-05-20T14:00:00Z", status: "Upcoming", batch: "JEE Batch" },
+    { id: "lc4", title: "UPSC Indian Polity Masterclass", instructor: "Manoj Sir", scheduledAt: "2026-05-21T11:00:00Z", status: "Upcoming", batch: "UPSC Batch" },
+    { id: "lc5", title: "CBSE Class 10 Chemistry Balancing", instructor: "Ms. Divya", scheduledAt: "2026-05-19T18:00:00Z", status: "Ongoing", batch: "Class 10 CBSE" },
+    { id: "lc6", title: "General English & Grammar Hacks", instructor: "Prof. Sarah", scheduledAt: "2026-05-22T15:00:00Z", status: "Upcoming", batch: "General English Batch" },
+    { id: "lc7", title: "Banking QA & Reasoning Trick", instructor: "Mr. Ramesh", scheduledAt: "2026-05-21T16:00:00Z", status: "Upcoming", batch: "Banking PO Batch" },
+    { id: "lc8", title: "Modern Indian History Fast-Track", instructor: "Dr. Meera", scheduledAt: "2026-05-23T10:00:00Z", status: "Upcoming", batch: "SSC Batch" },
+    { id: "lc9", title: "PUC 2 Accountancy Partnership Accounts", instructor: "Mr. CA Anand", scheduledAt: "2026-05-20T17:00:00Z", status: "Upcoming", batch: "Commerce PU2" },
+    { id: "lc10", title: "Kannada Language Poetry Breakdown", instructor: "Mrs. Shweta", scheduledAt: "2026-05-24T14:00:00Z", status: "Upcoming", batch: "State Board Batch" }
+  ],
+  videoLectures: [
+    { id: "vl1", title: "Motion in 1D - Physics Revision", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+    { id: "vl2", title: "Chemical Reactions & Equations", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+    { id: "vl3", title: "Quadratic Equations Masterclass", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+    { id: "vl4", title: "Human Brain & Nervous System", subject: "Biology", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+    { id: "vl5", title: "Important Current Affairs 2026", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+    { id: "vl6", title: "Introduction to Python Programming", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/O5nskjZ_GoI" },
+    { id: "vl7", title: "Romeo & Juliet Character Analysis", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+    { id: "vl8", title: "Kannada Vyakaran & Grammar Rules", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+    { id: "vl9", title: "Principles of Microeconomics", subject: "Economics", videoUrl: "https://www.youtube.com/embed/3ez14uE9cZ0" },
+    { id: "vl10", title: "Accounting Basics & Journal Entries", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/c76tZ3U7l7w" },
+    { id: "vl11", title: "General Knowledge - World Geography", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+    { id: "vl12", title: "Logical Reasoning & Syllogism", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+    { id: "vl13", title: "Speed Math & Quantitative Aptitude", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+    { id: "vl14", title: "Active & Passive Voice Masterclass", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+    { id: "vl15", title: "Indian Constitution & Preamble", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+    { id: "vl16", title: "The Silk Road & Ancient History", subject: "History", videoUrl: "https://www.youtube.com/embed/vn3e37IQBCk" },
+    { id: "vl17", title: "Photosynthesis & Respiration in Plants", subject: "Biology", videoUrl: "https://www.youtube.com/embed/eo5XndJaz-Y" },
+    { id: "vl18", title: "Light Reflection & Refraction", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+    { id: "vl19", title: "Periodic Classification of Elements", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+    { id: "vl20", title: "Trigonometric Identities Made Easy", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+    { id: "vl21", title: "Object Oriented Programming (OOP) in Java", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/O5nskjZ_GoI" },
+    { id: "vl22", title: "Demand & Supply Curve Analysis", subject: "Economics", videoUrl: "https://www.youtube.com/embed/3ez14uE9cZ0" }
   ]
 };
 
@@ -200,6 +236,17 @@ class Database {
       if (fs.existsSync(DB_FILE)) {
         const fileContent = fs.readFileSync(DB_FILE, 'utf8');
         this.data = JSON.parse(fileContent);
+        // Ensure all required fields from initialData are present!
+        let updated = false;
+        for (let key in initialData) {
+          if (!this.data[key] || !Array.isArray(this.data[key]) || this.data[key].length === 0) {
+            this.data[key] = initialData[key];
+            updated = true;
+          }
+        }
+        if (updated) {
+          this.save();
+        }
       } else {
         this.save();
       }
