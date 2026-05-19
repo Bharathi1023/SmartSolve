@@ -10,6 +10,8 @@ import solverRouter from './routes/solver.js';
 import testsRouter from './routes/tests.js';
 import notesRouter from './routes/notes.js';
 import socialRouter from './routes/social.js';
+import coursesRouter from './routes/courses.js';
+import liveClassesRouter from './routes/liveClasses.js';
 
 dotenv.config();
 
@@ -38,6 +40,8 @@ app.use('/api/solver', solverRouter);
 app.use('/api/tests', testsRouter);
 app.use('/api/notes', notesRouter);
 app.use('/api/social', socialRouter);
+app.use('/api/courses', coursesRouter);
+app.use('/api/liveClasses', liveClassesRouter);
 
 // serve a gorgeous welcome status page on backend root to guide user to port 5173
 app.get('/', (req, res) => {

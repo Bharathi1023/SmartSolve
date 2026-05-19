@@ -139,7 +139,68 @@ function localSolveQuestion(text, mode, lengthMode, language) {
     steps = steps.map(s => `ಕನ್ನಡ: ${s}`);
   }
 
-  return { subject, answer: answerContent, steps, diagram, mathSolved: !!mathAnalysis, mathData: mathAnalysis };
+  let similarQuestions = [];
+  let videoExplanation = null;
+  let analysisReport = null;
+
+  if (subject === 'Mathematics') {
+    similarQuestions = [
+      "Find the roots of 3x² - 2x + 5 = 0",
+      "What is the discriminant of x² - 4x + 4 = 0?"
+    ];
+    videoExplanation = "https://www.youtube.com/embed/Z1e_S7G6lZ0";
+    analysisReport = {
+      chapter: "Quadratic Equations",
+      difficulty: "Medium",
+      importantTopics: ["Discriminant Nature", "Quadratic Formula", "Graph of Parabola"],
+      examWeightage: "High (8-10 Marks)",
+      studyTime: "2 Hours",
+      shortNotes: "A quadratic equation is ax² + bx + c = 0. The discriminant D = b² - 4ac determines the nature of roots. If D > 0, roots are real and distinct. If D = 0, roots are real and equal. If D < 0, roots are complex.",
+      generatedQuiz: [
+        { q: "What is the formula for the discriminant?", options: ["b² + 4ac", "b² - 4ac", "2a / b"], ans: "b² - 4ac" }
+      ]
+    };
+  } else if (subject.includes('Chemistry')) {
+    similarQuestions = [
+      "Balance the equation: H2 + O2 -> H2O",
+      "What is a double displacement reaction?"
+    ];
+    videoExplanation = "https://www.youtube.com/embed/e1W5ZkQ_b5c";
+    analysisReport = {
+      chapter: "Chemical Reactions",
+      difficulty: "Hard",
+      importantTopics: ["Displacement Reactions", "Balancing Equations", "Oxidation-Reduction"],
+      examWeightage: "Very High (10-12 Marks)",
+      studyTime: "3 Hours",
+      shortNotes: "A chemical equation must be balanced to satisfy the Law of Conservation of Mass. In a displacement reaction, a more reactive metal displaces a less reactive metal from its salt solution.",
+      generatedQuiz: [
+        { q: "Which of the following is a balanced equation?", options: ["H2 + O2 -> H2O", "2H2 + O2 -> 2H2O", "H2 + 2O2 -> H2O"], ans: "2H2 + O2 -> 2H2O" }
+      ]
+    };
+  } else {
+    similarQuestions = [
+      "Can you explain the underlying concept again?",
+      "Give me a real world example of this."
+    ];
+    videoExplanation = "https://www.youtube.com/embed/S2H_xJksKgs";
+    analysisReport = {
+      chapter: "General Concepts",
+      difficulty: "Easy",
+      importantTopics: ["Core Definitions", "Basic Formulas"],
+      examWeightage: "Low",
+      studyTime: "1 Hour",
+      shortNotes: "Focus on understanding the fundamental definitions. Memorize the basic formulas and practice standard examples.",
+      generatedQuiz: [
+        { q: "What is the best way to learn this?", options: ["Rote memorization", "Practice and application"], ans: "Practice and application" }
+      ]
+    };
+  }
+
+  return { 
+    subject, answer: answerContent, steps, diagram, 
+    mathSolved: !!mathAnalysis, mathData: mathAnalysis, 
+    similarQuestions, videoExplanation, analysisReport 
+  };
 }
 
 function localSolveQuadratic(a, b, c) {
@@ -304,6 +365,22 @@ const LOCAL_NOTES = [
       { front: "What is a precipitation reaction?", back: "A chemical reaction that results in an insoluble precipitate." }
     ]
   }
+];
+
+const LOCAL_COURSES = [
+  { id: "c1", type: "Entrance Exams", exam: "KCET", subject: "Physics", difficulty: "Hard" },
+  { id: "c2", type: "Entrance Exams", exam: "NEET", subject: "Biology", difficulty: "Medium" },
+  { id: "c3", type: "Government Exams", exam: "UPSC", subject: "Current Affairs", difficulty: "Hard" }
+];
+
+const LOCAL_LIVE_CLASSES = [
+  { id: "lc1", title: "KCET Physics 1-Shot", instructor: "Prof. Kiran", scheduledAt: "2026-05-20T10:00:00Z", status: "Upcoming", batch: "KCET Batch" },
+  { id: "lc2", title: "NEET Bio Masterclass", instructor: "Dr. Anjali", scheduledAt: "2026-05-19T09:00:00Z", status: "Ongoing", batch: "NEET Batch" }
+];
+
+const LOCAL_VIDEO_LECTURES = [
+  { id: "vl1", title: "Motion in 1D", subject: "Physics", videoUrl: "https://www.youtube.com/embed/5iMxs2F8pBQ" },
+  { id: "vl2", title: "Chemical Balancing", subject: "Science", videoUrl: "https://www.youtube.com/embed/e1W5ZkQ_b5c" }
 ];
 
 // Helper to write to local storage
@@ -721,6 +798,18 @@ const fallbackAPI = {
 
     setStorageItem('ss_rooms', rooms);
     return { updatedRoom: room, simulatedReply: simulated };
+  },
+
+  getCourses: async () => {
+    return LOCAL_COURSES;
+  },
+
+  getLiveClasses: async () => {
+    return LOCAL_LIVE_CLASSES;
+  },
+
+  getVideoLectures: async () => {
+    return LOCAL_VIDEO_LECTURES;
   }
 };
 
@@ -901,6 +990,24 @@ export const API = {
     const res = await API.request(`/social/rooms/${roomId}/chat`, { method: 'POST', body: { author, content } });
     if (res) return res;
     return fallbackAPI.sendRoomMessage(roomId, author, content);
+  },
+
+  getCourses: async () => {
+    const res = await API.request('/courses');
+    if (res) return res;
+    return fallbackAPI.getCourses();
+  },
+
+  getLiveClasses: async () => {
+    const res = await API.request('/liveClasses');
+    if (res) return res;
+    return fallbackAPI.getLiveClasses();
+  },
+
+  getVideoLectures: async () => {
+    const res = await API.request('/liveClasses/videos');
+    if (res) return res;
+    return fallbackAPI.getVideoLectures();
   }
 };
 export default API;

@@ -60,6 +60,17 @@ export default function App() {
     subjectAccuracy: []
   });
 
+  // New Feature States
+  const [coursesList, setCoursesList] = useState([]);
+  const [liveClassesList, setLiveClassesList] = useState([]);
+  const [videoLecturesList, setVideoLecturesList] = useState([]);
+  const [fullHistory, setFullHistory] = useState([]);
+  
+  // Course Selection UI state
+  const [selectedExamType, setSelectedExamType] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState('Medium');
+
   // Social / Study Lounge States
   const [leaderboard, setLeaderboard] = useState([]);
   const [forumPosts, setForumPosts] = useState([]);
@@ -136,9 +147,26 @@ export default function App() {
       const lead = await API.getLeaderboard();
       setLeaderboard(lead);
 
+      // Load New Features
+      const courses = await API.getCourses();
+      setCoursesList(courses);
+      const liveC = await API.getLiveClasses();
+      setLiveClassesList(liveC);
+      const vids = await API.getVideoLectures();
+      setVideoLecturesList(vids);
+      
+      // Compute Full History (combining papers, mock tests, etc.)
+      const testsHist = await API.getTestHistory(userId);
+      setFullHistory({
+        scans: hist,
+        tests: testsHist,
+        videosWatched: [
+          { id: "vw1", title: "Motion in 1D", date: new Date().toISOString() }
+        ]
+      });
+
       // Load past test scores for analytics
-      const testHistory = await API.getTestHistory(userId);
-      buildAnalytics(testHistory, hist);
+      buildAnalytics(testsHist, hist);
 
     } catch (err) {
       console.error("Failed to load user workspace data:", err);
@@ -335,6 +363,7 @@ export default function App() {
       );
       setOcrSuccessMsg(`Successfully scanned "${res.fileName}". Extracted text: "${res.ocrText}"`);
       setSolveResult(res.solution);
+      setActiveTab('solver');
       
       setTimeout(() => setOcrSuccessMsg(''), 6000);
       loadUserData(currentUser.id);
@@ -700,15 +729,21 @@ export default function App() {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1 }}>
           {[
             { id: 'home', label: 'Dashboard', icon: Trophy },
-            { id: 'exams', label: 'Government Exams', icon: BookOpen },
+            { id: 'subject_explorer', label: 'Subject Explorer', icon: BookOpen },
+            { id: 'courses', label: 'Courses & Selection', icon: BookOpen },
+            { id: 'live', label: 'Live Classes & Video', icon: Play },
+            { id: 'practice_mode', label: 'Smart Practice Mode', icon: Brain },
             { id: 'solver', label: 'AI Doubt Solver', icon: Sparkles },
             { id: 'tests', label: 'Smart Mock Tests', icon: BookMarked },
+            { id: 'revision_hub', label: 'Revision Hub', icon: RefreshCw },
             { id: 'papers', label: 'Previous Year Papers', icon: RefreshCw },
             { id: 'notes', label: 'NCERT & PU Notes', icon: BookOpen },
             { id: 'planner', label: 'Study Planner', icon: Clock },
             { id: 'current_affairs', label: 'Current Affairs', icon: Volume2 },
+            { id: 'career_guidance', label: 'AI Career Guidance', icon: Trophy },
             { id: 'interview', label: 'AI Interview Prep', icon: Mic },
             { id: 'analytics', label: 'Performance Analytics', icon: BarChart3 },
+            { id: 'history', label: 'Complete History', icon: CheckCircle },
             { id: 'social', label: 'Community & Lounge', icon: Users },
             { id: 'admin', label: 'Admin Panel', icon: Settings },
           ].map(item => {
@@ -1315,12 +1350,489 @@ export default function App() {
                       </div>
                     )}
 
+                    {/* New: Video Explanation */}
+                    {solveResult.videoExplanation && (
+                      <div style={{ marginTop: '10px' }}>
+                        <h4 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Play size={16} style={{ color: '#ef4444' }} /> Concept Video Explanation:
+                        </h4>
+                        <div style={{ borderRadius: '8px', overflow: 'hidden' }}>
+                          <iframe 
+                            width="100%" 
+                            height="240" 
+                            src={solveResult.videoExplanation} 
+                            frameBorder="0" 
+                            allowFullScreen 
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* New: Similar Questions */}
+                    {solveResult.similarQuestions && solveResult.similarQuestions.length > 0 && (
+                      <div style={{ marginTop: '10px' }}>
+                        <h4 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Brain size={16} style={{ color: '#8b5cf6' }} /> Similar Questions to Practice:
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {solveResult.similarQuestions.map((sq, idx) => (
+                            <button 
+                              key={idx} 
+                              onClick={() => {
+                                setDoubtText(sq);
+                                handleSolve(sq);
+                              }}
+                              style={{ 
+                                padding: '10px 16px', background: 'rgba(30, 41, 59, 0.4)', 
+                                border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '6px',
+                                color: 'var(--text-secondary)', textAlign: 'left', cursor: 'pointer',
+                                fontSize: '13px'
+                              }}
+                            >
+                              Q: {sq}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* New: AI Document Analysis Report (One Click Smart Prep) */}
+                    {solveResult.analysisReport && (
+                      <div style={{ marginTop: '20px', padding: '20px', borderRadius: '12px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%)', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+                        <h4 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', color: '#06b6d4' }}>
+                          <BarChart3 size={20} /> AI Document Analysis & Optimization Report
+                        </h4>
+                        
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                          <div style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '12px', borderRadius: '8px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Chapter / Topic</div>
+                            <div style={{ fontSize: '15px', fontWeight: 600 }}>{solveResult.analysisReport.chapter}</div>
+                          </div>
+                          <div style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '12px', borderRadius: '8px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Difficulty Level</div>
+                            <div style={{ fontSize: '15px', fontWeight: 600, color: solveResult.analysisReport.difficulty === 'Hard' ? '#ef4444' : '#f59e0b' }}>
+                              {solveResult.analysisReport.difficulty}
+                            </div>
+                          </div>
+                          <div style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '12px', borderRadius: '8px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Predicted Exam Weightage</div>
+                            <div style={{ fontSize: '15px', fontWeight: 600 }}>{solveResult.analysisReport.examWeightage}</div>
+                          </div>
+                          <div style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '12px', borderRadius: '8px' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Recommended Study Time</div>
+                            <div style={{ fontSize: '15px', fontWeight: 600 }}>{solveResult.analysisReport.studyTime}</div>
+                          </div>
+                        </div>
+
+                        <div style={{ marginBottom: '16px' }}>
+                          <h5 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px', color: 'var(--text-secondary)' }}>📌 Important Topics Detected</h5>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            {solveResult.analysisReport.importantTopics.map((topic, i) => (
+                              <span key={i} style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '4px 10px', borderRadius: '50px', fontSize: '12px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                                ✔ {topic}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div style={{ marginBottom: '16px' }}>
+                          <h5 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px', color: 'var(--text-secondary)' }}>📝 AI Generated Short Notes</h5>
+                          <div style={{ background: 'rgba(30, 41, 59, 0.3)', padding: '12px', borderRadius: '8px', fontSize: '13px', borderLeft: '3px solid #8b5cf6', lineHeight: '1.6' }}>
+                            {solveResult.analysisReport.shortNotes}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h5 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px', color: 'var(--text-secondary)' }}>🎯 Auto-Generated Practice Quiz</h5>
+                          {solveResult.analysisReport.generatedQuiz.map((q, i) => (
+                            <div key={i} style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '12px', borderRadius: '8px', marginBottom: '8px' }}>
+                              <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>Q: {q.q}</div>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                {q.options.map((opt, j) => (
+                                  <div key={j} style={{ background: 'var(--bg-primary)', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', border: '1px solid var(--border-glass)' }}>
+                                    {opt}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                      </div>
+                    )}
+
                   </div>
                 )}
               </div>
 
             </div>
 
+          </div>
+        )}
+
+        {/* ========================================================
+            NEW TAB: COURSE SELECTION
+            ======================================================== */}
+        {activeTab === 'courses' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
+              <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>📚 Course Selection & Difficulty</h1>
+              <p style={{ color: 'var(--text-secondary)' }}>
+                Select your path to success. Choose exam, subject, and adapt difficulty dynamically!
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '30px', alignItems: 'start' }}>
+              <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h3 style={{ fontSize: '18px' }}>Selection System</h3>
+                <div>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px', display: 'block' }}>EXAM TYPE</label>
+                  <select 
+                    value={selectedExamType} 
+                    onChange={e => setSelectedExamType(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}
+                  >
+                    <option value="">-- All Exams --</option>
+                    <option value="KCET">KCET</option>
+                    <option value="NEET">NEET</option>
+                    <option value="JEE">JEE</option>
+                    <option value="UPSC">UPSC</option>
+                    <option value="SSC">SSC</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px', display: 'block' }}>DIFFICULTY LEVEL</label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {['Easy', 'Medium', 'Hard'].map(diff => (
+                      <button 
+                        key={diff}
+                        onClick={() => setSelectedDifficulty(diff)}
+                        style={{
+                          flex: 1, padding: '8px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                          background: selectedDifficulty === diff ? 'var(--accent-gradient)' : 'var(--bg-tertiary)',
+                          color: 'white', border: 'var(--border-glass)'
+                        }}
+                      >
+                        {diff}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                  {coursesList.filter(c => !selectedExamType || c.exam === selectedExamType).map(course => (
+                    <div key={course.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: '10px', background: 'rgba(99,102,241,0.2)', padding: '4px 8px', borderRadius: '4px', color: '#8b5cf6', fontWeight: 'bold' }}>{course.exam}</span>
+                        <span style={{ fontSize: '10px', background: 'rgba(16,185,129,0.2)', padding: '4px 8px', borderRadius: '4px', color: '#10b981', fontWeight: 'bold' }}>{course.difficulty}</span>
+                      </div>
+                      <h4 style={{ fontSize: '18px', fontWeight: 600 }}>{course.subject} Module</h4>
+                      <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Interactive path specifically curated for {course.exam} with {selectedDifficulty} adaptability.</p>
+                      <button className="btn-primary" style={{ marginTop: 'auto', justifyContent: 'center' }}>Enroll / Continue</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            NEW TAB: LIVE CLASSES & VIDEOS
+            ======================================================== */}
+        {activeTab === 'live' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
+              <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>🔴 Live Classes & Videos</h1>
+              <p style={{ color: 'var(--text-secondary)' }}>
+                Attend live interactive sessions, engage in group discussions, and watch curated lectures.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              {liveClassesList.map(lc => (
+                <div key={lc.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: lc.status === 'Ongoing' ? '4px solid #ef4444' : '4px solid #06b6d4' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{lc.batch}</span>
+                    {lc.status === 'Ongoing' ? (
+                      <span className="badge-streak" style={{ fontSize: '10px', padding: '2px 8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ width: '6px', height: '6px', background: 'white', borderRadius: '50%', display: 'inline-block' }} /> LIVE NOW
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '11px', color: '#06b6d4', fontWeight: 600 }}>{new Date(lc.scheduledAt).toLocaleString()}</span>
+                    )}
+                  </div>
+                  <h3 style={{ fontSize: '18px' }}>{lc.title}</h3>
+                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Users size={14} /> By {lc.instructor}
+                  </div>
+                  <button className="btn-primary" style={{ justifyContent: 'center', marginTop: '10px' }}>
+                    {lc.status === 'Ongoing' ? 'Join Live Room' : 'Set Reminder'}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <h3 style={{ fontSize: '20px', marginTop: '20px' }}>📺 Video Lectures</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              {videoLecturesList.map(vl => (
+                <div key={vl.id} className="glass-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                  <iframe 
+                    width="100%" 
+                    height="180" 
+                    src={vl.videoUrl} 
+                    title={vl.title} 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen 
+                  />
+                  <div style={{ padding: '16px' }}>
+                    <div style={{ fontSize: '10px', color: '#8b5cf6', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>{vl.subject}</div>
+                    <h4 style={{ fontSize: '15px' }}>{vl.title}</h4>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            NEW TAB: COMPLETE HISTORY
+            ======================================================== */}
+        {activeTab === 'history' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
+              <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>🕰️ Complete Class History</h1>
+              <p style={{ color: 'var(--text-secondary)' }}>
+                Your complete learning timeline including videos watched, tests taken, and AI solver history.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Play size={18} /> Videos Watched</h3>
+              {fullHistory.videosWatched && fullHistory.videosWatched.length > 0 ? (
+                fullHistory.videosWatched.map(v => (
+                  <div key={v.id} className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px' }}>
+                    <div>
+                      <h4 style={{ fontSize: '15px' }}>{v.title}</h4>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Watched on: {new Date(v.date).toLocaleString()}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>No video history found.</div>
+              )}
+
+              <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '20px' }}><BookMarked size={18} /> Mock Test History</h3>
+              {fullHistory.tests && fullHistory.tests.length > 0 ? (
+                fullHistory.tests.map(t => (
+                  <div key={t.id} className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px' }}>
+                    <div>
+                      <h4 style={{ fontSize: '15px' }}>{t.testTitle}</h4>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Score: {t.score}% | Date: {new Date(t.date).toLocaleString()}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>No mock tests taken yet.</div>
+              )}
+
+              <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '20px' }}><Brain size={18} /> Solved Questions History</h3>
+              {fullHistory.scans && fullHistory.scans.length > 0 ? (
+                fullHistory.scans.map(s => (
+                  <div key={s.id} className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px' }}>
+                    <div>
+                      <h4 style={{ fontSize: '15px' }}>{s.title}</h4>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Subject: {s.subject} | Date: {new Date(s.date).toLocaleString()}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>No questions solved yet.</div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            NEW TAB: SUBJECT EXPLORER
+            ======================================================== */}
+        {activeTab === 'subject_explorer' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
+              <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>📚 Subject Explorer</h1>
+              <p style={{ color: 'var(--text-secondary)' }}>
+                Browse our complete library of subjects across School, Board, Government, and Entrance exams.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+              <div>
+                <h3 style={{ fontSize: '20px', marginBottom: '16px' }}>School & PU Subjects</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                  {['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'English', 'Kannada', 'Economics', 'Accountancy'].map(sub => (
+                    <div key={sub} className="glass-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                      <BookOpen size={20} style={{ color: '#06b6d4' }} /> {sub}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 style={{ fontSize: '20px', marginBottom: '16px' }}>Government Exams (UPSC / SSC / Banking)</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                  {['General Knowledge', 'Current Affairs', 'Reasoning', 'Quantitative Aptitude', 'English Grammar', 'Indian Polity', 'History'].map(sub => (
+                    <div key={sub} className="glass-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                      <Users size={20} style={{ color: '#8b5cf6' }} /> {sub}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            NEW TAB: SMART PRACTICE MODE
+            ======================================================== */}
+        {activeTab === 'practice_mode' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
+              <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>🧠 Smart Practice Mode</h1>
+              <p style={{ color: 'var(--text-secondary)' }}>
+                Customize your practice sessions. AI will generate tests tailored exactly to your parameters.
+              </p>
+            </div>
+
+            <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '600px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>SELECT SUBJECT</label>
+                <select style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}>
+                  <option>Mathematics</option>
+                  <option>Physics</option>
+                  <option>Chemistry</option>
+                  <option>General Knowledge</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>EXAM MODE</label>
+                <select style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}>
+                  <option>KCET Mode</option>
+                  <option>NEET Mode</option>
+                  <option>UPSC Mode</option>
+                  <option>Banking Mode</option>
+                  <option>PU Board Mode</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>DIFFICULTY & TIME LIMIT</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <select style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}>
+                    <option>Medium</option>
+                    <option>Hard</option>
+                    <option>Expert</option>
+                  </select>
+                  <select style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg-tertiary)', color: 'white', border: 'var(--border-glass)' }}>
+                    <option>15 Minutes</option>
+                    <option>30 Minutes</option>
+                    <option>60 Minutes</option>
+                  </select>
+                </div>
+              </div>
+
+              <button className="btn-primary" style={{ justifyContent: 'center', padding: '14px', marginTop: '10px' }}>
+                Generate Custom AI Test
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            NEW TAB: REVISION HUB
+            ======================================================== */}
+        {activeTab === 'revision_hub' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
+              <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>⚡ Revision Hub</h1>
+              <p style={{ color: 'var(--text-secondary)' }}>
+                Quick notes, formula sheets, and flashcards to supercharge your final revisions.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
+              {[
+                { title: 'Flashcards', desc: 'Memorize key definitions instantly.', icon: BookMarked, color: '#ef4444' },
+                { title: 'Quick Notes', desc: 'Summary of chapters in 2 pages.', icon: BookOpen, color: '#f59e0b' },
+                { title: 'Formula Sheets', desc: 'All Math & Physics formulas.', icon: Info, color: '#06b6d4' },
+                { title: 'One-Shot Videos', desc: 'Revise entire chapters in 1 hour.', icon: Play, color: '#8b5cf6' },
+                { title: 'Mind Maps', desc: 'Visual connections of concepts.', icon: Brain, color: '#10b981' }
+              ].map(item => (
+                <div key={item.title} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px', cursor: 'pointer' }}>
+                  <div style={{ background: `rgba(${parseInt(item.color.slice(1,3),16)}, ${parseInt(item.color.slice(3,5),16)}, ${parseInt(item.color.slice(5,7),16)}, 0.15)`, color: item.color, width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
+                    <item.icon size={20} />
+                  </div>
+                  <h3 style={{ fontSize: '18px' }}>{item.title}</h3>
+                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            NEW TAB: AI CAREER GUIDANCE
+            ======================================================== */}
+        {activeTab === 'career_guidance' && (
+          <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
+              <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>🎯 AI Career Guidance</h1>
+              <p style={{ color: 'var(--text-secondary)' }}>
+                Get personalized college recommendations, rank predictions, and career roadmaps based on your performance.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+              <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h3 style={{ fontSize: '18px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>Your Predicted Trajectory</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(30, 41, 59, 0.5)', padding: '16px', borderRadius: '8px' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Estimated KCET Rank</div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>Top 5,000</div>
+                  </div>
+                  <Trophy size={32} style={{ color: '#10b981', opacity: 0.8 }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(30, 41, 59, 0.5)', padding: '16px', borderRadius: '8px' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Estimated NEET Score</div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#06b6d4' }}>580 - 620</div>
+                  </div>
+                  <Brain size={32} style={{ color: '#06b6d4', opacity: 0.8 }} />
+                </div>
+              </div>
+
+              <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h3 style={{ fontSize: '18px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>Top College Recommendations</h3>
+                {[
+                  { name: 'RV College of Engineering', branch: 'Computer Science', chance: 'High' },
+                  { name: 'BMS College of Engineering', branch: 'Information Science', chance: 'Very High' },
+                  { name: 'Bangalore Medical College', branch: 'MBBS', chance: 'Moderate' },
+                ].map((college, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'rgba(30, 41, 59, 0.3)', borderRadius: '8px' }}>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '14px' }}>{college.name}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{college.branch}</div>
+                    </div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: college.chance === 'High' || college.chance === 'Very High' ? '#10b981' : '#f59e0b', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '4px' }}>
+                      {college.chance}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
