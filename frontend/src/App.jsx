@@ -35,6 +35,7 @@ export default function App() {
   
   // Subject Explorer state
   const [activeSubjectView, setActiveSubjectView] = useState(null);
+  const [expandedChapter, setExpandedChapter] = useState(null);
   
   // Mock Test Panel States
   const [mockTests, setMockTests] = useState([]);
@@ -1745,26 +1746,35 @@ export default function App() {
                   <div>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#818cf8', marginBottom: '4px' }}>AI Subject Tutor Message:</h3>
                     <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-                      "Welcome back! Today you should focus on revising <strong>Motion in 1D</strong>. I noticed your accuracy was low in the last Mock Test regarding kinematics equations. Let's tackle a quick quiz?"
+                      {activeSubjectView === 'Physics' ? "I noticed your accuracy dropped in Kinematics. Let's revise Motion in 1D today." :
+                       activeSubjectView === 'Mathematics' ? "Your weak topic is Definite Integrals. Try a quick 10-minute revision quiz!" :
+                       activeSubjectView === 'Chemistry' ? "Great job on Organic Chemistry! Today, let's focus on balancing equations." :
+                       `Welcome back to ${activeSubjectView}! Let's tackle your daily learning goals.`}
                     </p>
                   </div>
-                  <button className="btn-primary" style={{ marginLeft: 'auto', padding: '8px 16px', fontSize: '13px' }}>Start Quiz</button>
+                  <button onClick={() => setActiveTab('tests')} className="btn-primary" style={{ marginLeft: 'auto', padding: '8px 16px', fontSize: '13px' }}>Start Quiz</button>
                 </div>
 
                 {/* Quick Actions */}
                 <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
                   {[
-                    { label: 'Scan Question', icon: Camera, color: '#06b6d4' },
-                    { label: 'Watch Videos', icon: Play, color: '#ef4444' },
-                    { label: 'Take Quiz', icon: BookMarked, color: '#10b981' },
-                    { label: 'Open Notes', icon: BookOpen, color: '#f59e0b' },
-                    { label: 'Ask AI Doubt', icon: Sparkles, color: '#8b5cf6' }
+                    { label: 'Scan Question', icon: Camera, color: '#06b6d4', tab: 'solver' },
+                    { label: 'Watch Videos', icon: Play, color: '#ef4444', tab: 'live' },
+                    { label: 'Take Quiz', icon: BookMarked, color: '#10b981', tab: 'tests' },
+                    { label: 'Open Notes', icon: BookOpen, color: '#f59e0b', tab: 'notes' },
+                    { label: 'Ask AI Doubt', icon: Sparkles, color: '#8b5cf6', tab: 'solver' }
                   ].map((action, i) => (
-                    <button key={i} style={{ 
+                    <button 
+                      key={i} 
+                      onClick={() => setActiveTab(action.tab)}
+                      style={{ 
                       flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', 
                       background: 'rgba(30, 41, 59, 0.6)', border: `1px solid ${action.color}40`, 
-                      padding: '12px 20px', borderRadius: '8px', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '13px'
-                    }}>
+                      padding: '12px 20px', borderRadius: '8px', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '13px', transition: 'transform 0.1s'
+                    }}
+                    onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                    onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
                       <action.icon size={16} color={action.color} /> {action.label}
                     </button>
                   ))}
@@ -1778,23 +1788,49 @@ export default function App() {
                     <h3 style={{ fontSize: '20px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>Curriculum Chapters</h3>
                     
                     {[
-                      { name: '1. Basics & Fundamentals', status: 'Completed', videos: 4, tests: 2 },
-                      { name: '2. Core Principles & Laws', status: 'In Progress', videos: 3, tests: 0 },
-                      { name: '3. Advanced Applications', status: 'Locked', videos: 5, tests: 1 },
-                      { name: '4. Expert Level Problems', status: 'Locked', videos: 2, tests: 3 }
+                      { id: 1, name: '1. Basics & Fundamentals', status: 'Completed', videos: 4, tests: 2 },
+                      { id: 2, name: '2. Core Principles & Laws', status: 'In Progress', videos: 3, tests: 0 },
+                      { id: 3, name: '3. Advanced Applications', status: 'Locked', videos: 5, tests: 1 },
+                      { id: 4, name: '4. Expert Level Problems', status: 'Locked', videos: 2, tests: 3 }
                     ].map((chap, i) => (
-                      <div key={i} className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                        <div>
-                          <h4 style={{ fontSize: '16px', fontWeight: 600, color: chap.status === 'Locked' ? 'var(--text-muted)' : 'white' }}>{chap.name}</h4>
-                          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', gap: '12px' }}>
-                            <span>📺 {chap.videos} Videos</span>
-                            <span>📝 {chap.tests} Mock Tests</span>
-                            <span style={{ color: chap.status === 'Completed' ? '#10b981' : chap.status === 'In Progress' ? '#f59e0b' : 'var(--text-muted)' }}>
-                              • {chap.status}
-                            </span>
+                      <div key={i} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px', opacity: chap.status === 'Locked' ? 0.6 : 1 }}>
+                        <div 
+                          onClick={() => {
+                            if (chap.status !== 'Locked') {
+                              setExpandedChapter(expandedChapter === chap.id ? null : chap.id);
+                            } else {
+                              alert("This chapter is currently locked! Complete the previous modules first.");
+                            }
+                          }}
+                          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: chap.status === 'Locked' ? 'not-allowed' : 'pointer' }}
+                        >
+                          <div>
+                            <h4 style={{ fontSize: '16px', fontWeight: 600, color: chap.status === 'Locked' ? 'var(--text-muted)' : 'white' }}>{chap.name}</h4>
+                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', gap: '12px' }}>
+                              <span>📺 {chap.videos} Videos</span>
+                              <span>📝 {chap.tests} Mock Tests</span>
+                              <span style={{ color: chap.status === 'Completed' ? '#10b981' : chap.status === 'In Progress' ? '#f59e0b' : 'var(--text-muted)' }}>
+                                • {chap.status}
+                              </span>
+                            </div>
                           </div>
+                          <ChevronRight size={20} style={{ color: 'var(--text-muted)', transform: expandedChapter === chap.id ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
                         </div>
-                        <ChevronRight size={20} style={{ color: 'var(--text-muted)' }} />
+                        
+                        {/* Expandable Learning Flow */}
+                        {expandedChapter === chap.id && (
+                          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border-glass)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                            <button onClick={() => setActiveTab('live')} style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                              <Play size={14} /> Watch Videos
+                            </button>
+                            <button onClick={() => setActiveTab('notes')} style={{ padding: '10px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#f59e0b', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                              <BookOpen size={14} /> Read Notes
+                            </button>
+                            <button onClick={() => setActiveTab('tests')} style={{ padding: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                              <BookMarked size={14} /> Practice Quiz
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
