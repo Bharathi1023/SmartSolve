@@ -33,6 +33,10 @@ export default function App() {
   const [cameraMode, setCameraMode] = useState(false);
   const [ocrSuccessMsg, setOcrSuccessMsg] = useState('');
   
+  // Subject Explorer state
+  const [activeSubjectView, setActiveSubjectView] = useState(null);
+  const [expandedChapter, setExpandedChapter] = useState(null);
+  
   // Mock Test Panel States
   const [mockTests, setMockTests] = useState([]);
   const [activeTest, setActiveTest] = useState(null); // test object currently being taken
@@ -1780,36 +1784,216 @@ export default function App() {
             ======================================================== */}
         {activeTab === 'subject_explorer' && (
           <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-            <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
-              <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>📚 Subject Explorer</h1>
-              <p style={{ color: 'var(--text-secondary)' }}>
-                Browse our complete library of subjects across School, Board, Government, and Entrance exams.
-              </p>
-            </div>
+            
+            {!activeSubjectView ? (
+              // ----------------------------------------------------
+              // 1. ALL SUBJECTS LIST VIEW
+              // ----------------------------------------------------
+              <>
+                <div style={{ borderBottom: 'var(--border-glass)', paddingBottom: '20px' }}>
+                  <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>📚 Subject Explorer</h1>
+                  <p style={{ color: 'var(--text-secondary)' }}>
+                    Browse our complete library of subjects across School, Board, Government, and Entrance exams.
+                  </p>
+                </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-              <div>
-                <h3 style={{ fontSize: '20px', marginBottom: '16px' }}>School & PU Subjects</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-                  {['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'English', 'Kannada', 'Economics', 'Accountancy'].map(sub => (
-                    <div key={sub} className="glass-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
-                      <BookOpen size={20} style={{ color: '#06b6d4' }} /> {sub}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '20px', marginBottom: '16px' }}>School & PU Subjects</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                      {['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'English', 'Kannada', 'Economics', 'Accountancy'].map(sub => (
+                        <div 
+                          key={sub} 
+                          onClick={() => setActiveSubjectView(sub)}
+                          className="glass-card" 
+                          style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'transform 0.2s' }}
+                          onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                          onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                        >
+                          <BookOpen size={20} style={{ color: '#06b6d4' }} /> <span style={{ fontWeight: 600 }}>{sub}</span>
+                        </div>
+                      ))}
                     </div>
+                  </div>
+
+                  <div>
+                    <h3 style={{ fontSize: '20px', marginBottom: '16px' }}>Government Exams (UPSC / SSC / Banking)</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                      {['General Knowledge', 'Current Affairs', 'Reasoning', 'Quantitative Aptitude', 'English Grammar', 'Indian Polity', 'History'].map(sub => (
+                        <div 
+                          key={sub} 
+                          onClick={() => setActiveSubjectView(sub)}
+                          className="glass-card" 
+                          style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'transform 0.2s' }}
+                          onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                          onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                        >
+                          <Users size={20} style={{ color: '#8b5cf6' }} /> <span style={{ fontWeight: 600 }}>{sub}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              // ----------------------------------------------------
+              // 2. DETAILED INDIVIDUAL SUBJECT DASHBOARD VIEW
+              // ----------------------------------------------------
+              <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                
+                {/* Header Banner */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '24px', borderRadius: '16px', background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)', border: '1px solid rgba(6,182,212,0.3)' }}>
+                  <button 
+                    onClick={() => setActiveSubjectView(null)}
+                    style={{ background: 'rgba(30, 41, 59, 0.6)', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    ← Back
+                  </button>
+                  <div style={{ flexGrow: 1 }}>
+                    <h1 style={{ fontSize: '32px', marginBottom: '4px' }}>{activeSubjectView} Masterclass</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Complete curriculum, notes, videos, and AI tutoring for {activeSubjectView}.</p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Completion</div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>24%</div>
+                  </div>
+                </div>
+
+                {/* AI Tutor Callout */}
+                <div style={{ display: 'flex', gap: '16px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '20px', borderRadius: '12px', alignItems: 'center' }}>
+                  <div style={{ background: '#6366f1', padding: '12px', borderRadius: '50%' }}><Brain size={24} color="white" /></div>
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#818cf8', marginBottom: '4px' }}>AI Subject Tutor Message:</h3>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+                      {activeSubjectView === 'Physics' ? "I noticed your accuracy dropped in Kinematics. Let's revise Motion in 1D today." :
+                       activeSubjectView === 'Mathematics' ? "Your weak topic is Definite Integrals. Try a quick 10-minute revision quiz!" :
+                       activeSubjectView === 'Chemistry' ? "Great job on Organic Chemistry! Today, let's focus on balancing equations." :
+                       `Welcome back to ${activeSubjectView}! Let's tackle your daily learning goals.`}
+                    </p>
+                  </div>
+                  <button onClick={() => setActiveTab('tests')} className="btn-primary" style={{ marginLeft: 'auto', padding: '8px 16px', fontSize: '13px' }}>Start Quiz</button>
+                </div>
+
+                {/* Quick Actions */}
+                <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
+                  {[
+                    { label: 'Scan Question', icon: Camera, color: '#06b6d4', tab: 'solver' },
+                    { label: 'Watch Videos', icon: Play, color: '#ef4444', tab: 'live' },
+                    { label: 'Take Quiz', icon: BookMarked, color: '#10b981', tab: 'tests' },
+                    { label: 'Open Notes', icon: BookOpen, color: '#f59e0b', tab: 'notes' },
+                    { label: 'Ask AI Doubt', icon: Sparkles, color: '#8b5cf6', tab: 'solver' }
+                  ].map((action, i) => (
+                    <button 
+                      key={i} 
+                      onClick={() => setActiveTab(action.tab)}
+                      style={{ 
+                      flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', 
+                      background: 'rgba(30, 41, 59, 0.6)', border: `1px solid ${action.color}40`, 
+                      padding: '12px 20px', borderRadius: '8px', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '13px', transition: 'transform 0.1s'
+                    }}
+                    onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                    onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                      <action.icon size={16} color={action.color} /> {action.label}
+                    </button>
                   ))}
                 </div>
-              </div>
 
-              <div>
-                <h3 style={{ fontSize: '20px', marginBottom: '16px' }}>Government Exams (UPSC / SSC / Banking)</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-                  {['General Knowledge', 'Current Affairs', 'Reasoning', 'Quantitative Aptitude', 'English Grammar', 'Indian Polity', 'History'].map(sub => (
-                    <div key={sub} className="glass-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
-                      <Users size={20} style={{ color: '#8b5cf6' }} /> {sub}
+                {/* Two Column Layout for Chapters & Progress */}
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+                  
+                  {/* Left Column: Chapters & Content */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <h3 style={{ fontSize: '20px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>Curriculum Chapters</h3>
+                    
+                    {[
+                      { id: 1, name: '1. Basics & Fundamentals', status: 'Completed', videos: 4, tests: 2 },
+                      { id: 2, name: '2. Core Principles & Laws', status: 'In Progress', videos: 3, tests: 0 },
+                      { id: 3, name: '3. Advanced Applications', status: 'Locked', videos: 5, tests: 1 },
+                      { id: 4, name: '4. Expert Level Problems', status: 'Locked', videos: 2, tests: 3 }
+                    ].map((chap, i) => (
+                      <div key={i} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px', opacity: chap.status === 'Locked' ? 0.6 : 1 }}>
+                        <div 
+                          onClick={() => {
+                            if (chap.status !== 'Locked') {
+                              setExpandedChapter(expandedChapter === chap.id ? null : chap.id);
+                            } else {
+                              alert("This chapter is currently locked! Complete the previous modules first.");
+                            }
+                          }}
+                          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: chap.status === 'Locked' ? 'not-allowed' : 'pointer' }}
+                        >
+                          <div>
+                            <h4 style={{ fontSize: '16px', fontWeight: 600, color: chap.status === 'Locked' ? 'var(--text-muted)' : 'white' }}>{chap.name}</h4>
+                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', gap: '12px' }}>
+                              <span>📺 {chap.videos} Videos</span>
+                              <span>📝 {chap.tests} Mock Tests</span>
+                              <span style={{ color: chap.status === 'Completed' ? '#10b981' : chap.status === 'In Progress' ? '#f59e0b' : 'var(--text-muted)' }}>
+                                • {chap.status}
+                              </span>
+                            </div>
+                          </div>
+                          <ChevronRight size={20} style={{ color: 'var(--text-muted)', transform: expandedChapter === chap.id ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
+                        </div>
+                        
+                        {/* Expandable Learning Flow */}
+                        {expandedChapter === chap.id && (
+                          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border-glass)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                            <button onClick={() => setActiveTab('live')} style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                              <Play size={14} /> Watch Videos
+                            </button>
+                            <button onClick={() => setActiveTab('notes')} style={{ padding: '10px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#f59e0b', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                              <BookOpen size={14} /> Read Notes
+                            </button>
+                            <button onClick={() => setActiveTab('tests')} style={{ padding: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                              <BookMarked size={14} /> Practice Quiz
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Right Column: AI Analytics & Progress Tracker */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div className="glass-card">
+                      <h3 style={{ fontSize: '16px', marginBottom: '16px', color: 'var(--text-secondary)' }}>Performance Analytics</h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Accuracy %</span>
+                          <span style={{ fontSize: '14px', fontWeight: 600, color: '#10b981' }}>78%</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Time Spent</span>
+                          <span style={{ fontSize: '14px', fontWeight: 600 }}>12h 45m</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Chapters Completed</span>
+                          <span style={{ fontSize: '14px', fontWeight: 600 }}>1 / 14</span>
+                        </div>
+                      </div>
                     </div>
-                  ))}
+
+                    <div className="glass-card" style={{ border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                      <h3 style={{ fontSize: '16px', marginBottom: '12px', color: '#ef4444' }}>Weak Topics</h3>
+                      <ul style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0, paddingLeft: '20px', lineHeight: '1.8' }}>
+                        <li>Complex Formulas</li>
+                        <li>Theoretical Derivations</li>
+                      </ul>
+                    </div>
+
+                    <div className="glass-card" style={{ border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                      <h3 style={{ fontSize: '16px', marginBottom: '12px', color: '#10b981' }}>Strong Topics</h3>
+                      <ul style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0, paddingLeft: '20px', lineHeight: '1.8' }}>
+                        <li>Basic Definitions</li>
+                        <li>Multiple Choice Basics</li>
+                      </ul>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
