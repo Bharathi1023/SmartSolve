@@ -1,6 +1,26 @@
 {
   "users": [],
-  "papers": [],
+  "papers": [
+    {
+      "userId": "u_4lyy7j0",
+      "title": "Uploaded Paper: math_paper_scan.png",
+      "question": "Solve the quadratic equation x^2 - 4x + 4 = 0 and explain the nature of roots.",
+      "subject": "Mathematics",
+      "solution": "Here is the AI solution to your query:\n\n> \"Solve the quadratic equation x^2 - 4x + 4 = 0 and explain the nature of roots.\"\n\nBased on analytical standards, we have generated a detailed response broken down step-by-step.",
+      "steps": [
+        "Analyze the core problem statement.",
+        "Extract known constants and parameters.",
+        "Apply standard logical frameworks and principles.",
+        "Synthesize the final deduction and conclusion."
+      ],
+      "diagram": null,
+      "mathSolved": false,
+      "mathData": null,
+      "fileName": "math_paper_scan.png",
+      "date": "2026-05-20T02:05:03.683Z",
+      "id": "ogx3mc3mpdf60jo"
+    }
+  ],
   "mockTests": [
     {
       "id": "math-101",

@@ -2059,7 +2059,7 @@ export default function App() {
 
             <h3 style={{ fontSize: '20px', marginTop: '20px' }}>📺 Video Lectures {subjectVideoFilter ? `— ${subjectVideoFilter}` : '(All Subjects)'}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-              {(subjectVideoFilter ? videoLecturesList.filter(vl => vl.subject.toLowerCase().includes(subjectVideoFilter.toLowerCase())) : videoLecturesList).map(vl => (
+              {(subjectVideoFilter ? videoLecturesList.filter(vl => vl.subject.toLowerCase().includes(subjectVideoFilter.toLowerCase()) || vl.title.toLowerCase().includes(subjectVideoFilter.toLowerCase())) : videoLecturesList).map(vl => (
                 <div key={vl.id} className="glass-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                   <iframe 
                     width="100%" 
@@ -2441,13 +2441,13 @@ export default function App() {
                         {/* Expandable Learning Flow */}
                         {expandedChapter === chap.id && (
                           <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border-glass)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-                            <button onClick={() => setActiveTab('live')} style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                            <button onClick={() => { setSubjectVideoFilter(chap.name); setActiveTab('live'); }} style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                               <Play size={14} /> Watch Videos
                             </button>
-                            <button onClick={() => setActiveTab('notes')} style={{ padding: '10px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#f59e0b', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                            <button onClick={() => { setSubjectNoteFilter(chap.name); setActiveTab('notes'); }} style={{ padding: '10px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#f59e0b', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                               <BookOpen size={14} /> Read Notes
                             </button>
-                            <button onClick={() => setActiveTab('tests')} style={{ padding: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                            <button onClick={() => { setSubjectSolverPrefill(chap.name); setActiveTab('solver'); }} style={{ padding: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                               <BookMarked size={14} /> Practice Quiz
                             </button>
                           </div>
