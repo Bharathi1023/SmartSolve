@@ -121,6 +121,12 @@ export default function App() {
   const [smartTestTimeSpent, setSmartTestTimeSpent] = useState(0);
   const smartTestTimerRef = useRef(null);
 
+  // Subject Explorer quick-action context filters
+  const [subjectVideoFilter, setSubjectVideoFilter] = useState(null);
+  const [subjectNoteFilter, setSubjectNoteFilter] = useState(null);
+  const [subjectSolverPrefill, setSubjectSolverPrefill] = useState(null);
+
+
   // 1. Initial Load & Auth check
   useEffect(() => {
     const cachedUser = localStorage.getItem('ss_current_user');
@@ -1134,7 +1140,7 @@ export default function App() {
                 <iframe 
                   width="100%" 
                   height="100%" 
-                  src="https://www.youtube.com/embed/ZM8ECpBuQYE?autoplay=1&mute=1" 
+                  src={activeLiveRoom.videoUrl || "https://www.youtube.com/embed/ZM8ECpBuQYE?autoplay=1&mute=1"}
                   title={activeLiveRoom.title} 
                   frameBorder="0" 
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -1550,6 +1556,17 @@ export default function App() {
               </p>
             </div>
 
+            {subjectSolverPrefill && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', borderRadius: '10px', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.4)' }}>
+                <Sparkles size={16} style={{ color: '#8b5cf6' }} />
+                <div>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#a78bfa' }}>Subject Context: </span>
+                  <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Answering in context of <strong style={{ color: 'white' }}>{subjectSolverPrefill}</strong>. Type your question below!</span>
+                </div>
+                <button onClick={() => { setSubjectSolverPrefill(null); setDoubtText(''); }} style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid rgba(139,92,246,0.4)', color: '#a78bfa', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }}>✕ Clear</button>
+              </div>
+            )}
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', alignItems: 'start' }}>
               
               {/* Left Column: Ask inputs */}
@@ -1961,7 +1978,16 @@ export default function App() {
                       </div>
                       <h4 style={{ fontSize: '18px', fontWeight: 600 }}>{course.subject} Module</h4>
                       <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Interactive path specifically curated for {course.exam} with {selectedDifficulty} adaptability.</p>
-                      <button className="btn-primary" style={{ marginTop: 'auto', justifyContent: 'center' }}>Enroll / Continue</button>
+                      <button 
+                        className="btn-primary" 
+                        style={{ marginTop: 'auto', justifyContent: 'center' }}
+                        onClick={() => {
+                          setActiveSubjectView(course.subject);
+                          setActiveTab('subject_explorer');
+                        }}
+                      >
+                        Enroll / Continue
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -1982,8 +2008,15 @@ export default function App() {
               </p>
             </div>
 
+            {subjectVideoFilter && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', borderRadius: '10px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', marginBottom: '8px' }}>
+                <Play size={16} style={{ color: '#ef4444' }} />
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Showing only: <span style={{ color: '#ef4444' }}>{subjectVideoFilter}</span> content</span>
+                <button onClick={() => setSubjectVideoFilter(null)} style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid rgba(239,68,68,0.4)', color: '#ef4444', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '12px' }}>Show All</button>
+              </div>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-              {liveClassesList.map(lc => (
+              {(subjectVideoFilter ? liveClassesList.filter(lc => lc.title.toLowerCase().includes(subjectVideoFilter.toLowerCase()) || lc.batch.toLowerCase().includes(subjectVideoFilter.toLowerCase())) : liveClassesList).map(lc => (
                 <div key={lc.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: lc.status === 'Ongoing' ? '4px solid #ef4444' : '4px solid #06b6d4' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{lc.batch}</span>
@@ -2024,9 +2057,9 @@ export default function App() {
               ))}
             </div>
 
-            <h3 style={{ fontSize: '20px', marginTop: '20px' }}>📺 Video Lectures</h3>
+            <h3 style={{ fontSize: '20px', marginTop: '20px' }}>📺 Video Lectures {subjectVideoFilter ? `— ${subjectVideoFilter}` : '(All Subjects)'}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-              {videoLecturesList.map(vl => (
+              {(subjectVideoFilter ? videoLecturesList.filter(vl => vl.subject.toLowerCase().includes(subjectVideoFilter.toLowerCase())) : videoLecturesList).map(vl => (
                 <div key={vl.id} className="glass-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                   <iframe 
                     width="100%" 
@@ -2217,15 +2250,29 @@ export default function App() {
                 {/* Quick Actions */}
                 <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
                   {[
-                    { label: 'Scan Question', icon: Camera, color: '#06b6d4', tab: 'solver' },
-                    { label: 'Watch Videos', icon: Play, color: '#ef4444', tab: 'live' },
-                    { label: 'Take Quiz', icon: BookMarked, color: '#10b981', tab: 'tests' },
-                    { label: 'Open Notes', icon: BookOpen, color: '#f59e0b', tab: 'notes' },
-                    { label: 'Ask AI Doubt', icon: Sparkles, color: '#8b5cf6', tab: 'solver' }
+                    { label: 'Scan Question', icon: Camera, color: '#06b6d4', action: () => {
+                      setSubjectSolverPrefill(`[${activeSubjectView}] `);
+                      setDoubtText(`[${activeSubjectView}] I have a question about this subject: `);
+                      setActiveTab('solver');
+                    }},
+                    { label: 'Watch Videos', icon: Play, color: '#ef4444', action: () => {
+                      setSubjectVideoFilter(activeSubjectView);
+                      setActiveTab('live');
+                    }},
+                    { label: 'Take Quiz', icon: BookMarked, color: '#10b981', action: () => setActiveTab('tests') },
+                    { label: 'Open Notes', icon: BookOpen, color: '#f59e0b', action: () => {
+                      setSubjectNoteFilter(activeSubjectView);
+                      setActiveTab('notes');
+                    }},
+                    { label: 'Ask AI Doubt', icon: Sparkles, color: '#8b5cf6', action: () => {
+                      setSubjectSolverPrefill(activeSubjectView);
+                      setDoubtText(`I have a doubt in ${activeSubjectView}: `);
+                      setActiveTab('solver');
+                    }}
                   ].map((action, i) => (
                     <button 
                       key={i} 
-                      onClick={() => setActiveTab(action.tab)}
+                      onClick={action.action}
                       style={{ 
                       flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', 
                       background: 'rgba(30, 41, 59, 0.6)', border: `1px solid ${action.color}40`, 
@@ -3129,6 +3176,13 @@ export default function App() {
               </p>
             </div>
 
+            {subjectNoteFilter && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', borderRadius: '10px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.4)' }}>
+                <BookOpen size={16} style={{ color: '#f59e0b' }} />
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Showing notes for: <span style={{ color: '#f59e0b' }}>{subjectNoteFilter}</span></span>
+                <button onClick={() => setSubjectNoteFilter(null)} style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid rgba(245,158,11,0.4)', color: '#f59e0b', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '12px' }}>Show All</button>
+              </div>
+            )}
             {/* Note Sub-Categories Selection tabs */}
             <div style={{ display: 'flex', borderBottom: 'var(--border-glass)', gap: '16px' }}>
               {[
@@ -3158,7 +3212,7 @@ export default function App() {
             {/* Formula Sheets & Conceptual Notes rendering */}
             {(activeNoteTab === 'formulas' || activeNoteTab === 'notes') && !selectedNote && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
-                {notes.filter(n => n.category === (activeNoteTab === 'formulas' ? 'formulas' : 'notes')).map(note => (
+                {notes.filter(n => n.category === (activeNoteTab === 'formulas' ? 'formulas' : 'notes') && (!subjectNoteFilter || n.subject.toLowerCase().includes(subjectNoteFilter.toLowerCase()))).map(note => (
                   <div key={note.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
                     <div>
                       <div style={{ color: '#06b6d4', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>

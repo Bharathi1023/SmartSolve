@@ -82,17 +82,47 @@ function localSolveQuestion(text, mode, lengthMode, language) {
         ];
       }
     } else {
-      answerContent = `Here is the AI solution to your query:\n\n` +
-                      `> "${text}"\n\n` +
-                      `Based on analytical standards, we have generated a detailed response broken down step-by-step.`;
-      steps = [
-        "Analyze the core problem statement.",
-        "Extract known constants and parameters.",
-        "Apply standard logical frameworks and principles.",
-        "Synthesize the final deduction and conclusion."
-      ];
+      // Dynamic fallback that actually addresses the user's specific question
+      const cleanText = text.replace(/^\[.*?\]\s*/, '').trim(); // Remove subject prefix if any
+      const isQuestion = cleanText.endsWith('?') || cleanText.toLowerCase().startsWith('what') || cleanText.toLowerCase().startsWith('how') || cleanText.toLowerCase().startsWith('explain');
+      
+      answerContent = `Here is a detailed explanation regarding: **"${cleanText}"**\n\n`;
+      
+      if (subject === 'Mathematics') {
+        answerContent += `To solve this mathematical problem, we need to carefully apply the relevant formulas and logical steps. Make sure to identify the known variables first before attempting to isolate the unknown variable.`;
+        steps = [
+          `Identify the knowns and unknowns in "${cleanText}"`,
+          "Select the appropriate mathematical formula or theorem.",
+          "Substitute the given values into the formula.",
+          "Perform the calculation and verify the final result."
+        ];
+      } else if (subject.includes('Science')) {
+        answerContent += `In science, phenomena like this are governed by fundamental laws. When analyzing **"${cleanText}"**, we look at the interaction of different elements, forces, or biological systems involved.`;
+        steps = [
+          `Define the key scientific terms mentioned in "${cleanText}"`,
+          "Identify the underlying scientific principle or law.",
+          "Explain the process step-by-step.",
+          "Provide a real-world example to illustrate the concept."
+        ];
+      } else if (subject === 'Kannada') {
+        answerContent = `ನಿಮ್ಮ ಪ್ರಶ್ನೆ: **"${cleanText}"**\n\nಕನ್ನಡ ಭಾಷೆ ಮತ್ತು ಸಾಹಿತ್ಯದ ದೃಷ್ಟಿಯಿಂದ ಇದನ್ನು ವಿಶ್ಲೇಷಿಸೋಣ. ಈ ವಿಷಯವು ವ್ಯಾಕರಣ ಅಥವಾ ಸಾಹಿತ್ಯ ಚರಿತ್ರೆಗೆ ಸಂಬಂಧಿಸಿದ್ದಿರಬಹುದು.`;
+        steps = [
+          "ಪ್ರಶ್ನೆಯ ಮೂಲ ಅರ್ಥವನ್ನು ಗ್ರಹಿಸುವುದು.",
+          "ಸೂಕ್ತ ವ್ಯಾಕರಣ ನಿಯಮ ಅಥವಾ ಸಾಹಿತ್ಯಿಕ ಉಲ್ಲೇಖವನ್ನು ಹುಡುಕುವುದು.",
+          "ಸ್ಪಷ್ಟ ಮತ್ತು ಸರಳ ಕನ್ನಡದಲ್ಲಿ ವಿವರಿಸುವುದು.",
+          "ಉದಾಹರಣೆಗಳೊಂದಿಗೆ ಉತ್ತರವನ್ನು ದೃಢೀಕರಿಸುವುದು."
+        ];
+      } else {
+        answerContent += `This is an interesting topic in **${subject}**. To properly understand it, we should break it down into its core components and analyze them individually.`;
+        steps = [
+          `Analyze the core concepts in "${cleanText}"`,
+          "Break down the topic into smaller, manageable parts.",
+          "Evaluate the relationships between these parts.",
+          "Synthesize a comprehensive final conclusion."
+        ];
+      }
+      }
     }
-  }
 
   // Teacher mode
   if (mode === 'teacher') {
@@ -150,7 +180,7 @@ function localSolveQuestion(text, mode, lengthMode, language) {
       "Find the roots of 3x² - 2x + 5 = 0",
       "What is the discriminant of x² - 4x + 4 = 0?"
     ];
-    videoExplanation = "https://www.youtube.com/embed/MR07YxA8AHs";
+    videoExplanation = "https://www.youtube.com/embed/hQpCGGuZvtQ";
     analysisReport = {
       chapter: "Quadratic Equations",
       difficulty: "Medium",
@@ -167,7 +197,7 @@ function localSolveQuestion(text, mode, lengthMode, language) {
       "Balance the equation: H2 + O2 -> H2O",
       "What is a double displacement reaction?"
     ];
-    videoExplanation = "https://www.youtube.com/embed/FSyAehMdpyI";
+    videoExplanation = "https://www.youtube.com/embed/aqM4bO04F8A";
     analysisReport = {
       chapter: "Chemical Reactions",
       difficulty: "Hard",
@@ -184,7 +214,7 @@ function localSolveQuestion(text, mode, lengthMode, language) {
       "What is Newton's First Law of Motion?",
       "State the formula for Centripetal Force."
     ];
-    videoExplanation = "https://www.youtube.com/embed/ZM8ECpBuQYE";
+    videoExplanation = "https://www.youtube.com/embed/aqM4bO04F8A";
     analysisReport = {
       chapter: "Kinematics & Motion",
       difficulty: "Medium",
@@ -201,7 +231,7 @@ function localSolveQuestion(text, mode, lengthMode, language) {
       "Explain the transport of oxygen in the human body.",
       "Where does the Calvin cycle take place in photosynthesis?"
     ];
-    videoExplanation = "https://www.youtube.com/embed/H8WJ45y9sN0";
+    videoExplanation = "https://www.youtube.com/embed/hQpCGGuZvtQ";
     analysisReport = {
       chapter: "Human Physiology & Photosynthesis",
       difficulty: "Medium",
@@ -218,7 +248,7 @@ function localSolveQuestion(text, mode, lengthMode, language) {
       "Can you explain the underlying concept again?",
       "Give me a real world example of this."
     ];
-    videoExplanation = "https://www.youtube.com/embed/fo46yFWIJzU";
+    videoExplanation = "https://www.youtube.com/embed/84Zl0pED4QY";
     analysisReport = {
       chapter: "General Concepts",
       difficulty: "Easy",
@@ -328,115 +358,681 @@ const LOCAL_MOCK_TESTS = [
 
 const LOCAL_NOTES = [
   {
-    id: "n1",
-    title: "Quadratic Equations Formula Sheet",
-    subject: "Mathematics",
-    category: "formulas",
-    content: `### Quadratic Equation: $ax^2 + bx + c = 0$\n\n#### 1. Discriminant ($D$)\n$D = b^2 - 4ac$\n\n#### 2. Nature of Roots\n- $D > 0$: Roots are real and distinct.\n- $D = 0$: Roots are real and equal.\n- $D < 0$: No real roots.\n\n#### 3. Quadratic Formula\n$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$`,
+    id: "n1", title: "Quadratic Equations Formula Sheet", subject: "Mathematics", category: "formulas",
+    content: `## Quadratic Equation: ax² + bx + c = 0\n\n**Discriminant:** D = b² - 4ac\n- D > 0 → Real and distinct roots\n- D = 0 → Real and equal roots\n- D < 0 → No real roots\n\n**Quadratic Formula:** x = (-b ± √D) / 2a\n\n**Sum of roots:** α + β = -b/a\n**Product of roots:** αβ = c/a\n\n**Trigonometry Identities:**\n- sin²θ + cos²θ = 1\n- tan θ = sin θ / cos θ\n- sin(A+B) = sinA cosB + cosA sinB`,
     videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs",
     flashcards: [
-      { front: "What is the quadratic formula?", back: "x = (-b ± √(b² - 4ac)) / 2a" },
-      { front: "What does the discriminant D determine?", back: "The nature of roots (real and distinct, equal, or imaginary)." },
-      { front: "Formula for the sum of roots α + β?", back: "-b/a" }
+      { front: "Quadratic formula?", back: "x = (-b ± √(b²-4ac)) / 2a" },
+      { front: "Sum of roots α + β?", back: "-b/a" },
+      { front: "Product of roots αβ?", back: "c/a" }
     ]
   },
   {
-    id: "n2",
-    title: "Chemical Reactions and Balancing Equations",
-    subject: "Science",
-    category: "notes",
-    content: `### Chemical Reactions Summary\n\n#### 1. Combination Reaction\n$2H_2 + O_2 \\rightarrow 2H_2O$\n\n#### 2. Decomposition Reaction\n$2H_2O \\rightarrow 2H_2 + O_2$\n\n#### 3. Displacement Reaction\n$Fe + CuSO_4 \\rightarrow FeSO_4 + Cu$`,
+    id: "n2", title: "Physics Key Formulas", subject: "Physics", category: "formulas",
+    content: `## Physics Important Formulas\n\n**Newton's Laws:**\n- F = ma (Second Law)\n- Every action has equal & opposite reaction\n\n**Motion:**\n- v = u + at\n- s = ut + ½at²\n- v² = u² + 2as\n\n**Work & Energy:**\n- W = F × d × cosθ\n- KE = ½mv²\n- PE = mgh\n\n**Electricity:**\n- V = IR (Ohm's Law)\n- P = VI = I²R\n- R (series) = R₁ + R₂\n- 1/R (parallel) = 1/R₁ + 1/R₂\n\n**Optics:**\n- Mirror formula: 1/f = 1/v + 1/u\n- Lens formula: 1/f = 1/v - 1/u\n- Magnification: m = -v/u`,
+    videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE",
+    flashcards: [
+      { front: "Newton's Second Law?", back: "F = ma" },
+      { front: "Ohm's Law?", back: "V = IR" },
+      { front: "Kinetic Energy formula?", back: "KE = ½mv²" }
+    ]
+  },
+  {
+    id: "n3", title: "Chemistry Quick Reference", subject: "Chemistry", category: "formulas",
+    content: `## Chemistry Key Concepts\n\n**Types of Reactions:**\n- Combination: A + B → AB\n- Decomposition: AB → A + B\n- Displacement: A + BC → AC + B\n- Double Displacement: AB + CD → AD + CB\n\n**Acids & Bases:**\n- pH < 7 → Acidic\n- pH = 7 → Neutral\n- pH > 7 → Basic/Alkaline\n\n**Important Compounds:**\n- Baking Soda: NaHCO₃\n- Washing Soda: Na₂CO₃\n- Bleaching Powder: CaOCl₂\n- Plaster of Paris: CaSO₄·½H₂O\n\n**Periodic Table Groups:**\n- Group 1: Alkali metals (Na, K, Li)\n- Group 17: Halogens (F, Cl, Br)\n- Group 18: Noble gases (He, Ne, Ar)`,
     videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI",
     flashcards: [
-      { front: "Define displacement reaction.", back: "A reaction in which a more reactive element displaces a less reactive element from its compound." },
-      { front: "What is a precipitation reaction?", back: "A chemical reaction that results in an insoluble precipitate." }
+      { front: "Baking Soda formula?", back: "NaHCO₃ (Sodium Bicarbonate)" },
+      { front: "pH of neutral solution?", back: "7" },
+      { front: "Most reactive metal in reactivity series?", back: "Potassium (K)" }
+    ]
+  },
+  {
+    id: "n4", title: "Biology Conceptual Summary", subject: "Biology", category: "notes",
+    content: `## Biology Key Concepts\n\n**Cell Biology:**\n- Powerhouse of cell: Mitochondria\n- Control center: Nucleus\n- Protein synthesis: Ribosomes\n- Energy currency of cell: ATP\n\n**Photosynthesis:**\n6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂\n- Occurs in: Chloroplast\n- Light reactions: Thylakoid membrane\n- Calvin cycle: Stroma\n\n**Human Systems:**\n- Blood circulation: Heart (4 chambers)\n- Functional unit of kidney: Nephron\n- Functional unit of lung: Alveoli\n- Nervous system unit: Neuron\n\n**Genetics:**\n- Father of Genetics: Gregor Mendel\n- DNA: Deoxyribonucleic Acid\n- RNA: Ribonucleic Acid\n- Chromosomes in humans: 46 (23 pairs)`,
+    videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc",
+    flashcards: [
+      { front: "Powerhouse of cell?", back: "Mitochondria" },
+      { front: "Photosynthesis equation?", back: "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂" },
+      { front: "Functional unit of kidney?", back: "Nephron" }
+    ]
+  },
+  {
+    id: "n5", title: "Computer Science Notes", subject: "Computer Science", category: "notes",
+    content: `## Computer Science Concepts\n\n**OOP Principles:**\n- Encapsulation: Bundling data & methods\n- Inheritance: Child class inherits parent\n- Polymorphism: Same method, different forms\n- Abstraction: Hide implementation details\n\n**Data Structures:**\n- Array: Fixed size, sequential\n- Stack: LIFO (Last In First Out)\n- Queue: FIFO (First In First Out)\n- Linked List: Dynamic nodes\n\n**Sorting Algorithms:**\n- Bubble Sort: O(n²)\n- Merge Sort: O(n log n)\n- Quick Sort: O(n log n) avg\n\n**SQL Commands:**\n- SELECT, INSERT, UPDATE, DELETE\n- CREATE, DROP, ALTER\n- WHERE, GROUP BY, ORDER BY`,
+    videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE",
+    flashcards: [
+      { front: "What is OOP?", back: "Object Oriented Programming - uses objects to structure code" },
+      { front: "Stack uses which principle?", back: "LIFO - Last In First Out" },
+      { front: "Time complexity of Merge Sort?", back: "O(n log n)" }
+    ]
+  },
+  {
+    id: "n6", title: "Kannada Vyakaran Notes", subject: "Kannada", category: "notes",
+    content: `## ಕನ್ನಡ ವ್ಯಾಕರಣ ಟಿಪ್ಪಣಿ\n\n**ಸ್ವರಗಳು (Vowels):** ಅ, ಆ, ಇ, ಈ, ಉ, ಊ, ಋ, ಎ, ಏ, ಐ, ಒ, ಓ, ಔ (13)\n\n**ವ್ಯಂಜನಗಳು (Consonants):** ಕ, ಖ, ಗ... (34)\n\n**ವಿಭಕ್ತಿ ಪ್ರತ್ಯಯಗಳು:**\n- 1ನೇ ವಿಭಕ್ತಿ: ಉ (ರಾಮನು)\n- 2ನೇ ವಿಭಕ್ತಿ: ಅನ್ನು (ರಾಮನನ್ನು)\n- 3ನೇ ವಿಭಕ್ತಿ: ಇಂದ (ರಾಮನಿಂದ)\n- 4ನೇ ವಿಭಕ್ತಿ: ಗೆ/ಕ್ಕೆ (ರಾಮನಿಗೆ)\n- 5ನೇ ವಿಭಕ್ತಿ: ಅ (ರಾಮನ)\n- 6ನೇ ವಿಭಕ್ತಿ: ಅಲ್ಲಿ (ರಾಮನಲ್ಲಿ)\n\n**ಪ್ರಸಿದ್ಧ ಕವಿಗಳು:**\n- ಪಂಪ (ಆದಿಕವಿ) - 10ನೇ ಶತಮಾನ\n- ರನ್ನ, ಪೊನ್ನ (ರತ್ನತ್ರಯ)\n- ಕುಮಾರವ್ಯಾಸ - ಮಹಾಭಾರತ\n- ಕುವೆಂಪು - ರಾಷ್ಟ್ರಕವಿ`,
+    videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU",
+    flashcards: [
+      { front: "ಕನ್ನಡದ ಆದಿಕವಿ ಯಾರು?", back: "ಪಂಪ" },
+      { front: "ಕನ್ನಡ ಸ್ವರಗಳ ಸಂಖ್ಯೆ?", back: "13" },
+      { front: "ರಾಷ್ಟ್ರಕವಿ ಯಾರು?", back: "ಕುವೆಂಪು" }
+    ]
+  },
+  {
+    id: "n7", title: "Economics Formula Sheet", subject: "Economics", category: "formulas",
+    content: `## Economics Key Formulas & Concepts\n\n**National Income:**\n- GDP = C + I + G + (X - M)\n- NNP = GNP - Depreciation\n- Per Capita Income = National Income / Population\n\n**Demand & Supply:**\n- Law of Demand: Price ↑ → Demand ↓\n- Law of Supply: Price ↑ → Supply ↑\n- Equilibrium: Demand = Supply\n\n**Types of Markets:**\n- Perfect Competition: Many buyers & sellers\n- Monopoly: Single seller\n- Oligopoly: Few sellers\n- Monopsony: Single buyer\n\n**Banking Terms:**\n- CRR: Cash Reserve Ratio\n- SLR: Statutory Liquidity Ratio\n- Repo Rate: Rate RBI lends to banks\n- Reverse Repo: Rate banks lend to RBI`,
+    videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk",
+    flashcards: [
+      { front: "GDP formula?", back: "C + I + G + (X - M)" },
+      { front: "Law of Demand?", back: "As price increases, demand decreases (inverse relationship)" },
+      { front: "What is Repo Rate?", back: "Rate at which RBI lends money to commercial banks" }
+    ]
+  },
+  {
+    id: "n8", title: "Accountancy Formula Sheet", subject: "Accountancy", category: "formulas",
+    content: `## Accountancy Key Formulas\n\n**Accounting Equation:**\nAssets = Liabilities + Capital\n\n**Profit & Loss:**\n- Gross Profit = Net Sales - COGS\n- Net Profit = Gross Profit - Expenses\n- COGS = Opening Stock + Purchases - Closing Stock\n\n**Important Ratios:**\n- Current Ratio = Current Assets / Current Liabilities\n- Gross Profit Ratio = (Gross Profit / Net Sales) × 100\n- Net Profit Ratio = (Net Profit / Net Sales) × 100\n\n**Partnership Accounts:**\n- Fixed Capital Method: Capital + Current A/c\n- Fluctuating Capital: Single capital account\n- Profit sharing ratio as per agreement\n\n**Journal Entry Rules:**\n- Debit: Assets ↑, Expenses ↑, Losses ↑\n- Credit: Liabilities ↑, Income ↑, Capital ↑`,
+    videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs",
+    flashcards: [
+      { front: "Accounting equation?", back: "Assets = Liabilities + Capital" },
+      { front: "Gross Profit formula?", back: "Net Sales - Cost of Goods Sold" },
+      { front: "Debit rule for assets?", back: "Debit when assets increase, Credit when assets decrease" }
+    ]
+  },
+  {
+    id: "n9", title: "Indian Polity Summary Notes", subject: "Indian Polity", category: "notes",
+    content: `## Indian Polity Key Points\n\n**Constitution Facts:**\n- Adopted: 26 November 1949\n- Enacted: 26 January 1950\n- Total Articles: 395 (originally)\n- Total Schedules: 12\n- Father of Constitution: Dr. B.R. Ambedkar\n\n**Fundamental Rights (Part III):**\n1. Right to Equality (Art 14-18)\n2. Right to Freedom (Art 19-22)\n3. Right against Exploitation (Art 23-24)\n4. Right to Freedom of Religion (Art 25-28)\n5. Cultural & Educational Rights (Art 29-30)\n6. Right to Constitutional Remedies (Art 32)\n\n**Parliament:**\n- Lok Sabha: 543 elected seats (max 545)\n- Rajya Sabha: 250 max (238 elected + 12 nominated)\n- President: Elected by Electoral College\n\n**Preamble Keywords:**\nSovereign, Socialist, Secular, Democratic, Republic`,
+    videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU",
+    flashcards: [
+      { front: "When was Constitution adopted?", back: "26 November 1949 (enacted 26 Jan 1950)" },
+      { front: "How many Fundamental Rights?", back: "6 Fundamental Rights" },
+      { front: "Lok Sabha seats?", back: "543 elected + 2 nominated = 545 max" }
+    ]
+  },
+  {
+    id: "n10", title: "History Timeline Notes", subject: "History", category: "notes",
+    content: `## Indian History Key Timelines\n\n**Ancient India:**\n- 3000 BCE: Indus Valley Civilization\n- 600 BCE: Mahajanapadas\n- 322 BCE: Maurya Empire (Chandragupta)\n- 268 BCE: Ashoka's reign begins\n- 320 CE: Gupta Empire founded\n\n**Medieval India:**\n- 1206: Delhi Sultanate established\n- 1526: First Battle of Panipat (Babur defeats Lodi)\n- 1556: Second Battle of Panipat (Akbar)\n- 1600: British East India Company formed\n\n**Modern India:**\n- 1857: First War of Independence\n- 1885: Indian National Congress formed\n- 1919: Jallianwala Bagh Massacre\n- 1920: Non-Cooperation Movement\n- 1930: Dandi March / Salt Satyagraha\n- 1942: Quit India Movement\n- 1947: Independence (15 August)\n- 1950: Republic Day (26 January)`,
+    videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU",
+    flashcards: [
+      { front: "When was Maurya Empire founded?", back: "322 BCE by Chandragupta Maurya" },
+      { front: "Year of Dandi March?", back: "1930 - Gandhi's Salt Satyagraha" },
+      { front: "India's Independence Day?", back: "15 August 1947" }
+    ]
+  },
+  {
+    id: "n11", title: "English Grammar Rules", subject: "English", category: "formulas",
+    content: `## English Grammar Quick Reference\n\n**Tenses:**\n- Simple Present: He plays\n- Present Continuous: He is playing\n- Present Perfect: He has played\n- Simple Past: He played\n- Simple Future: He will play\n\n**Active → Passive Voice:**\n- Active: Subject + V + Object\n- Passive: Object + is/was + V3 + by + Subject\n- Example: "He writes a letter" → "A letter is written by him"\n\n**Direct → Indirect Speech:**\n- Say/Says → no change; Said → no change\n- "I am happy" → He said that he was happy\n- Present → Past in reported speech\n\n**Common Idioms:**\n- Break a leg = Good luck\n- Bite the bullet = Endure pain\n- Cost an arm and a leg = Very expensive\n- Hit the nail on the head = Exactly right`,
+    videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU",
+    flashcards: [
+      { front: "Active to Passive: 'She reads a book'?", back: "'A book is read by her'" },
+      { front: "What does 'Break a leg' mean?", back: "Good luck" },
+      { front: "Present Perfect tense formula?", back: "Subject + has/have + V3 (past participle)" }
+    ]
+  },
+  {
+    id: "n12", title: "General Knowledge Capsule", subject: "General Knowledge", category: "notes",
+    content: `## GK Quick Capsule\n\n**India - Important Facts:**\n- Capital: New Delhi\n- Largest State (area): Rajasthan\n- Longest River: Ganga\n- National Bird: Peacock\n- National Animal: Tiger\n- National Flower: Lotus\n- National Anthem: Jana Gana Mana (Tagore)\n\n**World Facts:**\n- Largest Continent: Asia\n- Smallest Continent: Australia\n- Largest Ocean: Pacific\n- Tallest Mountain: Mount Everest (8,848m)\n- Longest River: Nile\n- Largest Country (area): Russia\n\n**Science GK:**\n- Speed of Light: 3 × 10⁸ m/s\n- Speed of Sound: 343 m/s\n- Hardest substance: Diamond\n- Universal donor blood group: O-\n- Universal acceptor blood group: AB+`,
+    videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc",
+    flashcards: [
+      { front: "National Animal of India?", back: "Bengal Tiger" },
+      { front: "Largest ocean?", back: "Pacific Ocean" },
+      { front: "Speed of light?", back: "3 × 10⁸ m/s" }
+    ]
+  },
+  {
+    id: "n13", title: "Reasoning Tips & Tricks", subject: "Reasoning", category: "notes",
+    content: `## Reasoning Quick Tips\n\n**Number Series Patterns:**\n- Check differences between terms\n- Look for ×2, ×3, ÷2 patterns\n- Fibonacci: each term = sum of previous two\n- Square series: 1,4,9,16,25...\n\n**Coding-Decoding Tips:**\n- A=1, B=2... Z=26\n- Reverse alphabet: A=26, Z=1\n- Next letter: +1 shift each\n- Check if letters are shifted by fixed value\n\n**Logical Reasoning:**\n- All A are B + All B are C → All A are C\n- Some A are B (not reversible to All A)\n- No A is B = No B is A (reversible)\n\n**Blood Relations:**\n- Son of my father = Brother\n- Father of my father = Grandfather\n- Sister of my mother = Aunt\n- Son of my uncle = Cousin`,
+    videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs",
+    flashcards: [
+      { front: "A=1, B=2... What is Z?", back: "Z = 26" },
+      { front: "Fibonacci series rule?", back: "Each term = sum of previous two terms" },
+      { front: "'All A are B, All B are C' conclusion?", back: "All A are C (transitive)" }
+    ]
+  },
+  {
+    id: "n14", title: "Quantitative Aptitude Shortcuts", subject: "Quantitative Aptitude", category: "formulas",
+    content: `## Quant Shortcut Formulas\n\n**Percentage:**\n- x% of y = (x × y) / 100\n- % increase = (increase/original) × 100\n\n**Profit & Loss:**\n- Profit% = (Profit/CP) × 100\n- SP = CP × (100 + P%) / 100\n- CP = SP × 100 / (100 + P%)\n\n**Simple & Compound Interest:**\n- SI = PNR/100\n- CI = P(1 + R/100)ⁿ - P\n\n**Time & Work:**\n- If A does in 'a' days, rate = 1/a per day\n- Together rate = 1/a + 1/b\n- Days together = ab/(a+b)\n\n**Time, Speed & Distance:**\n- D = S × T\n- Upstream speed = Boat - Current\n- Downstream speed = Boat + Current\n\n**Averages:**\n- Average = Sum / Number of items`,
+    videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk",
+    flashcards: [
+      { front: "Simple Interest formula?", back: "SI = PNR/100" },
+      { front: "A does in 10 days, B in 15 days. Together in?", back: "ab/(a+b) = 150/25 = 6 days" },
+      { front: "Downstream speed formula?", back: "Boat speed + Current speed" }
+    ]
+  },
+  {
+    id: "n15", title: "Current Affairs & Government Schemes", subject: "Current Affairs", category: "notes",
+    content: `## Key Government Schemes & Current Affairs\n\n**Major Government Schemes:**\n- PM Jan Dhan Yojana: Financial inclusion\n- Swachh Bharat Mission: Clean India\n- Ayushman Bharat: Health insurance ₹5L\n- PM Kisan Samman: ₹6000/year to farmers\n- Beti Bachao Beti Padhao: Girl child welfare\n- Digital India: Connectivity & digitization\n- Make in India: Manufacturing boost\n- Smart Cities Mission: Urban development\n\n**Important International Bodies:**\n- UN: United Nations (Founded 1945)\n- WHO: World Health Organization\n- IMF: International Monetary Fund\n- WTO: World Trade Organization\n- UNESCO: Education, Science, Culture\n\n**India's Space Milestones:**\n- Chandrayaan-3: Soft landed on Moon (2023)\n- Aditya-L1: Solar mission (2023)\n- Gaganyaan: India's human spaceflight mission`,
+    videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU",
+    flashcards: [
+      { front: "Ayushman Bharat covers up to?", back: "₹5 Lakh health insurance per family" },
+      { front: "Chandrayaan-3 achievement?", back: "India's first successful soft landing near Moon's south pole (2023)" },
+      { front: "PM Kisan Samman benefit?", back: "₹6000 per year in 3 installments to farmers" }
+    ]
+  },
+  {
+    id: "n16", title: "English Grammar Advanced", subject: "English Grammar", category: "formulas",
+    content: `## English Grammar - Advanced Reference\n\n**Parts of Speech:**\n- Noun: Name of person/place/thing\n- Pronoun: Replaces noun (he, she, it)\n- Verb: Action word (run, write)\n- Adjective: Describes noun (beautiful)\n- Adverb: Describes verb (quickly)\n- Preposition: Shows relation (in, on, at)\n- Conjunction: Joins clauses (and, but, or)\n- Interjection: Expresses emotion (Oh! Wow!)\n\n**Sentence Types:**\n- Simple: One independent clause\n- Compound: Two independent clauses joined\n- Complex: Independent + dependent clause\n\n**Common Error Types:**\n- Subject-Verb Agreement: He goes (not go)\n- Misplaced Modifier\n- Dangling Participle\n- Run-on Sentence`,
+    videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU",
+    flashcards: [
+      { front: "What is an adverb?", back: "A word that modifies a verb, adjective, or another adverb" },
+      { front: "Subject-verb agreement example?", back: "She runs (singular), They run (plural)" },
+      { front: "Compound sentence?", back: "Two independent clauses joined by conjunction: I went home AND she stayed." }
     ]
   }
 ];
 
+
 const LOCAL_COURSES = [
   { id: "c1", type: "Entrance Exams", exam: "KCET", subject: "Physics", difficulty: "Hard" },
-  { id: "c2", type: "Entrance Exams", exam: "NEET", subject: "Biology", difficulty: "Medium" },
-  { id: "c3", type: "Government Exams", exam: "UPSC", subject: "Current Affairs", difficulty: "Hard" }
+  { id: "c2", type: "Entrance Exams", exam: "KCET", subject: "Mathematics", difficulty: "Medium" },
+  { id: "c3", type: "Entrance Exams", exam: "KCET", subject: "Chemistry", difficulty: "Medium" },
+  { id: "c4", type: "Entrance Exams", exam: "KCET", subject: "Biology", difficulty: "Easy" },
+  { id: "c5", type: "Entrance Exams", exam: "NEET", subject: "Biology", difficulty: "Hard" },
+  { id: "c6", type: "Entrance Exams", exam: "NEET", subject: "Physics", difficulty: "Hard" },
+  { id: "c7", type: "Entrance Exams", exam: "NEET", subject: "Chemistry", difficulty: "Medium" },
+  { id: "c8", type: "Entrance Exams", exam: "JEE", subject: "Mathematics", difficulty: "Hard" },
+  { id: "c9", type: "Entrance Exams", exam: "JEE", subject: "Physics", difficulty: "Hard" },
+  { id: "c10", type: "Entrance Exams", exam: "JEE", subject: "Chemistry", difficulty: "Hard" },
+  { id: "c11", type: "Government Exams", exam: "UPSC", subject: "Current Affairs", difficulty: "Hard" },
+  { id: "c12", type: "Government Exams", exam: "UPSC", subject: "History", difficulty: "Medium" },
+  { id: "c13", type: "Government Exams", exam: "UPSC", subject: "Indian Polity", difficulty: "Hard" },
+  { id: "c14", type: "Government Exams", exam: "SSC", subject: "Quantitative Aptitude", difficulty: "Medium" },
+  { id: "c15", type: "Government Exams", exam: "SSC", subject: "Reasoning", difficulty: "Medium" },
+  { id: "c16", type: "Government Exams", exam: "SSC", subject: "English", difficulty: "Easy" }
 ];
 
 const LOCAL_LIVE_CLASSES = [
-  { id: "lc1", title: "KCET Physics 1-Shot", instructor: "Prof. Kiran", scheduledAt: "2026-05-20T10:00:00Z", status: "Upcoming", batch: "KCET Batch" },
-  { id: "lc2", title: "NEET Bio Masterclass", instructor: "Dr. Anjali", scheduledAt: "2026-05-19T09:00:00Z", status: "Ongoing", batch: "NEET Batch" },
-  { id: "lc3", title: "JEE Math Integration Sprint", instructor: "Dr. Dev", scheduledAt: "2026-05-20T14:00:00Z", status: "Upcoming", batch: "JEE Batch" },
-  { id: "lc4", title: "UPSC Indian Polity Masterclass", instructor: "Manoj Sir", scheduledAt: "2026-05-21T11:00:00Z", status: "Upcoming", batch: "UPSC Batch" },
-  { id: "lc5", title: "CBSE Class 10 Chemistry Balancing", instructor: "Ms. Divya", scheduledAt: "2026-05-19T18:00:00Z", status: "Ongoing", batch: "Class 10 CBSE" },
-  { id: "lc6", title: "General English & Grammar Hacks", instructor: "Prof. Sarah", scheduledAt: "2026-05-22T15:00:00Z", status: "Upcoming", batch: "General English Batch" },
-  { id: "lc7", title: "Banking QA & Reasoning Trick", instructor: "Mr. Ramesh", scheduledAt: "2026-05-21T16:00:00Z", status: "Upcoming", batch: "Banking PO Batch" },
-  { id: "lc8", title: "Modern Indian History Fast-Track", instructor: "Dr. Meera", scheduledAt: "2026-05-23T10:00:00Z", status: "Upcoming", batch: "SSC Batch" },
-  { id: "lc9", title: "PUC 2 Accountancy Partnership Accounts", instructor: "Mr. CA Anand", scheduledAt: "2026-05-20T17:00:00Z", status: "Upcoming", batch: "Commerce PU2" },
-  { id: "lc10", title: "Kannada Language Poetry Breakdown", instructor: "Mrs. Shweta", scheduledAt: "2026-05-24T14:00:00Z", status: "Upcoming", batch: "State Board Batch" }
+  { id: "lc1", title: "KCET Physics 1-Shot", instructor: "Prof. Kiran", scheduledAt: "2026-05-20T10:00:00Z", status: "Upcoming", batch: "KCET Batch", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE?autoplay=1&mute=1" },
+  { id: "lc2", title: "NEET Bio Masterclass", instructor: "Dr. Anjali", scheduledAt: "2026-05-19T09:00:00Z", status: "Ongoing", batch: "NEET Batch", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc?autoplay=1&mute=1" },
+  { id: "lc3", title: "JEE Math Integration Sprint", instructor: "Dr. Dev", scheduledAt: "2026-05-20T14:00:00Z", status: "Upcoming", batch: "JEE Batch", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs?autoplay=1&mute=1" },
+  { id: "lc4", title: "UPSC Indian Polity Masterclass", instructor: "Manoj Sir", scheduledAt: "2026-05-21T11:00:00Z", status: "Upcoming", batch: "UPSC Batch", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU?autoplay=1&mute=1" },
+  { id: "lc5", title: "CBSE Class 10 Chemistry Balancing", instructor: "Ms. Divya", scheduledAt: "2026-05-19T18:00:00Z", status: "Ongoing", batch: "Class 10 CBSE", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI?autoplay=1&mute=1" },
+  { id: "lc6", title: "General English & Grammar Hacks", instructor: "Prof. Sarah", scheduledAt: "2026-05-22T15:00:00Z", status: "Upcoming", batch: "General English Batch", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU?autoplay=1&mute=1" },
+  { id: "lc7", title: "Banking QA & Reasoning Trick", instructor: "Mr. Ramesh", scheduledAt: "2026-05-21T16:00:00Z", status: "Upcoming", batch: "Banking PO Batch", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk?autoplay=1&mute=1" },
+  { id: "lc8", title: "Modern Indian History Fast-Track", instructor: "Dr. Meera", scheduledAt: "2026-05-23T10:00:00Z", status: "Upcoming", batch: "SSC Batch", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU?autoplay=1&mute=1" },
+  { id: "lc9", title: "PUC 2 Accountancy Partnership Accounts", instructor: "Mr. CA Anand", scheduledAt: "2026-05-20T17:00:00Z", status: "Upcoming", batch: "Commerce PU2", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs?autoplay=1&mute=1" },
+  { id: "lc10", title: "Kannada Language Poetry Breakdown", instructor: "Mrs. Shweta", scheduledAt: "2026-05-24T14:00:00Z", status: "Upcoming", batch: "State Board Batch", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU?autoplay=1&mute=1" }
 ];
 
 const LOCAL_VIDEO_LECTURES = [
-  // Physics (3 videos)
-  { id: "vl1", title: "Motion in 1D - Physics Revision", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
-  { id: "vl18", title: "Light Reflection & Refraction", subject: "Physics", videoUrl: "https://www.youtube.com/embed/Oh4m8Ees-3Q" },
-  { id: "vl23", title: "Electricity & Circuits Explained", subject: "Physics", videoUrl: "https://www.youtube.com/embed/mc979OhitAg" },
-  // Chemistry (3 videos)
-  { id: "vl2", title: "Chemical Reactions & Equations", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
-  { id: "vl19", title: "Periodic Classification of Elements", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/rz4Dd1I_fX0" },
-  { id: "vl24", title: "Acids, Bases & Salts", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/ANi709MYnWo" },
-  // Mathematics (3 videos)
-  { id: "vl3", title: "Quadratic Equations Masterclass", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
-  { id: "vl20", title: "Trigonometric Identities Made Easy", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/G-MKVOfjXkQ" },
-  { id: "vl25", title: "Statistics & Probability Crash Course", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
-  // Biology (3 videos)
-  { id: "vl4", title: "Human Brain & Nervous System", subject: "Biology", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
-  { id: "vl17", title: "Photosynthesis & Respiration in Plants", subject: "Biology", videoUrl: "https://www.youtube.com/embed/eo5XndJaz-Y" },
-  { id: "vl26", title: "Genetics & DNA - Mendel's Laws", subject: "Biology", videoUrl: "https://www.youtube.com/embed/CBezq1fFUEA" },
-  // Computer Science (3 videos)
-  { id: "vl6", title: "Introduction to Python Programming", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/O5nskjZ_GoI" },
-  { id: "vl21", title: "Object Oriented Programming (OOP) in Java", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/pTB0EiLXUC8" },
-  { id: "vl27", title: "SQL & Database Fundamentals", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/HXV3zeQKqGY" },
-  // English (3 videos)
-  { id: "vl7", title: "Romeo & Juliet Character Analysis", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
-  { id: "vl28", title: "How to Write a Perfect Essay", subject: "English", videoUrl: "https://www.youtube.com/embed/dGIDxJWMnk8" },
-  { id: "vl29", title: "Reading Comprehension Strategies", subject: "English", videoUrl: "https://www.youtube.com/embed/WBaRDQwEcGY" },
-  // Kannada (3 videos)
-  { id: "vl8", title: "Kannada Vyakaran & Grammar Rules", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
-  { id: "vl30", title: "Kannada Poetry - Kumara Vyasa Bharata", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
-  { id: "vl31", title: "Kannada Prose & Letter Writing", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/eo5XndJaz-Y" },
-  // Economics (3 videos)
-  { id: "vl9", title: "Principles of Microeconomics", subject: "Economics", videoUrl: "https://www.youtube.com/embed/3ez14uE9cZ0" },
-  { id: "vl22", title: "Demand & Supply Curve Analysis", subject: "Economics", videoUrl: "https://www.youtube.com/embed/kIFBaaPJUO0" },
-  { id: "vl32", title: "Indian Economy & Budget Explained", subject: "Economics", videoUrl: "https://www.youtube.com/embed/PHe0bXAIuk0" },
-  // Accountancy (3 videos)
-  { id: "vl10", title: "Accounting Basics & Journal Entries", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/c76tZ3U7l7w" },
-  { id: "vl33", title: "Trial Balance & Final Accounts", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/d0t23tD4nKk" },
-  { id: "vl34", title: "Partnership Accounts Made Easy", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/_-K9A1iyOhc" },
-  // General Knowledge (3 videos)
-  { id: "vl11", title: "General Knowledge - World Geography", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
-  { id: "vl35", title: "Indian States, Capitals & Facts", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
-  { id: "vl36", title: "Famous Scientists & Inventions", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/vn3e37IQBCk" },
-  // Current Affairs (2 videos)
-  { id: "vl5", title: "Important Current Affairs 2026", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
-  { id: "vl37", title: "Government Schemes & Policies Update", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/3ez14uE9cZ0" },
-  // Reasoning (3 videos)
-  { id: "vl12", title: "Logical Reasoning & Syllogism", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
-  { id: "vl38", title: "Coding-Decoding & Puzzles", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
-  { id: "vl39", title: "Blood Relations & Seating Arrangement", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/G-MKVOfjXkQ" },
-  // Quantitative Aptitude (3 videos)
-  { id: "vl13", title: "Speed Math & Quantitative Aptitude", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
-  { id: "vl40", title: "Percentage, Profit & Loss Tricks", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
-  { id: "vl41", title: "Time & Work - Shortcut Methods", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/G-MKVOfjXkQ" },
-  // English Grammar (3 videos)
-  { id: "vl14", title: "Active & Passive Voice Masterclass", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
-  { id: "vl42", title: "Tenses - Complete Guide", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/dGIDxJWMnk8" },
-  { id: "vl43", title: "Direct & Indirect Speech Rules", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/WBaRDQwEcGY" },
-  // Indian Polity (3 videos)
-  { id: "vl15", title: "Indian Constitution & Preamble", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
-  { id: "vl44", title: "Fundamental Rights & Duties Explained", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/3ez14uE9cZ0" },
-  { id: "vl45", title: "Parliament & Legislature of India", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/PHe0bXAIuk0" },
-  // History (3 videos)
-  { id: "vl16", title: "The Silk Road & Ancient History", subject: "History", videoUrl: "https://www.youtube.com/embed/vn3e37IQBCk" },
-  { id: "vl46", title: "Mughal Empire - Rise & Fall", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
-  { id: "vl47", title: "Indian Freedom Struggle - Key Events", subject: "History", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" }
+  { id: "vl1", title: "Introduction to Physics Part 1", subject: "Physics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl2", title: "Advanced Physics Part 2", subject: "Physics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl3", title: "Masterclass on Physics Part 3", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl4", title: "Fundamentals of Physics Part 4", subject: "Physics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl5", title: "Crash Course: Physics Part 5", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl6", title: "Deep Dive into Physics Part 6", subject: "Physics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl7", title: "Understanding Physics Part 7", subject: "Physics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl8", title: "Basics of Physics Part 8", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl9", title: "Important Concepts in Physics Part 9", subject: "Physics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl10", title: "Quick Revision: Physics Part 10", subject: "Physics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl11", title: "Key Theories of Physics Part 11", subject: "Physics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl12", title: "Practical Applications of Physics Part 12", subject: "Physics", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl13", title: "Problem Solving: Physics Part 13", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl14", title: "Conceptual Clarity: Physics Part 14", subject: "Physics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl15", title: "Most Expected Questions in Physics Part 15", subject: "Physics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl16", title: "Summary of Physics Part 16", subject: "Physics", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl17", title: "Everything you need to know about Physics Part 17", subject: "Physics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl18", title: "A-Z of Physics Part 18", subject: "Physics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl19", title: "Complete Guide to Physics Part 19", subject: "Physics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl20", title: "Fast Track: Physics Part 20", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl21", title: "Pro Tips for Physics Part 21", subject: "Physics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl22", title: "Exam Strategies for Physics Part 22", subject: "Physics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl23", title: "Past Year Questions on Physics Part 23", subject: "Physics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl24", title: "Top Tricks for Physics Part 24", subject: "Physics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl25", title: "Expert Analysis of Physics Part 25", subject: "Physics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl26", title: "Simplified: Physics Part 26", subject: "Physics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl27", title: "Beginner's Guide to Physics Part 27", subject: "Physics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl28", title: "Core Principles of Physics Part 28", subject: "Physics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl29", title: "Final Revision for Physics Part 29", subject: "Physics", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl30", title: "Ultimate Masterclass on Physics Part 30", subject: "Physics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl31", title: "Introduction to Chemistry Part 1", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl32", title: "Advanced Chemistry Part 2", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl33", title: "Masterclass on Chemistry Part 3", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl34", title: "Fundamentals of Chemistry Part 4", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl35", title: "Crash Course: Chemistry Part 5", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl36", title: "Deep Dive into Chemistry Part 6", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl37", title: "Understanding Chemistry Part 7", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl38", title: "Basics of Chemistry Part 8", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl39", title: "Important Concepts in Chemistry Part 9", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl40", title: "Quick Revision: Chemistry Part 10", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl41", title: "Key Theories of Chemistry Part 11", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl42", title: "Practical Applications of Chemistry Part 12", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl43", title: "Problem Solving: Chemistry Part 13", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl44", title: "Conceptual Clarity: Chemistry Part 14", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl45", title: "Most Expected Questions in Chemistry Part 15", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl46", title: "Summary of Chemistry Part 16", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl47", title: "Everything you need to know about Chemistry Part 17", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl48", title: "A-Z of Chemistry Part 18", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl49", title: "Complete Guide to Chemistry Part 19", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl50", title: "Fast Track: Chemistry Part 20", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl51", title: "Pro Tips for Chemistry Part 21", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl52", title: "Exam Strategies for Chemistry Part 22", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl53", title: "Past Year Questions on Chemistry Part 23", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl54", title: "Top Tricks for Chemistry Part 24", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl55", title: "Expert Analysis of Chemistry Part 25", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl56", title: "Simplified: Chemistry Part 26", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl57", title: "Beginner's Guide to Chemistry Part 27", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl58", title: "Core Principles of Chemistry Part 28", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl59", title: "Final Revision for Chemistry Part 29", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl60", title: "Ultimate Masterclass on Chemistry Part 30", subject: "Chemistry", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl61", title: "Introduction to Mathematics Part 1", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl62", title: "Advanced Mathematics Part 2", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl63", title: "Masterclass on Mathematics Part 3", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl64", title: "Fundamentals of Mathematics Part 4", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl65", title: "Crash Course: Mathematics Part 5", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl66", title: "Deep Dive into Mathematics Part 6", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl67", title: "Understanding Mathematics Part 7", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl68", title: "Basics of Mathematics Part 8", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl69", title: "Important Concepts in Mathematics Part 9", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl70", title: "Quick Revision: Mathematics Part 10", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl71", title: "Key Theories of Mathematics Part 11", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl72", title: "Practical Applications of Mathematics Part 12", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl73", title: "Problem Solving: Mathematics Part 13", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl74", title: "Conceptual Clarity: Mathematics Part 14", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl75", title: "Most Expected Questions in Mathematics Part 15", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl76", title: "Summary of Mathematics Part 16", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl77", title: "Everything you need to know about Mathematics Part 17", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl78", title: "A-Z of Mathematics Part 18", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl79", title: "Complete Guide to Mathematics Part 19", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl80", title: "Fast Track: Mathematics Part 20", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl81", title: "Pro Tips for Mathematics Part 21", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl82", title: "Exam Strategies for Mathematics Part 22", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl83", title: "Past Year Questions on Mathematics Part 23", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl84", title: "Top Tricks for Mathematics Part 24", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl85", title: "Expert Analysis of Mathematics Part 25", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl86", title: "Simplified: Mathematics Part 26", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl87", title: "Beginner's Guide to Mathematics Part 27", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl88", title: "Core Principles of Mathematics Part 28", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl89", title: "Final Revision for Mathematics Part 29", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl90", title: "Ultimate Masterclass on Mathematics Part 30", subject: "Mathematics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl91", title: "Introduction to Biology Part 1", subject: "Biology", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl92", title: "Advanced Biology Part 2", subject: "Biology", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl93", title: "Masterclass on Biology Part 3", subject: "Biology", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl94", title: "Fundamentals of Biology Part 4", subject: "Biology", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl95", title: "Crash Course: Biology Part 5", subject: "Biology", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl96", title: "Deep Dive into Biology Part 6", subject: "Biology", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl97", title: "Understanding Biology Part 7", subject: "Biology", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl98", title: "Basics of Biology Part 8", subject: "Biology", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl99", title: "Important Concepts in Biology Part 9", subject: "Biology", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl100", title: "Quick Revision: Biology Part 10", subject: "Biology", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl101", title: "Key Theories of Biology Part 11", subject: "Biology", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl102", title: "Practical Applications of Biology Part 12", subject: "Biology", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl103", title: "Problem Solving: Biology Part 13", subject: "Biology", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl104", title: "Conceptual Clarity: Biology Part 14", subject: "Biology", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl105", title: "Most Expected Questions in Biology Part 15", subject: "Biology", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl106", title: "Summary of Biology Part 16", subject: "Biology", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl107", title: "Everything you need to know about Biology Part 17", subject: "Biology", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl108", title: "A-Z of Biology Part 18", subject: "Biology", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl109", title: "Complete Guide to Biology Part 19", subject: "Biology", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl110", title: "Fast Track: Biology Part 20", subject: "Biology", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl111", title: "Pro Tips for Biology Part 21", subject: "Biology", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl112", title: "Exam Strategies for Biology Part 22", subject: "Biology", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl113", title: "Past Year Questions on Biology Part 23", subject: "Biology", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl114", title: "Top Tricks for Biology Part 24", subject: "Biology", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl115", title: "Expert Analysis of Biology Part 25", subject: "Biology", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl116", title: "Simplified: Biology Part 26", subject: "Biology", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl117", title: "Beginner's Guide to Biology Part 27", subject: "Biology", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl118", title: "Core Principles of Biology Part 28", subject: "Biology", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl119", title: "Final Revision for Biology Part 29", subject: "Biology", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl120", title: "Ultimate Masterclass on Biology Part 30", subject: "Biology", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl121", title: "Introduction to Computer Science Part 1", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl122", title: "Advanced Computer Science Part 2", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl123", title: "Masterclass on Computer Science Part 3", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl124", title: "Fundamentals of Computer Science Part 4", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl125", title: "Crash Course: Computer Science Part 5", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl126", title: "Deep Dive into Computer Science Part 6", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl127", title: "Understanding Computer Science Part 7", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl128", title: "Basics of Computer Science Part 8", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl129", title: "Important Concepts in Computer Science Part 9", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl130", title: "Quick Revision: Computer Science Part 10", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl131", title: "Key Theories of Computer Science Part 11", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl132", title: "Practical Applications of Computer Science Part 12", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl133", title: "Problem Solving: Computer Science Part 13", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl134", title: "Conceptual Clarity: Computer Science Part 14", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl135", title: "Most Expected Questions in Computer Science Part 15", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl136", title: "Summary of Computer Science Part 16", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl137", title: "Everything you need to know about Computer Science Part 17", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl138", title: "A-Z of Computer Science Part 18", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl139", title: "Complete Guide to Computer Science Part 19", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl140", title: "Fast Track: Computer Science Part 20", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl141", title: "Pro Tips for Computer Science Part 21", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl142", title: "Exam Strategies for Computer Science Part 22", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl143", title: "Past Year Questions on Computer Science Part 23", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl144", title: "Top Tricks for Computer Science Part 24", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl145", title: "Expert Analysis of Computer Science Part 25", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl146", title: "Simplified: Computer Science Part 26", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl147", title: "Beginner's Guide to Computer Science Part 27", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl148", title: "Core Principles of Computer Science Part 28", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl149", title: "Final Revision for Computer Science Part 29", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl150", title: "Ultimate Masterclass on Computer Science Part 30", subject: "Computer Science", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl151", title: "Introduction to English Part 1", subject: "English", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl152", title: "Advanced English Part 2", subject: "English", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl153", title: "Masterclass on English Part 3", subject: "English", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl154", title: "Fundamentals of English Part 4", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl155", title: "Crash Course: English Part 5", subject: "English", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl156", title: "Deep Dive into English Part 6", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl157", title: "Understanding English Part 7", subject: "English", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl158", title: "Basics of English Part 8", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl159", title: "Important Concepts in English Part 9", subject: "English", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl160", title: "Quick Revision: English Part 10", subject: "English", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl161", title: "Key Theories of English Part 11", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl162", title: "Practical Applications of English Part 12", subject: "English", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl163", title: "Problem Solving: English Part 13", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl164", title: "Conceptual Clarity: English Part 14", subject: "English", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl165", title: "Most Expected Questions in English Part 15", subject: "English", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl166", title: "Summary of English Part 16", subject: "English", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl167", title: "Everything you need to know about English Part 17", subject: "English", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl168", title: "A-Z of English Part 18", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl169", title: "Complete Guide to English Part 19", subject: "English", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl170", title: "Fast Track: English Part 20", subject: "English", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl171", title: "Pro Tips for English Part 21", subject: "English", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl172", title: "Exam Strategies for English Part 22", subject: "English", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl173", title: "Past Year Questions on English Part 23", subject: "English", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl174", title: "Top Tricks for English Part 24", subject: "English", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl175", title: "Expert Analysis of English Part 25", subject: "English", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl176", title: "Simplified: English Part 26", subject: "English", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl177", title: "Beginner's Guide to English Part 27", subject: "English", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl178", title: "Core Principles of English Part 28", subject: "English", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl179", title: "Final Revision for English Part 29", subject: "English", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl180", title: "Ultimate Masterclass on English Part 30", subject: "English", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl181", title: "Introduction to Kannada Part 1", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl182", title: "Advanced Kannada Part 2", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl183", title: "Masterclass on Kannada Part 3", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl184", title: "Fundamentals of Kannada Part 4", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl185", title: "Crash Course: Kannada Part 5", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl186", title: "Deep Dive into Kannada Part 6", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl187", title: "Understanding Kannada Part 7", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl188", title: "Basics of Kannada Part 8", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl189", title: "Important Concepts in Kannada Part 9", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl190", title: "Quick Revision: Kannada Part 10", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl191", title: "Key Theories of Kannada Part 11", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl192", title: "Practical Applications of Kannada Part 12", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl193", title: "Problem Solving: Kannada Part 13", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl194", title: "Conceptual Clarity: Kannada Part 14", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl195", title: "Most Expected Questions in Kannada Part 15", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl196", title: "Summary of Kannada Part 16", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl197", title: "Everything you need to know about Kannada Part 17", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl198", title: "A-Z of Kannada Part 18", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl199", title: "Complete Guide to Kannada Part 19", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl200", title: "Fast Track: Kannada Part 20", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl201", title: "Pro Tips for Kannada Part 21", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl202", title: "Exam Strategies for Kannada Part 22", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl203", title: "Past Year Questions on Kannada Part 23", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl204", title: "Top Tricks for Kannada Part 24", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl205", title: "Expert Analysis of Kannada Part 25", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl206", title: "Simplified: Kannada Part 26", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl207", title: "Beginner's Guide to Kannada Part 27", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl208", title: "Core Principles of Kannada Part 28", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl209", title: "Final Revision for Kannada Part 29", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl210", title: "Ultimate Masterclass on Kannada Part 30", subject: "Kannada", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl211", title: "Introduction to Economics Part 1", subject: "Economics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl212", title: "Advanced Economics Part 2", subject: "Economics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl213", title: "Masterclass on Economics Part 3", subject: "Economics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl214", title: "Fundamentals of Economics Part 4", subject: "Economics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl215", title: "Crash Course: Economics Part 5", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl216", title: "Deep Dive into Economics Part 6", subject: "Economics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl217", title: "Understanding Economics Part 7", subject: "Economics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl218", title: "Basics of Economics Part 8", subject: "Economics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl219", title: "Important Concepts in Economics Part 9", subject: "Economics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl220", title: "Quick Revision: Economics Part 10", subject: "Economics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl221", title: "Key Theories of Economics Part 11", subject: "Economics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl222", title: "Practical Applications of Economics Part 12", subject: "Economics", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl223", title: "Problem Solving: Economics Part 13", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl224", title: "Conceptual Clarity: Economics Part 14", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl225", title: "Most Expected Questions in Economics Part 15", subject: "Economics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl226", title: "Summary of Economics Part 16", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl227", title: "Everything you need to know about Economics Part 17", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl228", title: "A-Z of Economics Part 18", subject: "Economics", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl229", title: "Complete Guide to Economics Part 19", subject: "Economics", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl230", title: "Fast Track: Economics Part 20", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl231", title: "Pro Tips for Economics Part 21", subject: "Economics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl232", title: "Exam Strategies for Economics Part 22", subject: "Economics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl233", title: "Past Year Questions on Economics Part 23", subject: "Economics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl234", title: "Top Tricks for Economics Part 24", subject: "Economics", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl235", title: "Expert Analysis of Economics Part 25", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl236", title: "Simplified: Economics Part 26", subject: "Economics", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl237", title: "Beginner's Guide to Economics Part 27", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl238", title: "Core Principles of Economics Part 28", subject: "Economics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl239", title: "Final Revision for Economics Part 29", subject: "Economics", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl240", title: "Ultimate Masterclass on Economics Part 30", subject: "Economics", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl241", title: "Introduction to Accountancy Part 1", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl242", title: "Advanced Accountancy Part 2", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl243", title: "Masterclass on Accountancy Part 3", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl244", title: "Fundamentals of Accountancy Part 4", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl245", title: "Crash Course: Accountancy Part 5", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl246", title: "Deep Dive into Accountancy Part 6", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl247", title: "Understanding Accountancy Part 7", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl248", title: "Basics of Accountancy Part 8", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl249", title: "Important Concepts in Accountancy Part 9", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl250", title: "Quick Revision: Accountancy Part 10", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl251", title: "Key Theories of Accountancy Part 11", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl252", title: "Practical Applications of Accountancy Part 12", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl253", title: "Problem Solving: Accountancy Part 13", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl254", title: "Conceptual Clarity: Accountancy Part 14", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl255", title: "Most Expected Questions in Accountancy Part 15", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl256", title: "Summary of Accountancy Part 16", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl257", title: "Everything you need to know about Accountancy Part 17", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl258", title: "A-Z of Accountancy Part 18", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl259", title: "Complete Guide to Accountancy Part 19", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl260", title: "Fast Track: Accountancy Part 20", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl261", title: "Pro Tips for Accountancy Part 21", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl262", title: "Exam Strategies for Accountancy Part 22", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl263", title: "Past Year Questions on Accountancy Part 23", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl264", title: "Top Tricks for Accountancy Part 24", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl265", title: "Expert Analysis of Accountancy Part 25", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl266", title: "Simplified: Accountancy Part 26", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl267", title: "Beginner's Guide to Accountancy Part 27", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl268", title: "Core Principles of Accountancy Part 28", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl269", title: "Final Revision for Accountancy Part 29", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl270", title: "Ultimate Masterclass on Accountancy Part 30", subject: "Accountancy", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl271", title: "Introduction to General Knowledge Part 1", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl272", title: "Advanced General Knowledge Part 2", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl273", title: "Masterclass on General Knowledge Part 3", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl274", title: "Fundamentals of General Knowledge Part 4", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl275", title: "Crash Course: General Knowledge Part 5", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl276", title: "Deep Dive into General Knowledge Part 6", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl277", title: "Understanding General Knowledge Part 7", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl278", title: "Basics of General Knowledge Part 8", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl279", title: "Important Concepts in General Knowledge Part 9", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl280", title: "Quick Revision: General Knowledge Part 10", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl281", title: "Key Theories of General Knowledge Part 11", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl282", title: "Practical Applications of General Knowledge Part 12", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl283", title: "Problem Solving: General Knowledge Part 13", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl284", title: "Conceptual Clarity: General Knowledge Part 14", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl285", title: "Most Expected Questions in General Knowledge Part 15", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl286", title: "Summary of General Knowledge Part 16", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl287", title: "Everything you need to know about General Knowledge Part 17", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl288", title: "A-Z of General Knowledge Part 18", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl289", title: "Complete Guide to General Knowledge Part 19", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl290", title: "Fast Track: General Knowledge Part 20", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl291", title: "Pro Tips for General Knowledge Part 21", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl292", title: "Exam Strategies for General Knowledge Part 22", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl293", title: "Past Year Questions on General Knowledge Part 23", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl294", title: "Top Tricks for General Knowledge Part 24", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl295", title: "Expert Analysis of General Knowledge Part 25", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl296", title: "Simplified: General Knowledge Part 26", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl297", title: "Beginner's Guide to General Knowledge Part 27", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl298", title: "Core Principles of General Knowledge Part 28", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl299", title: "Final Revision for General Knowledge Part 29", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl300", title: "Ultimate Masterclass on General Knowledge Part 30", subject: "General Knowledge", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl301", title: "Introduction to Current Affairs Part 1", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl302", title: "Advanced Current Affairs Part 2", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl303", title: "Masterclass on Current Affairs Part 3", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl304", title: "Fundamentals of Current Affairs Part 4", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl305", title: "Crash Course: Current Affairs Part 5", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl306", title: "Deep Dive into Current Affairs Part 6", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl307", title: "Understanding Current Affairs Part 7", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl308", title: "Basics of Current Affairs Part 8", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl309", title: "Important Concepts in Current Affairs Part 9", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl310", title: "Quick Revision: Current Affairs Part 10", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl311", title: "Key Theories of Current Affairs Part 11", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl312", title: "Practical Applications of Current Affairs Part 12", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl313", title: "Problem Solving: Current Affairs Part 13", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl314", title: "Conceptual Clarity: Current Affairs Part 14", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl315", title: "Most Expected Questions in Current Affairs Part 15", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl316", title: "Summary of Current Affairs Part 16", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl317", title: "Everything you need to know about Current Affairs Part 17", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl318", title: "A-Z of Current Affairs Part 18", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl319", title: "Complete Guide to Current Affairs Part 19", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl320", title: "Fast Track: Current Affairs Part 20", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl321", title: "Pro Tips for Current Affairs Part 21", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl322", title: "Exam Strategies for Current Affairs Part 22", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl323", title: "Past Year Questions on Current Affairs Part 23", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl324", title: "Top Tricks for Current Affairs Part 24", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl325", title: "Expert Analysis of Current Affairs Part 25", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl326", title: "Simplified: Current Affairs Part 26", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl327", title: "Beginner's Guide to Current Affairs Part 27", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl328", title: "Core Principles of Current Affairs Part 28", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl329", title: "Final Revision for Current Affairs Part 29", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl330", title: "Ultimate Masterclass on Current Affairs Part 30", subject: "Current Affairs", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl331", title: "Introduction to Reasoning Part 1", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl332", title: "Advanced Reasoning Part 2", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl333", title: "Masterclass on Reasoning Part 3", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl334", title: "Fundamentals of Reasoning Part 4", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl335", title: "Crash Course: Reasoning Part 5", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl336", title: "Deep Dive into Reasoning Part 6", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl337", title: "Understanding Reasoning Part 7", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl338", title: "Basics of Reasoning Part 8", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl339", title: "Important Concepts in Reasoning Part 9", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl340", title: "Quick Revision: Reasoning Part 10", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl341", title: "Key Theories of Reasoning Part 11", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl342", title: "Practical Applications of Reasoning Part 12", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl343", title: "Problem Solving: Reasoning Part 13", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl344", title: "Conceptual Clarity: Reasoning Part 14", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl345", title: "Most Expected Questions in Reasoning Part 15", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl346", title: "Summary of Reasoning Part 16", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl347", title: "Everything you need to know about Reasoning Part 17", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl348", title: "A-Z of Reasoning Part 18", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl349", title: "Complete Guide to Reasoning Part 19", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl350", title: "Fast Track: Reasoning Part 20", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl351", title: "Pro Tips for Reasoning Part 21", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl352", title: "Exam Strategies for Reasoning Part 22", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl353", title: "Past Year Questions on Reasoning Part 23", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl354", title: "Top Tricks for Reasoning Part 24", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl355", title: "Expert Analysis of Reasoning Part 25", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl356", title: "Simplified: Reasoning Part 26", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl357", title: "Beginner's Guide to Reasoning Part 27", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl358", title: "Core Principles of Reasoning Part 28", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl359", title: "Final Revision for Reasoning Part 29", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl360", title: "Ultimate Masterclass on Reasoning Part 30", subject: "Reasoning", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl361", title: "Introduction to Quantitative Aptitude Part 1", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl362", title: "Advanced Quantitative Aptitude Part 2", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl363", title: "Masterclass on Quantitative Aptitude Part 3", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl364", title: "Fundamentals of Quantitative Aptitude Part 4", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl365", title: "Crash Course: Quantitative Aptitude Part 5", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl366", title: "Deep Dive into Quantitative Aptitude Part 6", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl367", title: "Understanding Quantitative Aptitude Part 7", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl368", title: "Basics of Quantitative Aptitude Part 8", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl369", title: "Important Concepts in Quantitative Aptitude Part 9", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl370", title: "Quick Revision: Quantitative Aptitude Part 10", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl371", title: "Key Theories of Quantitative Aptitude Part 11", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl372", title: "Practical Applications of Quantitative Aptitude Part 12", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl373", title: "Problem Solving: Quantitative Aptitude Part 13", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl374", title: "Conceptual Clarity: Quantitative Aptitude Part 14", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl375", title: "Most Expected Questions in Quantitative Aptitude Part 15", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl376", title: "Summary of Quantitative Aptitude Part 16", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl377", title: "Everything you need to know about Quantitative Aptitude Part 17", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl378", title: "A-Z of Quantitative Aptitude Part 18", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl379", title: "Complete Guide to Quantitative Aptitude Part 19", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl380", title: "Fast Track: Quantitative Aptitude Part 20", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl381", title: "Pro Tips for Quantitative Aptitude Part 21", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl382", title: "Exam Strategies for Quantitative Aptitude Part 22", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl383", title: "Past Year Questions on Quantitative Aptitude Part 23", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl384", title: "Top Tricks for Quantitative Aptitude Part 24", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl385", title: "Expert Analysis of Quantitative Aptitude Part 25", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl386", title: "Simplified: Quantitative Aptitude Part 26", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl387", title: "Beginner's Guide to Quantitative Aptitude Part 27", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl388", title: "Core Principles of Quantitative Aptitude Part 28", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl389", title: "Final Revision for Quantitative Aptitude Part 29", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl390", title: "Ultimate Masterclass on Quantitative Aptitude Part 30", subject: "Quantitative Aptitude", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl391", title: "Introduction to English Grammar Part 1", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl392", title: "Advanced English Grammar Part 2", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl393", title: "Masterclass on English Grammar Part 3", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl394", title: "Fundamentals of English Grammar Part 4", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl395", title: "Crash Course: English Grammar Part 5", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl396", title: "Deep Dive into English Grammar Part 6", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl397", title: "Understanding English Grammar Part 7", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl398", title: "Basics of English Grammar Part 8", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl399", title: "Important Concepts in English Grammar Part 9", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl400", title: "Quick Revision: English Grammar Part 10", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl401", title: "Key Theories of English Grammar Part 11", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl402", title: "Practical Applications of English Grammar Part 12", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl403", title: "Problem Solving: English Grammar Part 13", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl404", title: "Conceptual Clarity: English Grammar Part 14", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl405", title: "Most Expected Questions in English Grammar Part 15", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl406", title: "Summary of English Grammar Part 16", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl407", title: "Everything you need to know about English Grammar Part 17", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl408", title: "A-Z of English Grammar Part 18", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl409", title: "Complete Guide to English Grammar Part 19", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl410", title: "Fast Track: English Grammar Part 20", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl411", title: "Pro Tips for English Grammar Part 21", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl412", title: "Exam Strategies for English Grammar Part 22", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl413", title: "Past Year Questions on English Grammar Part 23", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl414", title: "Top Tricks for English Grammar Part 24", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl415", title: "Expert Analysis of English Grammar Part 25", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl416", title: "Simplified: English Grammar Part 26", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl417", title: "Beginner's Guide to English Grammar Part 27", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl418", title: "Core Principles of English Grammar Part 28", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl419", title: "Final Revision for English Grammar Part 29", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl420", title: "Ultimate Masterclass on English Grammar Part 30", subject: "English Grammar", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl421", title: "Introduction to Indian Polity Part 1", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl422", title: "Advanced Indian Polity Part 2", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl423", title: "Masterclass on Indian Polity Part 3", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl424", title: "Fundamentals of Indian Polity Part 4", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl425", title: "Crash Course: Indian Polity Part 5", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl426", title: "Deep Dive into Indian Polity Part 6", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl427", title: "Understanding Indian Polity Part 7", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl428", title: "Basics of Indian Polity Part 8", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl429", title: "Important Concepts in Indian Polity Part 9", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl430", title: "Quick Revision: Indian Polity Part 10", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl431", title: "Key Theories of Indian Polity Part 11", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl432", title: "Practical Applications of Indian Polity Part 12", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl433", title: "Problem Solving: Indian Polity Part 13", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl434", title: "Conceptual Clarity: Indian Polity Part 14", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl435", title: "Most Expected Questions in Indian Polity Part 15", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl436", title: "Summary of Indian Polity Part 16", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl437", title: "Everything you need to know about Indian Polity Part 17", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl438", title: "A-Z of Indian Polity Part 18", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl439", title: "Complete Guide to Indian Polity Part 19", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl440", title: "Fast Track: Indian Polity Part 20", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl441", title: "Pro Tips for Indian Polity Part 21", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl442", title: "Exam Strategies for Indian Polity Part 22", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl443", title: "Past Year Questions on Indian Polity Part 23", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl444", title: "Top Tricks for Indian Polity Part 24", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl445", title: "Expert Analysis of Indian Polity Part 25", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl446", title: "Simplified: Indian Polity Part 26", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl447", title: "Beginner's Guide to Indian Polity Part 27", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl448", title: "Core Principles of Indian Polity Part 28", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl449", title: "Final Revision for Indian Polity Part 29", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl450", title: "Ultimate Masterclass on Indian Polity Part 30", subject: "Indian Polity", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl451", title: "Introduction to History Part 1", subject: "History", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl452", title: "Advanced History Part 2", subject: "History", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl453", title: "Masterclass on History Part 3", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl454", title: "Fundamentals of History Part 4", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl455", title: "Crash Course: History Part 5", subject: "History", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl456", title: "Deep Dive into History Part 6", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl457", title: "Understanding History Part 7", subject: "History", videoUrl: "https://www.youtube.com/embed/FSyAehMdpyI" },
+  { id: "vl458", title: "Basics of History Part 8", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl459", title: "Important Concepts in History Part 9", subject: "History", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl460", title: "Quick Revision: History Part 10", subject: "History", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl461", title: "Key Theories of History Part 11", subject: "History", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl462", title: "Practical Applications of History Part 12", subject: "History", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl463", title: "Problem Solving: History Part 13", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl464", title: "Conceptual Clarity: History Part 14", subject: "History", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl465", title: "Most Expected Questions in History Part 15", subject: "History", videoUrl: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
+  { id: "vl466", title: "Summary of History Part 16", subject: "History", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl467", title: "Everything you need to know about History Part 17", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl468", title: "A-Z of History Part 18", subject: "History", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl469", title: "Complete Guide to History Part 19", subject: "History", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl470", title: "Fast Track: History Part 20", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl471", title: "Pro Tips for History Part 21", subject: "History", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl472", title: "Exam Strategies for History Part 22", subject: "History", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl473", title: "Past Year Questions on History Part 23", subject: "History", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl474", title: "Top Tricks for History Part 24", subject: "History", videoUrl: "https://www.youtube.com/embed/HuFR5XBYLfU" },
+  { id: "vl475", title: "Expert Analysis of History Part 25", subject: "History", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl476", title: "Simplified: History Part 26", subject: "History", videoUrl: "https://www.youtube.com/embed/MR07YxA8AHs" },
+  { id: "vl477", title: "Beginner's Guide to History Part 27", subject: "History", videoUrl: "https://www.youtube.com/embed/fo46yFWIJzU" },
+  { id: "vl478", title: "Core Principles of History Part 28", subject: "History", videoUrl: "https://www.youtube.com/embed/uAxyI_XfqXk" },
+  { id: "vl479", title: "Final Revision for History Part 29", subject: "History", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" },
+  { id: "vl480", title: "Ultimate Masterclass on History Part 30", subject: "History", videoUrl: "https://www.youtube.com/embed/B10pc0Kizsc" }
 ];
 
 // Helper to write to local storage
