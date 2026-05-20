@@ -33,14 +33,14 @@ const upload = multer({
 
 // 1. Solve doubt route (text or speech transcript input)
 router.post('/solve', async (req, res) => {
-  const { text, userId, mode, lengthMode, language } = req.body;
+  const { text, userId, mode, lengthMode, language, subjectContext, chapterContext } = req.body;
 
   if (!text) {
     return res.status(400).json({ error: "Question text is required" });
   }
 
   try {
-    const solution = await solveQuestion({ text, mode, lengthMode, language });
+    const solution = await solveQuestion({ text, mode, lengthMode, language, subjectContext, chapterContext });
     
     // Save to solved history if userId is provided
     if (userId) {

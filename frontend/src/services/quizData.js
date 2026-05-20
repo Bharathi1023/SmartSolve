@@ -1,5 +1,5 @@
 // Quiz Bank - 20 questions per subject
-const Q = (id,q,o,c,e) => ({id,question:q,options:o,correctAnswer:c,explanation:e});
+const Q = (id,q,o,c,e,we) => ({id,question:q,options:o,correctAnswer:c,explanation:e,wrongOptionExplanation:we});
 
 const physicsQs = [
   Q("p1","What is the SI unit of force?",["Newton","Joule","Watt","Pascal"],0,"Force is measured in Newtons (N)."),
@@ -48,7 +48,7 @@ const chemistryQs = [
 ];
 
 const mathQs = [
-  Q("m1","Find roots of 2x²-5x+3=0",["x=1, x=1.5","x=-1, x=-1.5","x=2, x=3","x=0, x=5"],0,"Quadratic formula gives 1.5 and 1."),
+  Q("m1","Find roots of 2x²-5x+3=0",["x=1, x=1.5","x=-1, x=-1.5","x=2, x=3","x=0, x=5"],0,"Quadratic formula gives 1.5 and 1.", [null, "Incorrect signs. Since b is negative and c is positive, both roots must be positive.", "These are factors of 6, but do not satisfy the equation. If x=2, 2(4)-10+3=1≠0.", "Zero and five do not satisfy the quadratic equation when substituted."]),
   Q("m2","Value of sin 30° is:",["0.5","1","0","√3/2"],0,"sin 30° = 1/2 = 0.5."),
   Q("m3","HCF of 12 and 18 is:",["6","3","12","36"],0,"HCF(12,18) = 6."),
   Q("m4","If x²-4x+4=0, roots are:",["Real and equal","Real and distinct","Imaginary","None"],0,"D = 16-16 = 0, real and equal."),

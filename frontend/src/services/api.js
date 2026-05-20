@@ -776,9 +776,12 @@ const fallbackAPI = {
     throw new Error("User not found");
   },
 
-  solve: async (text, userId, mode, lengthMode, language) => {
+  solve: async (text, userId, mode, lengthMode, language, subjectContext, chapterContext) => {
     const solution = localSolveQuestion(text, mode, lengthMode, language);
     
+    if (subjectContext && !solution.subject.includes(subjectContext)) {
+      solution.subject = subjectContext;
+    }
     if (userId) {
       const papers = getStorageItem('ss_papers', []);
       const newPaper = {
@@ -863,8 +866,65 @@ const fallbackAPI = {
     return { success: true };
   },
 
-  getMockTests: async () => {
+  getMockTests: async (subject) => {
+    if (subject) {
+      return LOCAL_MOCK_TESTS.filter(t => t.subject.toLowerCase() === subject.toLowerCase());
+    }
     return LOCAL_MOCK_TESTS;
+  },
+
+  generateSmartTest: async (subject, difficulty, mode, duration) => {
+    // Generate a test using real MCQs from the matching subject
+    let availableTests = LOCAL_MOCK_TESTS;
+    if (subject) {
+      availableTests = LOCAL_MOCK_TESTS.filter(t => t.subject.toLowerCase() === subject.toLowerCase());
+    }
+    
+    let allQuestions = [];
+    availableTests.forEach(t => {
+      allQuestions = allQuestions.concat(t.questions || []);
+    });
+
+    // Shuffle questions
+    allQuestions = allQuestions.sort(() => Math.random() - 0.5);
+
+    // Select amount of questions based on duration (e.g. 1 question per minute)
+    let qCount = duration;
+    if (qCount > allQuestions.length) qCount = allQuestions.length;
+    if (qCount < 5 && allQuestions.length >= 5) qCount = 5;
+    if (qCount === 0) {
+      // Fallback if we have no questions for that subject
+      return {
+        id: `smart_test_${Date.now()}`,
+        title: `AI Generated ${mode} Test`,
+        subject: subject,
+        difficulty: difficulty,
+        duration: duration,
+        questions: [
+          {
+            id: 'q1',
+            question: `What is the most fundamental concept in ${subject}?`,
+            options: ['Option A', 'Option B', 'Option C', 'Option D'],
+            correctAnswer: 1,
+            explanation: 'This is a generated explanation.'
+          }
+        ]
+      };
+    }
+
+    const selectedQuestions = allQuestions.slice(0, qCount).map((q, idx) => ({
+      ...q,
+      id: `ai_q_${Date.now()}_${idx}`
+    }));
+
+    return {
+      id: `smart_test_${Date.now()}`,
+      title: `AI Generated ${mode} Test (${difficulty})`,
+      subject: subject || "General",
+      difficulty: difficulty,
+      duration: duration,
+      questions: selectedQuestions
+    };
   },
 
   submitTest: async (userId, testId, answers, timeSpentSeconds) => {
@@ -1168,10 +1228,10 @@ export const API = {
     return fallbackAPI.updatePreferences(userId, update);
   },
 
-  solve: async (text, userId, mode, lengthMode, language) => {
-    const res = await API.request('/solver/solve', { method: 'POST', body: { text, userId, mode, lengthMode, language } });
+  solve: async (text, userId, mode, lengthMode, language, subjectContext, chapterContext) => {
+    const res = await API.request('/solver/solve', { method: 'POST', body: { text, userId, mode, lengthMode, language, subjectContext, chapterContext } });
     if (res) return res.solution;
-    const local = await fallbackAPI.solve(text, userId, mode, lengthMode, language);
+    const local = await fallbackAPI.solve(text, userId, mode, lengthMode, language, subjectContext, chapterContext);
     return local.solution;
   },
 
@@ -1212,10 +1272,20 @@ export const API = {
     return fallbackAPI.deleteHistory(historyId);
   },
 
-  getMockTests: async () => {
-    const res = await API.request('/tests');
+  getMockTests: async (subject) => {
+    let endpoint = '/tests';
+    if (subject) {
+      endpoint += `?subject=${encodeURIComponent(subject)}`;
+    }
+    const res = await API.request(endpoint);
     if (res) return res;
-    return fallbackAPI.getMockTests();
+    return fallbackAPI.getMockTests(subject);
+  },
+
+  generateSmartTest: async (subject, difficulty, mode, duration) => {
+    const res = await API.request('/tests/generate', { method: 'POST', body: { subject, difficulty, mode, duration } });
+    if (res) return res;
+    return fallbackAPI.generateSmartTest(subject, difficulty, mode, duration);
   },
 
   submitTest: async (userId, testId, answers, timeSpentSeconds) => {

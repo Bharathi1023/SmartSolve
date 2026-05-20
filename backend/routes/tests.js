@@ -6,7 +6,68 @@ const router = express.Router();
 // 1. Get all available mock tests
 router.get('/', (req, res) => {
   const tests = db.getCollection('mockTests');
+  if (req.query.subject) {
+    const filtered = tests.filter(t => t.subject.toLowerCase() === req.query.subject.toLowerCase());
+    return res.json(filtered);
+  }
   res.json(tests);
+});
+
+// 1.5 Generate AI Smart Test
+router.post('/generate', (req, res) => {
+  const { subject, difficulty, mode, duration } = req.body;
+  const tests = db.getCollection('mockTests');
+  
+  let availableTests = tests;
+  if (subject) {
+    availableTests = tests.filter(t => t.subject.toLowerCase() === subject.toLowerCase());
+  }
+
+  let allQuestions = [];
+  availableTests.forEach(t => {
+    allQuestions = allQuestions.concat(t.questions || []);
+  });
+
+  // Shuffle questions randomly
+  allQuestions = allQuestions.sort(() => Math.random() - 0.5);
+
+  let qCount = duration || 15;
+  if (qCount > allQuestions.length) qCount = allQuestions.length;
+  if (qCount < 5 && allQuestions.length >= 5) qCount = 5;
+
+  if (qCount === 0) {
+    // Basic fallback if no questions exist in DB for this subject
+    return res.json({
+      id: `smart_test_${Date.now()}`,
+      title: `AI Generated ${mode} Test`,
+      subject: subject || "General",
+      difficulty: difficulty || "Medium",
+      duration: duration || 15,
+      questions: [
+        {
+          id: 'q1',
+          question: `What is the most fundamental concept in ${subject}?`,
+          options: ['Option A', 'Option B', 'Option C', 'Option D'],
+          correctAnswer: 1,
+          explanation: 'This is a generated explanation.'
+        }
+      ]
+    });
+  }
+
+  const selectedQuestions = allQuestions.slice(0, qCount).map((q, idx) => ({
+    ...q,
+    id: `ai_q_${Date.now()}_${idx}`
+  }));
+
+  res.json({
+    id: `smart_test_${Date.now()}`,
+    title: `AI Generated ${mode} Test (${difficulty})`,
+    subject: subject || "General",
+    difficulty: difficulty || "Medium",
+    duration: duration || 15,
+    questions: selectedQuestions
+  });
 });
 
 // 2. Submit mock test answers and evaluate
@@ -49,7 +110,8 @@ router.post('/submit', (req, res) => {
       userAnswer: userAnswerIndex !== undefined ? q.options[userAnswerIndex] : "Not Answered",
       correctAnswer: q.options[q.correctAnswer],
       isCorrect,
-      explanation: q.explanation
+      explanation: q.explanation,
+      wrongOptionExplanation: q.wrongOptionExplanation || null
     });
   });
 

@@ -1,23 +1,27 @@
 import { exec } from 'child_process';
+import db from '../database/db.js';
 
 // A mock/intelligent procedural solver that parses questions and generates rich responses.
 // Can integrate with OpenAI/Gemini if API keys are configured, otherwise uses advanced procedural solving logic.
 
-export async function solveQuestion({ text, mode = 'standard', lengthMode = 'standard', language = 'english' }) {
+export async function solveQuestion({ text, mode = 'standard', lengthMode = 'standard', language = 'english', subjectContext, chapterContext }) {
   console.log(`Solving question: "${text.substring(0, 50)}..." [Mode: ${mode}, Length: ${lengthMode}, Lang: ${language}]`);
 
   // Normalize text for subject and topic detection
   const query = text.toLowerCase();
-  let subject = 'General Study';
+  let subject = subjectContext || 'General Study';
+  let chapter = chapterContext || 'General Topics';
   
-  if (query.includes('force') || query.includes('velocity') || query.includes('gravity') || query.includes('lens') || query.includes('mirror') || query.includes('newton') || query.includes('motion') || query.includes('speed') || query.includes('acceleration')) {
-    subject = 'Science (Physics)';
-  } else if (query.includes('chemical') || query.includes('reaction') || query.includes('acid') || query.includes('balance') || query.includes('fe +') || query.includes('caco3') || query.includes('iron filings') || query.includes('copper sulphate')) {
-    subject = 'Science (Chemistry)';
-  } else if (query.includes('cell') || query.includes('plant') || query.includes('blood') || query.includes('heart') || query.includes('photosynthesis') || query.includes('respiratory') || query.includes('lung')) {
-    subject = 'Science (Biology)';
-  } else if (query.includes('quadratic') || query.includes('x^2') || query.includes('x²') || query.includes('equation') || query.includes('math') || query.includes('solve for x') || query.includes('roots')) {
-    subject = 'Mathematics';
+  if (!subjectContext) {
+    if (query.includes('force') || query.includes('velocity') || query.includes('gravity') || query.includes('lens') || query.includes('mirror') || query.includes('newton') || query.includes('motion') || query.includes('speed') || query.includes('acceleration')) {
+      subject = 'Science (Physics)';
+    } else if (query.includes('chemical') || query.includes('reaction') || query.includes('acid') || query.includes('balance') || query.includes('fe +') || query.includes('caco3') || query.includes('iron filings') || query.includes('copper sulphate')) {
+      subject = 'Science (Chemistry)';
+    } else if (query.includes('cell') || query.includes('plant') || query.includes('blood') || query.includes('heart') || query.includes('photosynthesis') || query.includes('respiratory') || query.includes('lung')) {
+      subject = 'Science (Biology)';
+    } else if (query.includes('quadratic') || query.includes('x^2') || query.includes('x²') || query.includes('equation') || query.includes('math') || query.includes('solve for x') || query.includes('roots')) {
+      subject = 'Mathematics';
+    }
   }
 
   // Check if it's a quadratic equation problem to solve dynamically!
@@ -53,63 +57,81 @@ export async function solveQuestion({ text, mode = 'standard', lengthMode = 'sta
                     `### Discriminant (D):\n` +
                     `D = b² - 4ac = (${mathAnalysis.b})² - 4(${mathAnalysis.a})(${mathAnalysis.c}) = **${mathAnalysis.D}**`;
   } else {
-    // Procedural solver for chemical reactions or biology questions
-    if (subject.includes('Chemistry')) {
-      if (query.includes('fe') && query.includes('cuso4')) {
-        answerContent = `This is a **Displacement Reaction**.\n\n` +
-                        `**Equation:**\n` +
-                        `$$\\text{Fe (s)} + \\text{CuSO}_4\\text{ (aq)} \\rightarrow \\text{FeSO}_4\\text{ (aq)} + \\text{Cu (s)}$$\n\n` +
-                        `**Observation:**\n` +
-                        `- The blue color of Copper Sulphate solution fades and turns light green due to the formation of Iron Sulphate (FeSO₄).\n` +
-                        `- A reddish-brown deposit of copper is formed on the iron nail.`;
-        steps = [
-          "Identify the reactants: Iron (Fe) metal and Copper Sulphate (CuSO₄) solution.",
-          "Compare reactivity: Iron is placed above Copper in the metal reactivity series, meaning Iron is more reactive.",
-          "The more reactive iron displaces copper from its sulphate salt.",
-          "Write down the balanced products: Iron(II) Sulphate (FeSO₄) and copper metal (Cu)."
-        ];
-        // Create an SVG chemical experiment diagram!
-        diagram = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%" class="rounded-lg shadow-inner bg-slate-900 border border-slate-700">
-          <rect x="150" y="30" width="100" height="130" rx="10" fill="rgba(56, 189, 248, 0.2)" stroke="#38bdf8" stroke-width="3" />
-          <path d="M 150 60 L 250 60" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 4" />
-          <!-- Liquid -->
-          <path d="M 152 70 Q 200 68 248 70 L 248 158 C 248 160 240 160 200 160 C 160 160 152 160 152 158 Z" fill="rgba(14, 165, 233, 0.4)" />
-          <!-- Iron Nail -->
-          <rect x="195" y="40" width="10" height="100" rx="2" fill="#94a3b8" stroke="#64748b" stroke-width="2" transform="rotate(15 200 90)" />
-          <rect x="195" y="110" width="10" height="30" rx="2" fill="#b45309" stroke="#78350f" stroke-width="2" transform="rotate(15 200 90)" />
-          <text x="200" y="185" fill="#f8fafc" font-size="12" text-anchor="middle" font-family="system-ui">Iron Nail in Blue CuSO₄ solution</text>
-        </svg>`;
-      } else {
-        answerContent = `**Chemical Reactions and Equations Solving**\n\n` +
-                        `Here is a comprehensive breakdown of the chemical reaction in question.\n` +
-                        `For balance: Make sure the number of atoms of each element is equal on both the reactant and product sides.`;
-        steps = [
-          "Write the unbalanced equation with formulas.",
-          "Count the atoms of each element on both sides of the equation.",
-          "Use coefficients in front of formulas to balance the atoms.",
-          "Verify that all elements are fully balanced."
-        ];
+    // Try to find exact match in DB for a perfect explanation
+    let exactMatch = null;
+    const allTests = db.getCollection('mockTests') || [];
+    let cleanText = text.replace(/Explain (Simply|question):/gi, '').trim().toLowerCase();
+    
+    for (const test of allTests) {
+      if (test.questions) {
+        for (const q of test.questions) {
+          if (q.question.toLowerCase().includes(cleanText) || cleanText.includes(q.question.toLowerCase())) {
+            exactMatch = q;
+            break;
+          }
+        }
       }
-    } else if (subject.includes('Biology')) {
-      answerContent = `**Biological Process Breakdown**\n\n` +
-                      `This process represents an essential biological system. Let's look at its pathway, key organelle involvement, and functional outcomes.`;
+      if (exactMatch) break;
+    }
+
+    if (exactMatch) {
+      answerContent = `**AI Analysis for your question:**\n\n` +
+                      `> "${exactMatch.question}"\n\n` +
+                      `**Correct Answer:** ${exactMatch.options[exactMatch.correctAnswer]}\n\n` +
+                      `**Detailed Explanation:**\n${exactMatch.explanation}`;
       steps = [
-        "Identify the primary cells or tissues involved.",
-        "Detail the molecular/cellular interactions.",
-        "List the physiological inputs and outputs.",
-        "Explain the regulatory feedback loops."
+        "Analyzed the core problem statement.",
+        "Identified the correct theoretical framework.",
+        "Derived the precise solution.",
+        "Synthesized the final deduction."
       ];
     } else {
-      // Default / General
-      answerContent = `Here is the AI solution to your query:\n\n` +
-                      `> "${text}"\n\n` +
-                      `Based on analytical standards, we have generated a detailed response broken down step-by-step.`;
-      steps = [
-        "Analyze the core problem statement.",
-        "Extract known constants and parameters.",
-        "Apply standard logical frameworks and principles.",
-        "Synthesize the final deduction and conclusion."
-      ];
+      let displayQuery = text.replace(/Explain (Simply|question):/gi, '').trim();
+      answerContent = `**AI Analysis for your question:**\n\n` +
+                      `> "${displayQuery}"\n\n` +
+                      `Let's break down the core concepts of this problem specifically for the topic of **${chapter}** in **${subject}**. `;
+      
+      if (subject.includes('Chemistry')) {
+        answerContent += `In chemistry, identifying the reactants and understanding the balanced equation is key. For a problem like "${displayQuery.substring(0, 50)}...", we must look at the specific chemical properties and interactions.`;
+        steps = [
+          `Analyze the chemical components involved in ${chapter}.`,
+          "Write the relevant formulas or equations.",
+          "Apply chemical principles to find the outcome.",
+          "Verify that the result is logically sound."
+        ];
+      } else if (subject.includes('Biology')) {
+        answerContent += `In biology, understanding the physiological or cellular mechanism is essential. When looking at "${displayQuery.substring(0, 50)}..." from the ${chapter} chapter, we focus on the specific biological pathways involved.`;
+        steps = [
+          `Identify the primary cells, tissues, or organs involved.`,
+          "Detail the molecular/cellular interactions.",
+          "List the physiological inputs and outputs.",
+          "Explain the regulatory feedback loops."
+        ];
+      } else if (subject.includes('Physics')) {
+        answerContent += `In physics, defining the physical system and forces is the first step. For "${displayQuery.substring(0, 50)}...", applying the correct formula for ${chapter} is crucial.`;
+        steps = [
+          `Identify the physical principles at play in ${chapter}.`,
+          "List knowns and unknowns from the problem statement.",
+          "Apply the relevant formula.",
+          "Calculate and state the final result."
+        ];
+      } else if (subject.includes('Mathematics')) {
+        answerContent += `To solve this mathematical problem in ${chapter}, we need to carefully apply the relevant formulas and logical steps. Make sure to identify the known variables first.`;
+        steps = [
+          `Identify the knowns and unknowns in "${displayQuery.substring(0, 30)}..."`,
+          "Select the appropriate mathematical formula or theorem.",
+          "Substitute the given values into the formula.",
+          "Perform the calculation and verify the final result."
+        ];
+      } else {
+        answerContent += `Here is a detailed breakdown.`;
+        steps = [
+          `Analyze the core problem statement for ${chapter}.`,
+          "Extract known constants and parameters.",
+          "Apply standard logical frameworks and principles.",
+          "Synthesize the final deduction and conclusion."
+        ];
+      }
     }
   }
 

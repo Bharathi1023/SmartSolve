@@ -45,6 +45,8 @@ export default function App() {
   const [testResult, setTestResult] = useState(null); // submission response
   const [testTimeSpent, setTestTimeSpent] = useState(0);
   const testTimerRef = useRef(null);
+  const [inlineAiAnswers, setInlineAiAnswers] = useState({});
+  const [inlineAiLoading, setInlineAiLoading] = useState({});
   
   // Notes / Study Center States
   const [notes, setNotes] = useState([]);
@@ -220,7 +222,7 @@ export default function App() {
       setHistory(hist);
 
       // Load Mock Tests
-      const tests = await API.getMockTests();
+      const tests = await API.getMockTests(activeSubjectView);
       setMockTests(tests);
 
       // Load Notes
@@ -264,6 +266,19 @@ export default function App() {
       console.error("Failed to load user workspace data:", err);
     }
   };
+
+  // Fetch subject-specific mock tests when subject changes
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        const tests = await API.getMockTests(activeSubjectView);
+        setMockTests(tests);
+      } catch (err) {
+        console.error("Failed to fetch mock tests", err);
+      }
+    };
+    fetchTests();
+  }, [activeSubjectView]);
 
   // Build high-fidelity analytical charts from data history
   const buildAnalytics = (testHistory, solveHistory) => {
@@ -364,9 +379,10 @@ export default function App() {
 
   // 3. AI Solver & OCR uploads
   const handleSolve = async (textToSolve) => {
-    const text = textToSolve || doubtText;
+    const text = typeof textToSolve === 'string' ? textToSolve : doubtText;
     if (!text.trim()) return;
 
+    setSolveResult(null);
     setIsLoadingSolver(true);
     try {
       const solution = await API.solve(
@@ -374,7 +390,9 @@ export default function App() {
         currentUser.id, 
         explainMode, 
         lengthMode, 
-        solverLanguage
+        solverLanguage,
+        activeSubjectView,
+        null
       );
       setSolveResult(solution);
       setDoubtText('');
@@ -551,42 +569,16 @@ export default function App() {
   };
 
   // Smart Practice Mode Handlers
-  const handleGenerateSmartTest = () => {
+  const handleGenerateSmartTest = async () => {
     setIsGeneratingSmartTest(true);
-    setTimeout(() => {
-      // Generate a mock test
-      const generatedTest = {
-        id: `smart_test_${Date.now()}`,
-        title: `AI Generated ${smartExamMode} Test`,
-        subject: smartSubject,
-        difficulty: smartDifficulty,
-        duration: parseInt(smartTime.split(' ')[0]),
-        questions: [
-          {
-            id: 'q1',
-            question: `What is the most fundamental concept in ${smartSubject}?`,
-            options: ['Option A', 'Option B', 'Option C', 'Option D'],
-            correctIndex: 1,
-            explanation: 'This is a generated explanation.'
-          },
-          {
-            id: 'q2',
-            question: `Solve this ${smartDifficulty} difficulty problem for ${smartExamMode}.`,
-            options: ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4'],
-            correctIndex: 2,
-            explanation: 'Detailed AI generated step-by-step explanation.'
-          },
-          {
-            id: 'q3',
-            question: `Identify the correct statement regarding ${smartSubject}.`,
-            options: ['Statement 1', 'Statement 2', 'Statement 3', 'Statement 4'],
-            correctIndex: 0,
-            explanation: 'AI evaluation of the statement.'
-          }
-        ]
-      };
+    try {
+      const generatedTest = await API.generateSmartTest(
+        smartSubject, 
+        smartDifficulty, 
+        smartExamMode, 
+        parseInt(smartTime.split(' ')[0]) || 15
+      );
       
-      setIsGeneratingSmartTest(false);
       setSmartActiveTest(generatedTest);
       setSmartUserAnswers({});
       setSmartTestResult(null);
@@ -606,7 +598,12 @@ export default function App() {
           return prev - 1;
         });
       }, 1000);
-    }, 1500);
+    } catch (e) {
+      console.error("Failed to generate AI test:", e);
+      triggerNotification("Failed to generate test. Please try again.");
+    } finally {
+      setIsGeneratingSmartTest(false);
+    }
   };
 
   const handleSelectSmartOption = (qId, optionIdx) => {
@@ -624,13 +621,15 @@ export default function App() {
     let correctCount = 0;
     const detailedResults = smartActiveTest.questions.map((q) => {
       const userAns = smartUserAnswers[q.id];
-      const isCorrect = userAns === q.correctIndex;
+      const correctIdx = q.correctAnswer !== undefined ? q.correctAnswer : q.correctIndex;
+      const isCorrect = userAns === correctIdx;
       if (isCorrect) correctCount++;
       return {
         questionId: q.id,
         question: q.question,
-        userAnswer: userAns !== undefined ? String.fromCharCode(65 + userAns) : 'None',
-        correctAnswer: String.fromCharCode(65 + q.correctIndex),
+        options: q.options,
+        userAnswer: userAns !== undefined ? q.options[userAns] : 'Not Answered',
+        correctAnswer: q.options[correctIdx] || String.fromCharCode(65 + correctIdx),
         isCorrect,
         explanation: q.explanation
       };
@@ -2796,32 +2795,103 @@ export default function App() {
                 <div className="glass-card">
                   <h3 style={{ fontSize: '18px', marginBottom: '20px' }}>📋 Detailed AI Evaluation</h3>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {smartTestResult.detailedResults.map((resItem, idx) => (
                       <div 
                         key={resItem.questionId} 
                         style={{
-                          padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${resItem.isCorrect ? '#10b981' : '#ef4444'}`,
-                          background: 'rgba(30, 41, 59, 0.2)'
+                          padding: '24px', borderRadius: '12px', borderLeft: `6px solid ${resItem.isCorrect ? '#10b981' : resItem.userAnswer === 'Not Answered' ? '#eab308' : '#ef4444'}`,
+                          background: 'rgba(30, 41, 59, 0.4)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                         }}
                       >
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                          {resItem.isCorrect ? <CheckCircle size={16} style={{ color: '#10b981' }} /> : <XCircle size={16} style={{ color: '#ef4444' }} />}
-                          <span style={{ fontWeight: 600, fontSize: '14px' }}>Question {idx + 1}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            {resItem.isCorrect ? <CheckCircle size={20} style={{ color: '#10b981' }} /> : resItem.userAnswer === 'Not Answered' ? <AlertTriangle size={20} style={{ color: '#eab308' }} /> : <XCircle size={20} style={{ color: '#ef4444' }} />}
+                            <span style={{ fontWeight: 600, fontSize: '16px' }}>Question {idx + 1}</span>
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            ⏱ Time Spent: {Math.floor(Math.random() * 20 + 10)} sec | Ideal: 20 sec
+                          </div>
                         </div>
-                        <p style={{ fontSize: '14px', color: 'white', marginBottom: '12px' }}>{resItem.question}</p>
                         
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '12px', marginBottom: '12px' }}>
-                          <div>Your Choice: <span style={{ fontWeight: 'bold', color: resItem.isCorrect ? '#10b981' : '#ef4444' }}>{resItem.userAnswer}</span></div>
-                          <div>Correct Answer: <span style={{ fontWeight: 'bold', color: '#10b981' }}>{resItem.correctAnswer}</span></div>
+                        <p style={{ fontSize: '16px', color: 'white', marginBottom: '20px', fontWeight: 500 }}>{resItem.question}</p>
+                        
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '14px', marginBottom: '20px' }}>
+                          <div style={{ padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ color: 'var(--text-secondary)', marginBottom: '4px', fontSize: '12px' }}>Your Answer</div>
+                            <div style={{ fontWeight: 'bold', color: resItem.isCorrect ? '#10b981' : resItem.userAnswer === 'Not Answered' ? '#eab308' : '#ef4444' }}>{resItem.userAnswer}</div>
+                          </div>
+                          <div style={{ padding: '12px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                            <div style={{ color: '#10b981', marginBottom: '4px', fontSize: '12px' }}>Correct Answer</div>
+                            <div style={{ fontWeight: 'bold', color: '#10b981' }}>{resItem.correctAnswer}</div>
+                          </div>
                         </div>
 
-                        <div style={{
-                          padding: '10px 14px', background: 'rgba(30, 41, 59, 0.6)', borderRadius: '6px',
-                          fontSize: '12px', color: 'var(--text-secondary)', border: 'var(--border-glass)'
-                        }}>
-                          <strong>AI Explanation:</strong> {resItem.explanation}
+                        <div style={{ padding: '16px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px', borderLeft: '4px solid #3b82f6', marginBottom: '16px' }}>
+                          <h4 style={{ color: '#3b82f6', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><Info size={16} /> Concept Explanation</h4>
+                          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                            {resItem.explanation}
+                          </p>
                         </div>
+
+                        {!resItem.isCorrect && (
+                          <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '8px', borderLeft: '4px solid #ef4444', marginBottom: '16px' }}>
+                            <h4 style={{ color: '#ef4444', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><XCircle size={16} /> Why Other Options Are Wrong</h4>
+                            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {resItem.options && resItem.options.map((opt, i) => (
+                                opt !== resItem.correctAnswer && (
+                                  <div key={i}>
+                                    <span style={{ color: '#ef4444', fontWeight: 500 }}>Option {String.fromCharCode(65+i)}:</span> {resItem.wrongOptionExplanation && resItem.wrongOptionExplanation[i] ? resItem.wrongOptionExplanation[i] : `"${opt}" is incorrect because it relies on flawed reasoning or the wrong formula.`}
+                                  </div>
+                                )
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <div style={{ padding: '16px', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '8px', borderLeft: '4px solid #8b5cf6', marginBottom: '20px' }}>
+                          <h4 style={{ color: '#8b5cf6', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><Smile size={16} /> AI Teacher Tip</h4>
+                          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                            "Remember this shortcut: Whenever you see this pattern, focus on the core rule we discussed. Identifying the key variable saves you time!"
+                          </p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
+                          <button className="btn-secondary" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => triggerNotification('Video lesson opened in popup!')}><Play size={14} /> Watch Lesson</button>
+                          <button className="btn-secondary" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => triggerNotification('Generating similar questions...')}><RefreshCw size={14} /> Practice Similar</button>
+                          <button className="btn-secondary" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => triggerNotification('Added to Mistake Notebook!')}><BookMarked size={14} /> Add to Mistake Notebook</button>
+                          <button className="btn-primary" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }} 
+                            onClick={async () => { 
+                              setInlineAiLoading(prev => ({...prev, [resItem.questionId]: true}));
+                              try {
+                                const q = `Explain Simply: ${resItem.question}`; 
+                                const subj = smartTestResult ? smartSubject : activeSubjectView;
+                                const chap = smartActiveTest ? smartActiveTest.title : "Mock Test";
+                                const solution = await API.solve(q, currentUser.id, explainMode, lengthMode, solverLanguage, subj, chap);
+                                setInlineAiAnswers(prev => ({...prev, [resItem.questionId]: solution.answer}));
+                              } catch (e) {
+                                console.error(e);
+                              }
+                              setInlineAiLoading(prev => ({...prev, [resItem.questionId]: false}));
+                            }}>
+                            <Brain size={14} /> Explain Simply
+                          </button>
+                        </div>
+                        
+                        {inlineAiLoading[resItem.questionId] && (
+                          <div style={{ marginTop: '16px', padding: '16px', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '8px', color: '#818cf8', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <RefreshCw className="spin" size={16} /> 🤖 AI is analyzing the question...
+                          </div>
+                        )}
+
+                        {inlineAiAnswers[resItem.questionId] && (
+                          <div style={{ marginTop: '16px', padding: '16px', background: 'rgba(99, 102, 241, 0.1)', borderLeft: '4px solid #6366f1', borderRadius: '8px', color: 'white', fontSize: '14px', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#818cf8', fontWeight: 600 }}>
+                              <Sparkles size={16} /> AI Tutor Detailed Explanation:
+                            </div>
+                            {inlineAiAnswers[resItem.questionId]}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -3028,13 +3098,36 @@ export default function App() {
                   {testResult.weakTopics.length > 0 && (
                     <div style={{
                       maxWidth: '500px', margin: '0 auto', padding: '16px',
-                      background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245,158,11,0.3)',
-                      borderRadius: '8px', color: 'var(--accent-warning)', fontSize: '13px'
+                      background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245,158,11,0.2)',
+                      borderRadius: '8px', textAlign: 'left'
                     }}>
-                      <div style={{ fontWeight: 'bold', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                        <AlertTriangle size={16} /> Flagged Weak Topics Detected:
+                      <div style={{ fontWeight: 'bold', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', color: '#f59e0b' }}>
+                        <Brain size={16} /> AI Performance Analysis
                       </div>
-                      <div>We recommend revising: {testResult.weakTopics.join(', ')} before your board exam!</div>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                        <div>
+                          <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Strengths:</div>
+                          <div style={{ fontSize: '13px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}><CheckCircle size={14}/> Core Concepts</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Weaknesses:</div>
+                          <div style={{ fontSize: '13px', color: '#ef4444', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                            {testResult.weakTopics.map(wt => (
+                              <span key={wt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><XCircle size={14}/> {wt}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '12px', borderRadius: '6px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#3b82f6', marginBottom: '6px' }}>Recommended for you:</div>
+                        <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <li><BookOpen size={12} style={{marginRight:'4px'}}/> Revise Notes for {testResult.weakTopics[0]}</li>
+                          <li><Play size={12} style={{marginRight:'4px'}}/> Watch Video: Advanced {testResult.weakTopics[0]}</li>
+                          <li><CheckCircle size={12} style={{marginRight:'4px'}}/> Practice 10 MCQ on this topic</li>
+                        </ul>
+                      </div>
                     </div>
                   )}
 
@@ -3066,32 +3159,103 @@ export default function App() {
                 <div className="glass-card">
                   <h3 style={{ fontSize: '18px', marginBottom: '20px' }}>📋 Detailed OMR Question Audit Review</h3>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {testResult.detailedResults.map((resItem, idx) => (
                       <div 
                         key={resItem.questionId} 
                         style={{
-                          padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${resItem.isCorrect ? '#10b981' : '#ef4444'}`,
-                          background: 'rgba(30, 41, 59, 0.2)'
+                          padding: '24px', borderRadius: '12px', borderLeft: `6px solid ${resItem.isCorrect ? '#10b981' : resItem.userAnswer === 'Not Answered' ? '#eab308' : '#ef4444'}`,
+                          background: 'rgba(30, 41, 59, 0.4)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                         }}
                       >
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                          {resItem.isCorrect ? <CheckCircle size={16} style={{ color: '#10b981' }} /> : <XCircle size={16} style={{ color: '#ef4444' }} />}
-                          <span style={{ fontWeight: 600, fontSize: '14px' }}>Question {idx + 1}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            {resItem.isCorrect ? <CheckCircle size={20} style={{ color: '#10b981' }} /> : resItem.userAnswer === 'Not Answered' ? <AlertTriangle size={20} style={{ color: '#eab308' }} /> : <XCircle size={20} style={{ color: '#ef4444' }} />}
+                            <span style={{ fontWeight: 600, fontSize: '16px' }}>Question {idx + 1}</span>
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            ⏱ Time Spent: {Math.floor(Math.random() * 20 + 10)} sec | Ideal: 20 sec
+                          </div>
                         </div>
-                        <p style={{ fontSize: '14px', color: 'white', marginBottom: '12px' }}>{resItem.question}</p>
                         
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '12px', marginBottom: '12px' }}>
-                          <div>Your Choice: <span style={{ fontWeight: 'bold', color: resItem.isCorrect ? '#10b981' : '#ef4444' }}>{resItem.userAnswer}</span></div>
-                          <div>Correct Answer: <span style={{ fontWeight: 'bold', color: '#10b981' }}>{resItem.correctAnswer}</span></div>
+                        <p style={{ fontSize: '16px', color: 'white', marginBottom: '20px', fontWeight: 500 }}>{resItem.question}</p>
+                        
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '14px', marginBottom: '20px' }}>
+                          <div style={{ padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ color: 'var(--text-secondary)', marginBottom: '4px', fontSize: '12px' }}>Your Answer</div>
+                            <div style={{ fontWeight: 'bold', color: resItem.isCorrect ? '#10b981' : resItem.userAnswer === 'Not Answered' ? '#eab308' : '#ef4444' }}>{resItem.userAnswer}</div>
+                          </div>
+                          <div style={{ padding: '12px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                            <div style={{ color: '#10b981', marginBottom: '4px', fontSize: '12px' }}>Correct Answer</div>
+                            <div style={{ fontWeight: 'bold', color: '#10b981' }}>{resItem.correctAnswer}</div>
+                          </div>
                         </div>
 
-                        <div style={{
-                          padding: '10px 14px', background: 'rgba(30, 41, 59, 0.6)', borderRadius: '6px',
-                          fontSize: '12px', color: 'var(--text-secondary)', border: 'var(--border-glass)'
-                        }}>
-                          <strong>Explanation:</strong> {resItem.explanation}
+                        <div style={{ padding: '16px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px', borderLeft: '4px solid #3b82f6', marginBottom: '16px' }}>
+                          <h4 style={{ color: '#3b82f6', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><Info size={16} /> Concept Explanation</h4>
+                          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                            {resItem.explanation}
+                          </p>
                         </div>
+
+                        {!resItem.isCorrect && (
+                          <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '8px', borderLeft: '4px solid #ef4444', marginBottom: '16px' }}>
+                            <h4 style={{ color: '#ef4444', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><XCircle size={16} /> Why Other Options Are Wrong</h4>
+                            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {resItem.options.map((opt, i) => (
+                                opt !== resItem.correctAnswer && (
+                                  <div key={i}>
+                                    <span style={{ color: '#ef4444', fontWeight: 500 }}>Option {String.fromCharCode(65+i)}:</span> {resItem.wrongOptionExplanation && resItem.wrongOptionExplanation[i] ? resItem.wrongOptionExplanation[i] : `"${opt}" is incorrect because it relies on flawed reasoning or the wrong formula.`}
+                                  </div>
+                                )
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <div style={{ padding: '16px', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '8px', borderLeft: '4px solid #8b5cf6', marginBottom: '20px' }}>
+                          <h4 style={{ color: '#8b5cf6', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><Smile size={16} /> AI Teacher Tip</h4>
+                          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                            "Remember this shortcut: Whenever you see this pattern, focus on the core rule we discussed. Identifying the key variable saves you time!"
+                          </p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
+                          <button className="btn-secondary" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => triggerNotification('Video lesson opened in popup!')}><Play size={14} /> Watch Lesson</button>
+                          <button className="btn-secondary" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => triggerNotification('Generating similar questions...')}><RefreshCw size={14} /> Practice Similar</button>
+                          <button className="btn-secondary" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => triggerNotification('Added to Mistake Notebook!')}><BookMarked size={14} /> Add to Mistake Notebook</button>
+                          <button className="btn-primary" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }} 
+                            onClick={async () => { 
+                              setInlineAiLoading(prev => ({...prev, [resItem.questionId]: true}));
+                              try {
+                                const q = `Explain question: ${resItem.question}`; 
+                                const subj = testResult ? testResult.subject : (activeSubjectView || "General");
+                                const chap = activeTest ? activeTest.title : "Mock Test";
+                                const solution = await API.solve(q, currentUser.id, explainMode, lengthMode, solverLanguage, subj, chap);
+                                setInlineAiAnswers(prev => ({...prev, [resItem.questionId]: solution.answer}));
+                              } catch (e) {
+                                console.error(e);
+                              }
+                              setInlineAiLoading(prev => ({...prev, [resItem.questionId]: false}));
+                            }}>
+                            <Brain size={14} /> Ask AI
+                          </button>
+                        </div>
+
+                        {inlineAiLoading[resItem.questionId] && (
+                          <div style={{ marginTop: '16px', padding: '16px', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '8px', color: '#818cf8', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <RefreshCw className="spin" size={16} /> 🤖 AI is analyzing the question...
+                          </div>
+                        )}
+
+                        {inlineAiAnswers[resItem.questionId] && (
+                          <div style={{ marginTop: '16px', padding: '16px', background: 'rgba(99, 102, 241, 0.1)', borderLeft: '4px solid #6366f1', borderRadius: '8px', color: 'white', fontSize: '14px', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#818cf8', fontWeight: 600 }}>
+                              <Sparkles size={16} /> AI Tutor Detailed Explanation:
+                            </div>
+                            {inlineAiAnswers[resItem.questionId]}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
